@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaRegTrashAlt, FaEye } from "react-icons/fa";
 import { FiFileText } from "react-icons/fi";
+import { useNavigate } from 'react-router-dom';
 
 const datos = Array.from({ length: 50 }, (_, i) => ({
     id: i + 1,
@@ -8,7 +9,7 @@ const datos = Array.from({ length: 50 }, (_, i) => ({
     checkIn: `2025-04-${(i % 30 + 1).toString().padStart(2, '0')}`,
     checkOut: `2025-04-${((i + 3) % 30 + 1).toString().padStart(2, '0')}`,
     habitacion: `${(i % 10) + 1}${String.fromCharCode(65 + (i % 3))}`,
-    estadoIngreso: i % 2 === 0 ? "Confirmado" : "Pendiente",
+    estadoIngreso: i % 2 === 0 ? "Reserva Completa" : "Reserva Pendiente",
     consumo: 50000 + i * 1000,
     cargosExtras: 20000 + i * 500,
     total: 70000 + i * 1500,
@@ -46,6 +47,11 @@ function Inicio() {
         setShowDeleteModal(false);
     };
 
+    const navigate = useNavigate();
+
+    const irADetCuenta = () => {
+        navigate('/DetallesCuentas');
+    };
 
     return (
         <>
@@ -129,7 +135,7 @@ function Inicio() {
                                             onClick={() => handleShowDelete(item)}>
                                             <FaRegTrashAlt />
                                         </button>
-                                        <button className='btn rounded-circle mx-1' style={{ backgroundColor: "#003366", color: "white" }}><FiFileText /></button>
+                                        <button className='btn rounded-circle mx-1' style={{ backgroundColor: "#003366", color: "white" }} onClick={irADetCuenta}><FiFileText /></button>
                                     </td>
                                 </tr>
                             ))}
