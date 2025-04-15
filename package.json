@@ -12,6 +12,9 @@
     "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.0.2",
     "bootstrap": "^5.3.5",
     "bootstrap-icons": "^1.11.3",
     "datatables.net": "^2.2.2",

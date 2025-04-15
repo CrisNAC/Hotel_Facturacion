@@ -1,11 +1,8 @@
-import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import NavBar from './components/navbar.jsx'
 
 import Inicio from './components/inicio'
+import NavBar from './components/navbar.jsx'
 
 import DetallesCuentas from "./components/DetallesCuenta"
 import InvoiceComponentEli from "./components/InvoiceComponentEli"
@@ -16,16 +13,11 @@ import FacturaFilters from "./components/FacturaFilters"
 import Invoice from "./components/Invoice"
 
 import CheckIn from './components/CheckIn'
-import CheckInReserva from './components/CheckInReserva'
 import ConfirmarReserva from './components/ConfirmarReserva'
 import DatosHuesped from './components/DatosHuesped'
 import SeleccionHabitacion from './components/SeleccionHabitacion'
-import WalkIn from './components/WalkIn'
-
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
       <Router basename="/Hotel_Facturacion">
