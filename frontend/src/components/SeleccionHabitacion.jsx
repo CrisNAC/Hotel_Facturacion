@@ -79,7 +79,7 @@ const SeleccionHabitacion = () => {
 
 									<div className="text-end">
 										<strong>Gs. {tarifa.precio}</strong>
-										<button className="btn btn-warning btn-sm ms-3 text-white fw-bold"
+										<button type="button" className="btn btn-warning btn-sm ms-3 text-white fw-bold"
 												style={{width: '180px', height: '50px'}}
 												onClick={() => navigate('/ConfirmarReserva')}>Seleccionar
 										</button>
