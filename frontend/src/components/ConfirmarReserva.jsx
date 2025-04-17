@@ -1,17 +1,18 @@
 import React from "react";
-import {FaEdit, FaTrash, FaUserPlus} from "react-icons/fa";
+import { FaEdit, FaTrash, FaUserPlus } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 
 const ConfirmarReserva = () => {
 
 	const navigate = useNavigate();
 
-    return (
+	return (
 		<div>
 			<div className="container py-4" style={{ marginTop: '50px' }}>
 				<div className="d-flex justify-content-between align-items-center mb-3">
 					<h3>Huéspedes habitación 205</h3>
 					<button
+						type="button"
 						className="btn btn-primary btn-sm ms-3"
 						style={{
 							backgroundColor: "#003366",
@@ -25,34 +26,34 @@ const ConfirmarReserva = () => {
 				</div>
 
 				<table className="table table-hover">
-					<thead style={{backgroundColor: "#003366"}}>
+					<thead style={{ backgroundColor: "#003366" }}>
 						<tr>
-							<th	style={{backgroundColor: "#003366", color: "white"}}>#</th>
-							<th style={{backgroundColor: "#003366", color: "white"}}>
+							<th style={{ backgroundColor: "#003366", color: "white" }}>#</th>
+							<th style={{ backgroundColor: "#003366", color: "white" }}>
 								Nombre
 							</th>
 							<th
-								style={{backgroundColor: "#003366", color: "white"}}
+								style={{ backgroundColor: "#003366", color: "white" }}
 							>
 								Apellido
 							</th>
 							<th
-								style={{backgroundColor: "#003366", color: "white"}}
+								style={{ backgroundColor: "#003366", color: "white" }}
 							>
 								Nacionalidad
 							</th>
 							<th
-								style={{backgroundColor: "#003366", color: "white"}}
+								style={{ backgroundColor: "#003366", color: "white" }}
 							>
 								Teléfono
 							</th>
 							<th
-								style={{backgroundColor: "#003366", color: "white"}}
+								style={{ backgroundColor: "#003366", color: "white" }}
 							>
 								Correo
 							</th>
 							<th
-								style={{backgroundColor: "#003366", color: "white"}}
+								style={{ backgroundColor: "#003366", color: "white" }}
 							>
 								Acciones
 							</th>
@@ -68,6 +69,7 @@ const ConfirmarReserva = () => {
 							<td>juan@mail.com</td>
 							<td className="d-flex justify-content-center align-items-center">
 								<button
+									type="button"
 									className="btn plus rounded-circle d-flex align-items-center justify-content-center"
 									style={{
 										backgroundColor: "#003366",
@@ -81,6 +83,7 @@ const ConfirmarReserva = () => {
 									<FaEdit />
 								</button>
 								<button
+									type="button"
 									className="btn plus rounded-circle d-flex align-items-center justify-content-center"
 									style={{
 										backgroundColor: "#003366",
@@ -104,6 +107,7 @@ const ConfirmarReserva = () => {
 							<td>maria@mail.com</td>
 							<td className="d-flex justify-content-center align-items-center">
 								<button
+								type="button"
 									className="btn plus rounded-circle d-flex align-items-center justify-content-center"
 									style={{
 										backgroundColor: "#003366",
@@ -117,6 +121,7 @@ const ConfirmarReserva = () => {
 									<FaEdit />
 								</button>
 								<button
+								type="button"
 									className="btn plus rounded-circle d-flex align-items-center justify-content-center"
 									style={{
 										backgroundColor: "#003366",
@@ -146,7 +151,7 @@ const ConfirmarReserva = () => {
 						</div>
 					</div>
 
-					{/* Resumen Reserva*/ }
+					{/* Resumen Reserva*/}
 					<div className="col-md-6">
 						<div className="shadow p-4 rounded">
 
@@ -172,7 +177,7 @@ const ConfirmarReserva = () => {
 
 				{/* Button */}
 				<div className="d-flex justify-content-center mt-4">
-					<button className="btn btn-success" style={{width: '180px', height: '50px'}} onClick={() => navigate('/')}>
+					<button type="button" className="btn btn-success" style={{ width: '180px', height: '50px' }} onClick={() => navigate('/')}>
 						Confirmar Reserva
 					</button>
 				</div>
@@ -180,7 +185,7 @@ const ConfirmarReserva = () => {
 			</div>
 
 		</div>
-    );
+	);
 };
 
 export default ConfirmarReserva;

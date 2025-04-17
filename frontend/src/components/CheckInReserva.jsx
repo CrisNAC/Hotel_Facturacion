@@ -97,7 +97,7 @@ const CheckInReserva = () => {
 				</div>
 
 				<div className="text-center" style={{ marginTop: '60px'}}>
-					<button type="submit" className="btn btn-success" onClick={() => navigate('/SeleccionHabitacion')}>
+					<button type="button" className="btn btn-success" onClick={() => navigate('/SeleccionHabitacion')}>
 						Verificar Disponibilidad
 					</button>
 				</div>
