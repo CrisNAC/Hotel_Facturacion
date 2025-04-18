@@ -20,7 +20,7 @@ import SeleccionHabitacion from './components/SeleccionHabitacion'
 function App() {
   return (
     <>
-      <Router basename="/Hotel_Facturacion">
+      <Router>
         <Container>
 
           <NavBar></NavBar>
