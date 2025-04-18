@@ -8,7 +8,7 @@ const habitaciones = [
 		id: 1,
 		titulo: "Cama Doble-Matrimonial Estándar",
 		numero: 205,
-		imagen: "/Hotel_Facturacion/img/hab1-imagen.png",
+		imagen: "/img/hab1-imagen.png",
 		servicios: [
 			{ nombre: "Wifi libre", icono: <FaWifi></FaWifi> },
 			{ nombre: "Aire Acondicionado", icono: <FaSnowflake></FaSnowflake> },
@@ -26,7 +26,7 @@ const habitaciones = [
 		id: 2,
 		titulo: "Cama Doble-Matrimonial Deluxe",
 		numero: 206,
-		imagen: "/Hotel_Facturacion/img/hab2-imagen.png",
+		imagen: "/img/hab2-imagen.png",
 		servicios: [
 			{ nombre: "Wifi libre", icono: <FaWifi></FaWifi> },
 			{ nombre: "Aire Acondicionado", icono: <FaSnowflake></FaSnowflake> },
