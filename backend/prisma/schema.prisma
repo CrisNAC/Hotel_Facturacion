@@ -20,6 +20,7 @@ model Usuario {
   apellido          String
   nombre_usuario    String
   contrasena_hash   String
+  createdAt         DateTime      @default(now())
   activo            Boolean       @default(true)
 
   reservas          Reserva[]
@@ -189,3 +190,4 @@ model DetalleFactura {
 
   factura            Factura  @relation(fields: [fk_factura], references: [id_factura])
 }
+
