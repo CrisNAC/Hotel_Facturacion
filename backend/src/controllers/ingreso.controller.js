@@ -4,10 +4,10 @@ const prisma = new PrismaClient();
 const getAllIngresos = async (req, res) => {
     try {
         const result = await prisma.ingreso.findMany();
-        if (!result) return res.status(404).json({ error: 'Tareas no enontradas' });
-        res.json(result);
+        if (!result) return res.status(404).json({ error: 'Ingresos no enontrados' });
+        res.status(200).json(result);
     } catch (error) {
-        res.status(500).json({ error: 'Error al obtener tareas' });
+        res.status(500).json({ error: 'Error al obtener Ingresos' });
     }
 };
 

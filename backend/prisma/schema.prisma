@@ -131,7 +131,7 @@ model HuespedHabitacion {
 model Cuenta {
   id_cuenta      Int      @id @default(autoincrement())
   fk_ingreso     Int
-  estado         String
+  estado         Boolean
   activo         Boolean  @default(true)
 
   ingreso        Ingreso  @relation(fields: [fk_ingreso], references: [id_ingreso])
