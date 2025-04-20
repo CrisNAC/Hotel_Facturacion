@@ -3,7 +3,11 @@ const prisma = new PrismaClient();
 
 const getAllIngresos = async (req, res) => {
     try {
-        const result = await prisma.ingreso.findMany();
+        const result = await prisma.ingreso.findMany({
+            where: {
+                activo: true
+            }
+        });
         if (!result) return res.status(404).json({ error: 'Ingresos no enontrados' });
         res.status(200).json(result);
     } catch (error) {

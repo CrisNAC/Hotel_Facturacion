@@ -168,7 +168,7 @@ model Factura {
   id_factura        Int         @id @default(autoincrement())
   fk_cuenta         Int
   fk_timbrado       Int
-  fecha_emision     DateTime
+  fecha_emision     DateTime    @default(now())
   condicion_venta   String
   total             Int
   fk_usuario        Int

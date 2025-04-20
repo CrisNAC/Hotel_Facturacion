@@ -4,6 +4,7 @@ import usuarioRoutes from "./routes/usuario.routes";
 import huespedRoutes from "./routes/huesped.routes";
 import cuentaRoutes from "./routes/cuenta.routes";
 import consumoRoutes from "./routes/consumo.routes";
+import facturaRoutes from "./routes/factura.routes";
 
 
 const app = express();
@@ -14,6 +15,7 @@ app.use('/api/usuario', usuarioRoutes);
 app.use('/api/huesped', huespedRoutes);
 app.use('/api/cuenta', cuentaRoutes);
 app.use('/api/consumo', consumoRoutes);
+app.use('/api/facturas', facturaRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log("Servidor iniciado"));
