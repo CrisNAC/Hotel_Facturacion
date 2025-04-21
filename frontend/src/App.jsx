@@ -23,8 +23,8 @@ function App() {
       <Router>
         <Container>
 
-          <NavBar></NavBar>
-          <Routes>
+		  <NavBar></NavBar>
+		  <Routes>
             <Route path="/" element={<Inicio />} />
 
             <Route path="/DetallesCuentas" element={<DetallesCuentas />}></Route>

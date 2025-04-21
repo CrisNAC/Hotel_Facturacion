@@ -1,0 +1,224 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+	output = "../generated/prisma"
+}
+
+datasource db {
+    provider = "postgresql"
+    url = env("DATABASE_URL")
+	directUrl = env("DIRECT_URL")
+}
+
+model Usuario {
+	id_usuario Int @id @default(autoincrement())
+	nombre String
+	apellido String
+	nombre_usuario String @unique
+	contrasena_hash String
+	activo Boolean @default(true)
+	created_at DateTime @default(now())
+	updated_at DateTime @updatedAt
+
+	reservas Reserva[]
+	ingresos Ingreso[]
+	consumos Consumo[]
+	facturas Factura[]
+}
+
+enum DocumentoIdentidad {
+	DNI
+	PASAPORTE
+	LICENCIA
+}
+
+enum Nacionalidad {
+	PARAGUAY
+	BRASIL
+	ARGENTINA
+	OTRO
+}
+
+model Huesped {
+	id_huesped Int @id @default(autoincrement())
+	nombre String
+	apellido String
+	documento_identidad DocumentoIdentidad
+	numero_documento String @unique
+	ruc String?
+	nacionalidad Nacionalidad
+	telefono String?
+	email String?
+	fecha_nacimiento DateTime
+	activo Boolean @default(true)
+	created_at DateTime @default(now())
+	updated_at DateTime @updatedAt
+
+	reservas Reserva[]
+	ingresos Ingreso[]
+	huespedesHabitaciones HuespedHabitacion[]
+}
+
+model TipoHabitacion {
+	id_tipo_habitacion Int @id @default(autoincrement())
+	nombre String
+	descripcion String
+	capacidad Int
+	activo Boolean @default(true)
+	created_at DateTime @default(now())
+	updated_at DateTime @updatedAt
+
+	tarifas Tarifa[]
+	habitaciones Habitacion[]
+	reservas Reserva[]
+}
+
+model Tarifa {
+	id_tarifa Int @id @default(autoincrement())
+	fk_tipo_habitacion Int
+	descripcion String
+	precio Int
+	activo Boolean @default(true)
+	created_at DateTime @default(now())
+	updated_at DateTime @updatedAt
+
+	tipoHabitacion TipoHabitacion @relation(fields: [fk_tipo_habitacion], references: [id_tipo_habitacion])
+	ingresos Ingreso[]
+}
+
+model Habitacion {
+	id_habitacion Int @id @default(autoincrement())
+	numero String
+	fk_tipo_habitacion Int
+	piso String
+	estado String
+	activo Boolean @default(true)
+	created_at DateTime @default(now())
+	updated_at DateTime @updatedAt
+
+	tipoHabitacion TipoHabitacion @relation(fields: [fk_tipo_habitacion], references: [id_tipo_habitacion])
+	ingresos Ingreso[]
+}
+
+model Reserva {
+	id_reserva Int @id @default(autoincrement())
+	fk_huesped Int
+	fk_tipo_habitacion Int
+	check_in DateTime
+	check_out DateTime
+	estado String
+	fk_usuario Int
+	activo Boolean @default(true)
+	created_at DateTime @default(now())
+	updated_at DateTime @updatedAt
+
+	huesped Huesped @relation(fields: [fk_huesped], references: [id_huesped])
+	tipoHabitacion TipoHabitacion @relation(fields: [fk_tipo_habitacion], references: [id_tipo_habitacion])
+	usuario Usuario @relation(fields: [fk_usuario], references: [id_usuario])
+	ingreso Ingreso[]
+}
+
+model Ingreso {
+	id_ingreso        Int         @id @default(autoincrement())
+	fk_reserva        Int?
+	fk_habitacion     Int
+	fk_huesped        Int
+	fk_tarifa         Int
+	fecha_ingreso     DateTime
+	estado            String
+	fk_usuario        Int
+	activo Boolean @default(true)
+	created_at DateTime @default(now())
+	updated_at DateTime @updatedAt
+
+	reserva           Reserva?    @relation(fields: [fk_reserva], references: [id_reserva])
+	habitacion        Habitacion  @relation(fields: [fk_habitacion], references: [id_habitacion])
+	huesped           Huesped     @relation(fields: [fk_huesped], references: [id_huesped])
+	tarifa            Tarifa      @relation(fields: [fk_tarifa], references: [id_tarifa])
+	usuario           Usuario     @relation(fields: [fk_usuario], references: [id_usuario])
+
+	huespedesHabitaciones HuespedHabitacion[]
+	cuenta                Cuenta[]
+}
+
+model HuespedHabitacion {
+	id_huesped_habitacion Int      @id @default(autoincrement())
+	fk_huesped            Int
+	fk_ingreso            Int
+	activo Boolean @default(true)
+	created_at DateTime @default(now())
+	updated_at DateTime @updatedAt
+
+	huesped               Huesped  @relation(fields: [fk_huesped], references: [id_huesped])
+	ingreso               Ingreso  @relation(fields: [fk_ingreso], references: [id_ingreso])
+}
+
+model Cuenta {
+	id_cuenta      Int      @id @default(autoincrement())
+	fk_ingreso     Int
+	estado         String
+	activo         Boolean  @default(true)
+	created_at DateTime @default(now())
+	updated_at DateTime @updatedAt
+
+	ingreso        Ingreso  @relation(fields: [fk_ingreso], references: [id_ingreso])
+	consumos       Consumo[]
+	factura        Factura[]
+}
+
+model Consumo {
+	id_consumo     Int     @id @default(autoincrement())
+	fk_cuenta      Int
+	descripcion    String
+	cantidad       Int
+	monto          Int
+	fk_usuario     Int
+	activo         Boolean  @default(true)
+
+	cuenta         Cuenta  @relation(fields: [fk_cuenta], references: [id_cuenta])
+	usuario        Usuario @relation(fields: [fk_usuario], references: [id_usuario])
+}
+
+model Timbrado {
+	id_timbrado              Int       @id @default(autoincrement())
+	fecha_inicio             DateTime
+	fecha_fin                DateTime
+	codigo_sucursal          Int
+	codigo_punto_facturacion Int
+	numero_secuencial        Int
+	activo                   Boolean   @default(true)
+
+	facturas                 Factura[]
+}
+
+model Factura {
+	id_factura        Int         @id @default(autoincrement())
+	fk_cuenta         Int
+	fk_timbrado       Int
+	fecha_emision     DateTime	@default(now())
+	condicion_venta   String
+	total             Int
+	fk_usuario        Int
+
+	cuenta            Cuenta?     @relation(fields: [fk_cuenta], references: [id_cuenta])
+	timbrado          Timbrado   @relation(fields: [fk_timbrado], references: [id_timbrado])
+	usuario           Usuario    @relation(fields: [fk_usuario], references: [id_usuario])
+	detalles          DetalleFactura[]
+}
+
+model DetalleFactura {
+	id_detalle_factura Int     @id @default(autoincrement())
+	fk_factura         Int
+	descripcion        String
+	cantidad           Int
+	precio_unitario    Int
+	descuento          Int
+	porcentaje_iva     Int
+
+	factura            Factura  @relation(fields: [fk_factura], references: [id_factura])
+}

@@ -1,29 +1,43 @@
+import axios from 'axios';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+const initialState = {
+	nombre_usuario: '',
+	contrasena: '',
+}
+
 const Login = () => {
-    const [username, setUserName] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState(null);
+    
+	const [loginForm, setLoginForm] = useState( initialState ); 
+    const [errors, setErrors] = useState("");
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+	const handleChange = (e) => {
+		setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
+	}
+
+    const handleLogin = async (e) => {
         e.preventDefault();
 
-        const adminUser = "admin";
-        const adminPass = "12345";
+        try {
+			const response = await axios.post('/api/session', loginForm, { withCredentials: true });
+			const data = response.data;
+			console.log(data);
 
-        if (username === adminUser && password === adminPass) {
-            navigate("/home"); // Redirigir a la pantalla de inicio
-        }
-        else {
-            setError("Error al iniciar sesión. Verifica tus credenciales.");
-            // Se limpian los campos de entrada
-            setUserName("");
-            setPassword("");
-        }
-    };
+			if(response) {
+				setErrors([]);
+				navigate('/');
+			}
+
+		} catch (error) {
+			if (error.response && error.response.data) {
+				setErrors(error.response.data.error);
+				console.log(errors);
+			}
+		}
+    }
     
     return (
         <div className="login-wrapper">
@@ -33,39 +47,39 @@ const Login = () => {
                         <i className="bi bi-person-circle" style={{ fontSize: "50px" }}></i>
                     </div>
                     <form onSubmit={handleLogin}>
+
                         <div className="mb-3">
-                            <label className="form-label">Usuario:</label>
+                            <label htmlFor="nombre_usuario" className="form-label">Usuario:</label>
                             <input
                                 type="text"
+								id="nombre_usuario"
+								name='nombre_usuario'
                                 className="form-control"
-                                value={username}
-                                onChange={(e) => {
-                                    setUserName(e.target.value);
-                                    if (error) setError(null); // Limpia el error al escribir
-                                }}
-                                required
+                                value={ loginForm.nombre_usuario }
+                                onChange={ handleChange }                               
                             />
                         </div>
+
                         <div className="mb-3">
-                            <label className="form-label">Contraseña:</label>
+                            <label htmlFor="contrasena" className="form-label">Contraseña:</label>
                             <input
                                 type="password"
+								id="contrasena"
+								name='contrasena'
                                 className="form-control"
-                                value={password}
-                                onChange={(e) => { 
-                                    setPassword(e.target.value);
-                                    if (error) setError(null); // Limpia el error al escribir
-                                }}
-                                required
+                                value={ loginForm.contrasena }
+                                onChange={ handleChange }                               
                             />
                         </div>
+
                         <button type="submit" className="btn btn-dark w-100">
                             Iniciar sesión
                         </button>
+						
                     </form>
-                    {error && (
+                    {errors && (
                         <div className="alert alert-danger mt-3 text-center" role="alert">
-                            <i className="bi bi-exclamation-triangle-fill"></i> {error}
+                            <i className="bi bi-exclamation-triangle-fill"></i> {errors}
                         </div>
                     )}
                 </div>
