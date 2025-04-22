@@ -18485,10 +18485,10 @@ export namespace Prisma {
 
   export type HabitacionWhereUniqueInput = Prisma.AtLeast<{
     id_habitacion?: number
+    numero?: string
     AND?: HabitacionWhereInput | HabitacionWhereInput[]
     OR?: HabitacionWhereInput[]
     NOT?: HabitacionWhereInput | HabitacionWhereInput[]
-    numero?: StringFilter<"Habitacion"> | string
     fk_tipo_habitacion?: IntFilter<"Habitacion"> | number
     piso?: StringFilter<"Habitacion"> | string
     estado?: StringFilter<"Habitacion"> | string
@@ -18497,7 +18497,7 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"Habitacion"> | Date | string
     tipoHabitacion?: XOR<TipoHabitacionScalarRelationFilter, TipoHabitacionWhereInput>
     ingresos?: IngresoListRelationFilter
-  }, "id_habitacion">
+  }, "id_habitacion" | "numero">
 
   export type HabitacionOrderByWithAggregationInput = {
     id_habitacion?: SortOrder

@@ -1,9 +1,9 @@
 import { Router } from "express";
-import ingresoController from '../controllers/ingreso.controllers.js';
-const { getAllIngresos } = ingresoController;
+import {getAllIngresos, createIngreso} from '../controllers/ingreso.controllers.js';
 
 const router = Router();
 
 router.get('/', getAllIngresos);
+router.post('/', createIngreso);
 
 export default router;

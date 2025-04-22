@@ -1,7 +1,7 @@
 import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
-const getAllIngresos = async (req, res) => {
+/*const getAllIngresos = async (req, res) => {
     try {
         const result = await prisma.ingreso.findMany({
             where: {
@@ -13,8 +13,109 @@ const getAllIngresos = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener Ingresos' });
     }
-};
+};*/
 
-export default {
-    getAllIngresos
-};
+export const getAllIngresos = async (req, res) => {
+	try { 
+		const ingresos = await prisma.ingreso.findMany({
+			where: { activo: true },
+			select: {
+				id_ingreso: true,
+				estado: true,
+
+				reserva: {
+					select: {
+						check_in: true,
+						check_out: true
+					}
+				},
+
+				habitacion: {
+					select: {
+						numero: true
+					}
+				},
+
+				cuenta: {
+					select: {
+						consumos: {
+							select: {
+								cantidad: true,
+								monto: true
+							}
+						}
+					}
+				}
+			}
+		});
+		res.status(200).json(ingresos);
+		
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: "Internal Server Error: Error al listar ingresos" });
+	}
+}
+
+export const createIngreso = async (req, res) => {
+	const {
+		fk_reserva,
+		fk_habitacion,
+		fk_huesped,
+		fk_tarifa,
+		fecha_ingreso,
+		estado,
+		fk_usuario
+	} = req.body;
+
+	try {
+		const nuevoIngreso = await prisma.ingreso.create({
+			data : {
+				fk_reserva,
+				fk_habitacion,
+				fk_huesped,
+				fk_tarifa,
+				fecha_ingreso: new Date(fecha_ingreso),
+				estado,
+				fk_usuario
+			},
+
+			include: {
+				reserva: {
+					select: {
+						check_in: true,
+						check_out: true
+					}
+				},
+				habitacion: {
+					select: {
+						numero: true
+					}
+				},
+				tarifa: {
+					select: {
+						descripcion: true,
+						precio: true
+					}
+				},
+				huesped: {
+					select: {
+						nombre: true,
+						apellido: true
+					}
+				},
+				usuario: {
+					select: {
+						nombre_usuario: true
+					}
+				}
+			},
+		});
+
+		res.status(201).json(nuevoIngreso);
+
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: "Internal Server Error: Error al crear el ingreso" });
+	}
+}
+
