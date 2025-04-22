@@ -60,32 +60,7 @@ const DatosHuesped = () => {
 										/>
 									</div>
 								</div>
-									{/* Fecha de Nacimiento */}
-									<div className="col-md-6">
-										<label htmlFor="fecha_nacimiento" className="form-label mb-1 text-start d-block">Fecha de Nacimiento</label>
-										<input
-											type="date"
-											className="form-control"
-											id="fecha_nacimiento"
-											style={{ maxWidth: "100%", width: "400px" }}
-										/>
-									</div>
-								</div>
 
-								<div className="text-center mt-4">
-									<button
-										type="submit"
-										className="btn btn-primary px-4"
-										onClick={() => navigate('/ConfirmarReserva')}
-									>
-										Agregar
-									</button>
-								</div>
-							</form>
-
-						</div>
-					</div>
-				</div>
 								<div className="text-center mt-4">
 									<button
 										type="submit"
@@ -106,4 +81,3 @@ const DatosHuesped = () => {
 };
 
 export default DatosHuesped;
-
