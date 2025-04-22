@@ -53,7 +53,7 @@ export const createHabitacion = async (req, res) => {
 				estado
 			}
 		});
-		res.status(201).json(newUser);
+		res.status(201).json(newRoom);
 
 	} catch (error) {
 		console.error(error);

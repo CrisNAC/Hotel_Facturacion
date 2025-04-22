@@ -14,6 +14,7 @@ import consumoRoutes from "./routes/consumo.routes.js";
 import facturaRoutes from "./routes/factura.routes.js";
 import ingresoRoutes from "./routes/ingreso.routes.js";
 import reservaRoutes from "./routes/reserva.routes.js";
+import reservaRoutes from "./routes/reserva.routes.js";
 
 dotenv.config();
 const app = express();
@@ -31,14 +32,14 @@ app.use(cors(
 
 app.use('/api/usuario', usuarioRoutes);					//Kisser
 app.use('/api/session', sessionRoutes);					//Kisser
-app.use('/api/huesped', huespedRoutes);					//Cristian
+app.use('/api/huesped', huespedRoutes);					//Cristian - Kisser (modified)
 app.use('/api/tipohabitacion', tipoHabitacionRoutes); 	//Kisser
 app.use('/api/habitacion', habitacionesRoutes);			//Kisser
 app.use('/api/tarifa', tarifaRoutes)					//Kisser
 app.use('/api/cuenta', cuentaRoutes);					//Cristian
 app.use('/api/consumo', consumoRoutes);					//Cristian
 app.use('/api/facturas', facturaRoutes);				//Cristian
-app.use('/api/ingresos', ingresoRoutes);				//Cristian
+app.use('/api/ingresos', ingresoRoutes);				//Cristian - Kisser (Modified)
 app.use('/api/reserva', reservaRoutes);					//Jazmín
 
 app.listen(PORT, () => {

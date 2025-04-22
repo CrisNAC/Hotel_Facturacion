@@ -8,7 +8,7 @@ const DatosHuesped = () => {
 		<div className="container py-4">
 			<div className="row justify-content-center">
 				<div className="col-lg-10">
-					<div className="card shadow-sm">
+					<div className="card shadow p-4">
 						<div className="card-body">
 							<h3 className="text-center fw-bold mb-4">Datos del Huésped</h3>
 
@@ -60,7 +60,32 @@ const DatosHuesped = () => {
 										/>
 									</div>
 								</div>
+									{/* Fecha de Nacimiento */}
+									<div className="col-md-6">
+										<label htmlFor="fecha_nacimiento" className="form-label mb-1 text-start d-block">Fecha de Nacimiento</label>
+										<input
+											type="date"
+											className="form-control"
+											id="fecha_nacimiento"
+											style={{ maxWidth: "100%", width: "400px" }}
+										/>
+									</div>
+								</div>
 
+								<div className="text-center mt-4">
+									<button
+										type="submit"
+										className="btn btn-primary px-4"
+										onClick={() => navigate('/ConfirmarReserva')}
+									>
+										Agregar
+									</button>
+								</div>
+							</form>
+
+						</div>
+					</div>
+				</div>
 								<div className="text-center mt-4">
 									<button
 										type="submit"
@@ -81,3 +106,4 @@ const DatosHuesped = () => {
 };
 
 export default DatosHuesped;
+
