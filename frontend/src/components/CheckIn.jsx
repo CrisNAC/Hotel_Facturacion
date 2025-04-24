@@ -1,6 +1,7 @@
 import { useState } from "react";
 import WalkIn from "./WalkIn";
 import CheckInReserva from "./CheckInReserva";
+import NavBar from "./navbar";
 
 const CheckIn = () => {
 	const [tieneReserva, setTieneReserva] = useState(true);
@@ -10,7 +11,9 @@ const CheckIn = () => {
 	};
 
 	return (
+		
 		<div className="container py-4">
+			<NavBar />
 
 			<div className="row justify-content-center">
 				<div className="col-12 col-md-11 col-lg-10" style={{ maxWidth: "1150px" }}>

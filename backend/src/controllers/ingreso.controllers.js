@@ -19,6 +19,10 @@ export const getAllIngresos = async (req, res) => {
 	try { 
 		const ingresos = await prisma.ingreso.findMany({
 			where: { activo: true },
+  			orderBy: {
+    			reserva: {
+      			check_in: 'asc' 
+    		}},
 			select: {
 				id_ingreso: true,
 				estado: true,
