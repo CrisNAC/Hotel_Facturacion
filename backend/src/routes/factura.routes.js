@@ -1,5 +1,5 @@
 import { Router } from "express";
-import facturaController from "../controllers/factura.controller";
+import facturaController from "../controllers/factura.controllers.js";
 const { getAllfacturas, postfactura } = facturaController;
 
 const router = Router();
