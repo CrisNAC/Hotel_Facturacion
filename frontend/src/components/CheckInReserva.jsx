@@ -1,5 +1,9 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
+=======
+import NavBar from "./navbar";
+>>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 
 const CheckInReserva = () => {
 
@@ -7,6 +11,10 @@ const CheckInReserva = () => {
 
 	return (
 		<div>
+<<<<<<< HEAD
+=======
+			<NavBar />
+>>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 			{/* Formulario */}
 			<form style={{ marginTop: '70px' }}>
 				<div className="row g-5">

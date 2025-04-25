@@ -1,6 +1,10 @@
 import React from "react";
 import { FaEdit, FaTrash, FaUserPlus } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
+=======
+import NavBar from "./navbar";
+>>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 
 const ConfirmarReserva = () => {
 
@@ -8,6 +12,10 @@ const ConfirmarReserva = () => {
 
 	return (
 		<div>
+<<<<<<< HEAD
+=======
+			<NavBar />
+>>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 			<div className="container py-4" style={{ marginTop: '50px' }}>
 				<div className="d-flex justify-content-between align-items-center mb-3">
 					<h3>Huéspedes habitación 205</h3>
