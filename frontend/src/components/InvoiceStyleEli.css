@@ -1,0 +1,174 @@
+/* Estilos base */
+.invoice {
+    width: 701px;
+    font-family: "Roboto", Helvetica, sans-serif;
+    color: #000000;
+    position: relative;
+    background-color: #ffffff;
+  }
+  
+  /* Encabezado de la factura */
+  .invoice-header {
+    border: 1px solid #000000;
+    padding: 15px;
+    position: relative;
+    height: 98px;
+  }
+  
+  .hotel-name {
+    font-weight: 700;
+    font-size: 20px;
+    position: absolute;
+    left: 13px;
+    top: 19px;
+    width: 63px;
+    text-align: center;
+  }
+  
+  .invoice-title {
+    font-weight: 700;
+    font-size: 16px;
+    position: absolute;
+    left: 130px;
+    top: 7px;
+  }
+  
+  .commercial-info {
+    font-size: 15px;
+    position: absolute;
+    left: 130px;
+    top: 35px;
+  }
+  
+  .invoice-meta {
+    font-size: 12px;
+    position: absolute;
+    right: 15px;
+    top: 7px;
+    text-align: right;
+  }
+  
+  .invoice-meta span {
+    font-weight: 700;
+  }
+  
+  /* Información del cliente */
+  .customer-section {
+    border: 1px solid #000000;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .customer-info, .invoice-details {
+    font-size: 12px;
+    line-height: 28px;
+  }
+  
+  .customer-info {
+    width: 50%;
+  }
+  
+  .invoice-details {
+    width: 45%;
+    text-align: right;
+  }
+  
+  .customer-info span, .invoice-details span {
+    font-weight: 700;
+  }
+  
+ /* Tabla de items - Estilos base */
+/* Contenedor de la tabla con scroll */
+.table-container {
+    height: 300px; /* Altura fija para el área de scroll */
+    overflow-y: auto; /* Habilitar scroll vertical */
+    margin-bottom: 20px;
+    border: 1px solid #000000;
+  }
+  
+  /* Tabla de items */
+  .items-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    position: relative; /* Necesario para el posicionamiento del encabezado */
+  }
+  
+  /* Cabecera fija */
+  .items-table thead {
+    top: 0;
+    z-index: 10;
+  }
+  
+  .items-table th, 
+  .items-table td {
+    border: 1px solid #000000;
+    padding: 5px;
+    text-align: center;
+    border-bottom: 1px solid #ffffff;
+  }
+  
+  /* Estilos específicos del encabezado */
+  .table-header th {
+    font-size: 11px;
+    background-color: #e6e2e2;
+    font-weight: 700;
+    padding: 8px 5px;
+    border: 1px solid #000000;
+  }
+  
+  /* Columnas numéricas alineadas a derecha */
+  .items-table td:nth-child(n+5) {
+    text-align: right;
+    padding-right: 12px;
+  }
+  
+  /* Descripción alineada a izquierda */
+  .items-table td:nth-child(2) {
+    text-align: left;
+    padding-left: 8px;
+  }
+  
+  /* Última fila */
+  .items-table tr:last-child td {
+    border-bottom: 1px solid #000000 !important;
+    padding-bottom: 10px;
+  }
+  
+  /* Anchos de columnas (se mantienen igual) */
+  .items-table th:nth-child(1),
+  .items-table td:nth-child(1) { width: 50px; }
+  .items-table th:nth-child(2),
+  .items-table td:nth-child(2) { width: 200px; }
+  .items-table th:nth-child(3),
+  .items-table td:nth-child(3) { width: 50px; }
+  .items-table th:nth-child(4),
+  .items-table td:nth-child(4) { width: 60px; }
+  .items-table th:nth-child(5),
+  .items-table td:nth-child(5) { width: 90px; }
+  .items-table th:nth-child(6),
+  .items-table td:nth-child(6) { width: 70px; }
+  .items-table th:nth-child(7),
+  .items-table td:nth-child(7) { width: 60px; }
+  .items-table th:nth-child(8),
+  .items-table td:nth-child(8) { width: 50px; }
+  .items-table th:nth-child(9),
+  .items-table td:nth-child(9) { width: 50px; }
+  /* Sección de totales */
+  .totals-section {
+    background-color: #e6e2e2;
+    border: 1px solid #000000;
+    padding: 15px;
+    font-size: 12px;
+  }
+  
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .total-label {
+    font-weight: 700;
+  }
