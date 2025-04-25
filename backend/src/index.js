@@ -5,12 +5,9 @@ import cors from 'cors';
 import morgan from "morgan";
 import sessionRoutes from "./routes/session.routes.js";
 import usuarioRoutes from "./routes/usuario.routes.js";
-<<<<<<< HEAD
-=======
 import tipoHabitacionRoutes from "./routes/tipohabitacion.routes.js";
 import habitacionesRoutes from "./routes/habitacion.routes.js";
 import tarifaRoutes from "./routes/tarifa.routes.js";
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 import huespedRoutes from "./routes/huesped.routes.js";
 import cuentaRoutes from "./routes/cuenta.routes.js";
 import consumoRoutes from "./routes/consumo.routes.js";
@@ -32,16 +29,6 @@ app.use(cors(
 	}
 ));  //CONFIGURACION DE POLITICAS DE CORS
 
-<<<<<<< HEAD
-app.use('/api/usuario', usuarioRoutes);		//Kisser
-app.use('/api/session', sessionRoutes);		//Kisser
-app.use('/api/huesped', huespedRoutes);		//Cristian
-app.use('/api/cuenta', cuentaRoutes);		//Cristian
-app.use('/api/consumo', consumoRoutes);		//Cristian
-app.use('/api/facturas', facturaRoutes);	//Cristian
-app.use('/api/ingresos', ingresoRoutes);	//Cristian
-app.use('/api/reserva', reservaRoutes);     //Jazmín
-=======
 app.use('/api/usuario', usuarioRoutes);					//Kisser
 app.use('/api/session', sessionRoutes);					//Kisser
 app.use('/api/huesped', huespedRoutes);					//Cristian - Kisser (modified)
@@ -53,17 +40,7 @@ app.use('/api/consumo', consumoRoutes);					//Cristian
 app.use('/api/facturas', facturaRoutes);				//Cristian
 app.use('/api/ingresos', ingresoRoutes);				//Cristian - Kisser (Modified)
 app.use('/api/reserva', reservaRoutes);					//Jazmín
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 
 app.listen(PORT, () => {
 	console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
-
-
-
-
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
