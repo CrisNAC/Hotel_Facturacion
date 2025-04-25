@@ -1,8 +1,16 @@
 import React from "react";
+<<<<<<< HEAD
 
 const FacturaFilters = () => {
     return (
         <div className="container my-4">
+=======
+import NavBar from "./navbar";
+const FacturaFilters = () => {
+    return (
+        <div className="container my-4">
+            <NavBar />
+>>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
             <h2 className="text-center">Facturas emitidas</h2>
             <div className="bg-light p-3 rounded">
                 <div className="row">

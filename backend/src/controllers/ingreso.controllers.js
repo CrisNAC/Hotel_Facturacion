@@ -1,7 +1,11 @@
 import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
+<<<<<<< HEAD
 const getAllIngresos = async (req, res) => {
+=======
+/*const getAllIngresos = async (req, res) => {
+>>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
     try {
         const result = await prisma.ingreso.findMany({
             where: {
@@ -13,8 +17,131 @@ const getAllIngresos = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener Ingresos' });
     }
+<<<<<<< HEAD
 };
 
 export default {
     getAllIngresos
 };
+=======
+};*/
+
+export const getAllIngresos = async (req, res) => {
+	try { 
+		const ingresos = await prisma.ingreso.findMany({
+			where: { activo: true },
+  			orderBy: {
+    			reserva: {
+      			check_in: 'asc' 
+    		}},
+			select: {
+				id_ingreso: true,
+				estado: true,
+
+				reserva: {
+					select: {
+						check_in: true,
+						check_out: true
+					}
+				},
+				huesped: {
+					select: {
+						id_huesped: true,
+						nombre: true,
+						apellido: true,
+						nacionalidad: true,
+						telefono: true,
+						email: true
+					}
+				},
+
+				habitacion: {
+					select: {
+						numero: true
+					}
+				},
+
+				cuenta: {
+					select: {
+						consumos: {
+							select: {
+								cantidad: true,
+								monto: true
+							}
+						}
+					}
+				}
+			}
+		});
+		res.status(200).json(ingresos);
+		
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: "Internal Server Error: Error al listar ingresos" });
+	}
+}
+
+export const createIngreso = async (req, res) => {
+	const {
+		fk_reserva,
+		fk_habitacion,
+		fk_huesped,
+		fk_tarifa,
+		fecha_ingreso,
+		estado,
+		fk_usuario
+	} = req.body;
+
+	try {
+		const nuevoIngreso = await prisma.ingreso.create({
+			data : {
+				fk_reserva,
+				fk_habitacion,
+				fk_huesped,
+				fk_tarifa,
+				fecha_ingreso: new Date(fecha_ingreso),
+				estado,
+				fk_usuario
+			},
+
+			include: {
+				reserva: {
+					select: {
+						check_in: true,
+						check_out: true
+					}
+				},
+				habitacion: {
+					select: {
+						numero: true
+					}
+				},
+				tarifa: {
+					select: {
+						descripcion: true,
+						precio: true
+					}
+				},
+				huesped: {
+					select: {
+						nombre: true,
+						apellido: true
+					}
+				},
+				usuario: {
+					select: {
+						nombre_usuario: true
+					}
+				}
+			},
+		});
+
+		res.status(201).json(nuevoIngreso);
+
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: "Internal Server Error: Error al crear el ingreso" });
+	}
+}
+
+>>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
