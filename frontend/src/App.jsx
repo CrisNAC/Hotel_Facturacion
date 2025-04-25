@@ -10,7 +10,7 @@ import InvoiceComponentEli from "./components/InvoiceComponentEli"
 
 import Login from './components/Login'
 import FacturaTable from "./components/FacturaTable"
-import FacturaFilters from "./components/FacturaFilters"
+
 import Invoice from "./components/Invoice"
 
 import CheckIn from './components/CheckIn'
@@ -40,7 +40,6 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/FacturasEmitidas" element={
             <div style={{ marginTop: "6rem" }}>
-              <FacturaFilters />
               <FacturaTable />
             </div>
           }

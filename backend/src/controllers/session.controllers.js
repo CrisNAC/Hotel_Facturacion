@@ -27,7 +27,7 @@ export const login = async (req, res) => {
 		if (!user) {
 			return res.status(404).json({
 				success: false,
-				error: "Usuario no encontrado" 
+				error: "Credenciales incorrectas" 
 			});
 		}
 		
@@ -37,7 +37,7 @@ export const login = async (req, res) => {
 		if (!passwordMatch) {
 			return res.status(400).json({
 				success: false,
-				error: "Contraseña incorrecta" 
+				error: "Credenciales incorrectas" 
 			});
 		}
 		
