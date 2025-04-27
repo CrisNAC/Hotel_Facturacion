@@ -132,4 +132,3 @@ export const createIngreso = async (req, res) => {
 		res.status(500).json({ error: "Internal Server Error: Error al crear el ingreso" });
 	}
 }
-

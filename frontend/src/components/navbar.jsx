@@ -7,9 +7,6 @@ import { FaUser } from "react-icons/fa";
 
 export const NavBar = () => {
   const navigate = useNavigate();
-
-  
-
   const irAInicio = () => {
     navigate('/Inicio');
   };
@@ -17,7 +14,7 @@ export const NavBar = () => {
   const irAHuespedes = () => {
     navigate('/Huespedes');
   };
-  
+
   const irAIngresoHuesped = () => {
     navigate('/IngresoHuesped');
   };
@@ -28,7 +25,7 @@ export const NavBar = () => {
 
   const irALogin = () => {
     navigate('/Login');
-};
+  };
 
   return (
     <>
@@ -39,7 +36,7 @@ export const NavBar = () => {
       >
         {/* Logo */}
         <div className="d-flex align-items-center text-white fw-bold fs-4" onClick={irAInicio}>
-          <FaSlack size={32} className="me-2"/> JAZEL
+          <FaSlack size={32} className="me-2" /> JAZEL
         </div>
 
         {/* Acciones de navegación */}
@@ -49,20 +46,19 @@ export const NavBar = () => {
           <a href="#" className="text-white fw-normal text-decoration-none" onClick={irAIngresoHuesped}>Ingreso de huésped</a>
           <a href="#" className="text-white fw-normal text-decoration-none" onClick={irAFacturasEmitidas}>Facturas emitidas</a>
           <a href="#" className="text-white fw-normal text-decoration-none">Reportes</a>
-        </div>
+        </div >
 
-        {/* Auth section */}
+  {/* Auth section */ }
+
         <div className="d-flex align-items-center">
-        
           <FaUser className="text-white ms-2"></FaUser>
           <FaChevronDown className="text-white ms-2" />
-          
-        </div>
-      </div>
+        </div >
+      </div >
 
-      {/* Contenido debajo del NavBar */}
-      <div style={{ marginTop: "60px" }}>
-      </div>
+  {/* Contenido debajo del NavBar */ }
+  < div style = {{ marginTop: "60px" }}>
+      </div >
     </>
   );
 };
