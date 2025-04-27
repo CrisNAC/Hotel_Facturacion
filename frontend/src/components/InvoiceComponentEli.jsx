@@ -2,6 +2,7 @@ import React from "react";
 import "./InvoiceStyleEli.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
+
 const Invoice = () => {
   // Datos de la factura
   const invoiceData = {
