@@ -1,25 +1,16 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom';
-<<<<<<< HEAD
-=======
 import NavBar from "./navbar";
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 
 const DatosHuesped = () => {
 	const navigate = useNavigate();
 
 	return (
 		<div className="container py-4">
-<<<<<<< HEAD
-			<div className="row justify-content-center">
-				<div className="col-lg-10">
-					<div className="card shadow-sm">
-=======
 			<NavBar />
 			<div className="row justify-content-center">
 				<div className="col-lg-10">
 					<div className="card shadow p-4">
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 						<div className="card-body">
 							<h3 className="text-center fw-bold mb-4">Datos del Huésped</h3>
 

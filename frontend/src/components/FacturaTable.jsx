@@ -1,34 +1,41 @@
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import React, { useEffect, useRef } from "react";
-import $ from "jquery";
-import "datatables.net-dt/css/dataTables.dataTables.min.css";
-import "datatables.net";
-import { FaEye } from "react-icons/fa";
-import { IoMdDownload, IoMdPrint } from "react-icons/io";
+import ReactPaginate from "react-paginate";
+import "./FacturaTable.css";
+import NavBar from "../components/navbar.jsx";
 
 const FacturaTable = () => {
 
     const navigate = useNavigate();
 
-    const facturas = [
-        { huesped: "Juan Pérez", numero: "001-001-0002525", fecha: "01/03/2025", monto: 150000, condicion: "Contado" },
-        { huesped: "María López", numero: "001-001-0002526", fecha: "02/03/2025", monto: 645000, condicion: "Crédito" },
-        { huesped: "Carlos Gómez", numero: "001-001-0002527", fecha: "03/03/2025", monto: 300000, condicion: "Contado" },
-        { huesped: "Ana Torres", numero: "001-001-0002528", fecha: "04/03/2025", monto: 250000, condicion: "Crédito" },
-        { huesped: "Laura Martínez", numero: "001-001-0002529", fecha: "05/03/2025", monto: 400000, condicion: "Contado" },
-        { huesped: "Luis Fernández", numero: "001-001-0002530", fecha: "06/03/2025", monto: 180000, condicion: "Crédito" },
-        { huesped: "Sofía Rodríguez", numero: "001-001-0002531", fecha: "07/03/2025", monto: 220000, condicion: "Contado" },
-        { huesped: "Pedro Sánchez", numero: "001-001-0002532", fecha: "08/03/2025", monto: 350000, condicion: "Crédito" },
-        { huesped: "Elena Castillo", numero: "001-001-0002533", fecha: "09/03/2025", monto: 500000, condicion: "Contado" },
-        { huesped: "Miguel Ángel", numero: "001-001-0002534", fecha: "10/03/2025", monto: 600000, condicion: "Crédito" },
-        { huesped: "Sergio Morales", numero: "001-001-0002535", fecha: "11/03/2025", monto: 450000, condicion: "Contado" },
-        { huesped: "Patricia Díaz", numero: "001-001-0002536", fecha: "12/03/2025", monto: 380000, condicion: "Crédito" },
-        { huesped: "Andrés Castillo", numero: "001-001-0002537", fecha: "13/03/2025", monto: 200000, condicion: "Contado" },
-        { huesped: "Gabriela Herrera", numero: "001-001-0002538", fecha: "14/03/2025", monto: 550000, condicion: "Crédito" },
-        { huesped: "Miguel Díaz", numero: "001-001-0002539", fecha: "15/03/2025", monto: 245000, condicion: "Contado" },
-    ];
+    const [filters, setFilters] = useState({
+        desde: "",
+        hasta: "",
+        huesped: "",
+        condicion: "Todos",
+    });
 
-    const tableRef = useRef(null);
+    const [filtered, setFiltered] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 15;
+
+    const [facturas, setFacturas] = useState([]);
+    
+    
+    useEffect(() => {
+        // Cambiá la URL por la de tu API real
+        fetch("http://localhost:4000/api/facturas")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error al obtener las facturas");
+                }
+                return response.json();
+            })
+            .then(data => setFacturas(data))
+            .catch(error => {
+                console.error("Error al cargar los datos:", error);
+            });
+    }, []);
 
     // Función para convertir "01/03/2025" a "2025-03-01"
     function convertirFecha(fechastr) {
@@ -42,147 +49,180 @@ const FacturaTable = () => {
     }
 
     useEffect(() => {
-        const waitForFiltersAndInitialize = () => {
-            const filtroDesde = document.getElementById("filtroDesde");
-            const filtroHasta = document.getElementById("filtroHasta");
-            const filtroHuesped = document.getElementById("filtroHuesped");
-            const filtroCondicion = document.getElementById("filtroCondicion");
+        const { desde, hasta, huesped, condicion } = filters;
+        const huespedNormalizado = normalizarTexto(huesped);
 
-            if (filtroDesde && filtroHasta && filtroHuesped && filtroCondicion) {
-                const filtroPersonalizado = function (settings, data) {
-                    const desde = document.getElementById("filtroDesde")?.value;
-                    const hasta = document.getElementById("filtroHasta")?.value;
-                    const huespedSinAcento = normalizarTexto(document.getElementById("filtroHuesped")?.value || "");
-                    const condicion = document.getElementById("filtroCondicion")?.value;
+        const nuevasFacturas = facturas.filter((f) => {
+            const fecha = convertirFecha(f.fecha);
+            const nombre = normalizarTexto(f.huesped);
 
-                    const fechaStr = convertirFecha(data[2]);
-                    const nombreSinAcento = normalizarTexto(data[0] || ""); // Normaliza el nombre del huésped de los datos
-                    const tipoCondicion = data[4];
+            return (
+                (!desde || fecha >= desde) &&
+                (!hasta || fecha <= hasta) &&
+                (!huesped || nombre.includes(huespedNormalizado)) &&
+                (condicion === "Todos" || f.condicion === condicion)
+            );
+        });
 
-                    console.log("Filtering row:", data);
-                    console.log("  Desde:", desde, " FechaStr:", fechaStr);
-                    console.log("  Hasta:", hasta, " FechaStr:", fechaStr);
-                    console.log("  Huésped (sin acento):", huespedSinAcento, " Nombre (sin acento):", nombreSinAcento);
-                    console.log("  Condición:", condicion, " TipoCondicion:", tipoCondicion);
+        setFiltered(nuevasFacturas);
+        setCurrentPage(0); // Reinicia la paginación al cambiar filtros
+    }, [filters]);
 
-                    let isVisible = true;
-                    if (desde && fechaStr < desde) isVisible = false;
-                    if (hasta && fechaStr > hasta) isVisible = false;
-                    if (huespedSinAcento && !nombreSinAcento.includes(huespedSinAcento)) isVisible = false;
-                    if (condicion !== "Todos" && tipoCondicion !== condicion) isVisible = false;
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setFilters(prev => ({ 
+            ...prev, 
+            [id.replace("filtro", "").toLowerCase()]: value, 
+        }));
+    };
 
-                    console.log("  isVisible:", isVisible);
-                    return isVisible;
-                };
+    const handlePageClick = (event) => {
+        setCurrentPage(event.selected);
+    };
 
-                if ($.fn.DataTable.isDataTable(tableRef.current)) {
-                    $(tableRef.current).DataTable().destroy();
-                }
-
-                const existingIndex = $.fn.dataTable.ext.search.indexOf(filtroPersonalizado);
-                if (existingIndex === -1) {
-                    $.fn.dataTable.ext.search.push(filtroPersonalizado);
-                }
-
-                const table = $(tableRef.current).DataTable({
-                    paging: true,
-                    info: false,
-                    //searching: false,
-                    lengthChange: false,
-                    ordering: false,
-                    language: {
-                        paginate: {
-                            first: "Primero",
-                            last: "Último",
-                            next: "Siguiente",
-                            previous: "Anterior",
-                        },
-                        zeroRecords: "No se encontraron resultados",
-                        infoEmpty: "No hay registros disponibles",
-                    },
-                });
-
-                const ids = ["filtroDesde", "filtroHasta", "filtroHuesped", "filtroCondicion"];
-                ids.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) {
-                        console.log(`Attaching event listeners to element with ID: ${id}`);
-                        el.addEventListener("input", () => {
-                            console.log(`Input event triggered on ${id}`);
-                            table.draw(); // Asegúrate de usar la variable 'table' aquí
-                        });
-                        el.addEventListener("change", () => {
-                            console.log(`Change event triggered on ${id}`);
-                            table.draw(); // Asegúrate de usar la variable 'table' aquí
-                        });
-                    } else {
-                        console.log(`Element with ID: ${id} not found when attaching listeners.`);
-                    }
-                });
-
-                console.log("DataTable instance:", table);
-                console.log("Current $.fn.dataTable.ext.search:", $.fn.dataTable.ext.search);
-
-                return () => {
-                    if ($.fn.DataTable.isDataTable(tableRef.current)) {
-                        $(tableRef.current).DataTable().destroy();
-                    }
-                    const index = $.fn.dataTable.ext.search.indexOf(filtroPersonalizado);
-                    if (index > -1) {
-                        $.fn.dataTable.ext.search.splice(index, 1);
-                    }
-                };
-            } else {
-                setTimeout(waitForFiltersAndInitialize, 100);
-            }
-        };
-
-        waitForFiltersAndInitialize();
-
-    }, []);
+    const offset = currentPage * itemsPerPage;
+    const currentItems = filtered.slice(offset, offset + itemsPerPage);
+    const pageCount = Math.ceil(filtered.length / itemsPerPage);
 
     return (
-        <div className="container mt-4">
-            <table id="tablaFacturas" ref={tableRef} className="table text-center">
+        <>
+        <NavBar />
+        <div className="factura-wrapper container-fluid px-4 mt-4">
+            {/* Filtros */}
+            <h2 className="text-center" style={{ paddingBottom: "20px" }}>Facturas emitidas</h2>
+            <div className="bg-light p-3 rounded mb-4">
+                <div className="row" style={{ paddingTop: "8px" }}>
+                    <div className="col-12 col-md-3 mb-3">
+                        <label className="form-label">Desde:</label>
+                        <div className="position-relative d-flex align-items-center calendar-wrapper">
+                            <input
+                                type="date"
+                                id="filtroDesde"
+                                className="form-control pe-5"
+                                value={filters.desde}
+                                onChange={handleChange}
+                            />
+                            <i className="bi bi-calendar calendar-icon-right" onClick={() => document.getElementById("filtroDesde")?.showPicker?.()} style={{ cursor: "pointer" }}></i>
+                        </div>
+                    </div>
+                    <div className="col-12 col-md-3 mb-3">
+                        <label className="form-label">Hasta:</label>
+                        <div className="position-relative d-flex align-items-center calendar-wrapper">
+                            <input
+                                type="date"
+                                id="filtroHasta"
+                                className="form-control pe-5"
+                                value={filters.hasta}
+                                onChange={handleChange}
+                            />
+                            <i className="bi bi-calendar calendar-icon-right" onClick={() => document.getElementById("filtroHasta")?.showPicker?.()} style={{ cursor: "pointer" }}></i>
+                        </div>
+                    </div>
+                    <div className="col-12 col-md-3 mb-3">
+                        <label className="form-label">Huésped:</label>
+                        <input
+                            type="text"
+                            id="filtroHuesped"
+                            className="form-control pe-5"
+                            placeholder="Nombre"
+                            value={filters.huesped}
+                            onChange={handleChange}
+                            />
+                    </div>
+                    <div className="col-12 col-md-3 mb-3">
+                        <label className="form-label">Condición Venta:</label>
+                        <select
+                            id="filtroCondicion"
+                            className="form-select"
+                            value={filters.condicion}
+                            onChange={handleChange}
+                            style={{ cursor: "pointer" }}
+                        >
+                            <option>Todos</option>
+                            <option>Contado</option>
+                            <option>Crédito</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            {/* Tabla de resultados */}
+            <table id="tablaFacturas" className="table table-bordered table-hover w-100 text-center">
                 <thead>
                     <tr>
-                        <th style={{ backgroundColor: "#003366", color: "white" }}>Huésped</th>
-                        <th style={{ backgroundColor: "#003366", color: "white" }}>Número de factura</th>
-                        <th style={{ backgroundColor: "#003366", color: "white" }}>Fecha de emisión</th>
-                        <th style={{ backgroundColor: "#003366", color: "white" }}>Monto total</th>
-                        <th style={{ backgroundColor: "#003366", color: "white" }}>Condición venta</th>
-                        <th style={{ backgroundColor: "#003366", color: "white" }}>Acciones</th>
+                        <th style={{ backgroundColor: "#E6E6E6", color: "2E2E2E" }}>Huésped</th>
+                        <th style={{ backgroundColor: "#E6E6E6", color: "2E2E2E" }}>Número de factura</th>
+                        <th style={{ backgroundColor: "#E6E6E6", color: "2E2E2E" }}>Fecha de emisión</th>
+                        <th style={{ backgroundColor: "#E6E6E6", color: "2E2E2E" }}>Monto total</th>
+                        <th style={{ backgroundColor: "#E6E6E6", color: "2E2E2E" }}>Condición venta</th>
+                        <th style={{ backgroundColor: "#E6E6E6", color: "2E2E2E" }}>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {facturas.map((factura, index) => (
-                        <tr key={index}>
-                            <td>{factura.huesped}</td>
-                            <td>{factura.numero}</td>
-                            <td>{factura.fecha}</td>
-                            <td>{new Intl.NumberFormat('es-PY', { style: 'currency', currency: 'PYG' }).format(factura.monto)}</td>
-                            <td>{factura.condicion}</td>
-                            <td>
-                                <button
-                                    className='btn rounded-circle mx-1'
-                                    style={{ backgroundColor: "#003366", color: "white" }}
-                                    onClick={() => navigate(`/invoice/${factura.numero}`)}>
-                                    <FaEye />
-                                </button>
-                                <button className='btn rounded-circle mx-1'
-                                    style={{ backgroundColor: "#003366", color: "white" }}>
-                                    <IoMdDownload />
-                                </button>
-                                <button className='btn rounded-circle mx-1'
-                                    style={{ backgroundColor: "#003366", color: "white" }}>
-                                    <IoMdPrint />
-                                </button>
-                            </td>
+                    {filtered.length > 0 ? (
+                        currentItems.map((factura, index) => (
+                            <tr key={index}>
+                                <td>{factura.huesped}</td>
+                                <td>{factura.numero}</td>
+                                <td>{factura.fecha}</td>
+                                <td>
+                                    {new Intl.NumberFormat("es-PY", {
+                                        style: "currency",
+                                        currency: "PYG",
+                                    }).format(factura.monto)}
+                                </td>
+                                <td>{factura.condicion}</td>
+                                <td>
+                                    <button
+                                        className="btn btn-sm"
+                                        onClick={() => navigate(`/invoice/${factura.numero}`)}
+                                    >
+                                        <i className="bi bi-eye text-black"></i>
+                                    </button>
+                                    <button className="btn btn-sm">
+                                        <i className="bi bi-download text-black"></i>
+                                    </button>
+                                    <button className="btn btn-sm">
+                                        <i className="bi bi-printer text-black"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="6">No se encontraron resultados</td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
+            
+            {/* Paginación */}
+            {pageCount > 1 && (
+                <div className="d-flex justify-content-center mt-3">
+                    <ReactPaginate
+                        previousLabel={"←"}
+                        nextLabel={"→"}
+                        breakLabel={"..."}
+                        pageCount={pageCount}
+                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={3}
+                        onPageChange={handlePageClick}
+                        containerClassName={"pagination"}
+                        activeClassName={"active"}
+                        pageClassName={"page-item"}
+                        pageLinkClassName={"page-link"}
+                        previousClassName={"page-item"}
+                        previousLinkClassName={"page-link"}
+                        nextClassName={"page-item"}
+                        nextLinkClassName={"page-link"}
+                        breakClassName={"page-item"}
+                        breakLinkClassName={"page-link"}
+                        forcePage={currentPage}
+                    />
+                </div>
+            )}
         </div>
+        </>
     );
 };
 

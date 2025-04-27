@@ -1,11 +1,7 @@
 import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
-<<<<<<< HEAD
-const getAllIngresos = async (req, res) => {
-=======
 /*const getAllIngresos = async (req, res) => {
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
     try {
         const result = await prisma.ingreso.findMany({
             where: {
@@ -17,13 +13,6 @@ const getAllIngresos = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener Ingresos' });
     }
-<<<<<<< HEAD
-};
-
-export default {
-    getAllIngresos
-};
-=======
 };*/
 
 export const getAllIngresos = async (req, res) => {
@@ -143,5 +132,3 @@ export const createIngreso = async (req, res) => {
 		res.status(500).json({ error: "Internal Server Error: Error al crear el ingreso" });
 	}
 }
-
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1

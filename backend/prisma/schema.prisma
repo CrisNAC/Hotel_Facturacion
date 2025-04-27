@@ -93,11 +93,7 @@ model Tarifa {
 
 model Habitacion {
 	id_habitacion Int @id @default(autoincrement())
-<<<<<<< HEAD
-	numero String
-=======
 	numero String @unique
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 	fk_tipo_habitacion Int
 	piso String
 	estado String

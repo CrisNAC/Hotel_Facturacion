@@ -70,11 +70,7 @@ const WalkIn = () => {
 				</div>
 
 				<div className="text-center" style={{ marginTop: '60px'}}>
-<<<<<<< HEAD
-					<button type="submit" className="btn btn-success" onClick={() => navigate('/seleccion-habitacion')}>
-=======
 					<button type="button" className="btn btn-success" onClick={() => navigate('/SeleccionHabitacion')}>
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 						Verificar Disponibilidad
 					</button>
 				</div>

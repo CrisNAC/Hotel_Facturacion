@@ -28,11 +28,8 @@ const Login = () => {
 
 			if(response) {
 				setErrors([]);
-<<<<<<< HEAD
-				navigate('/');
-=======
+
 				navigate('/Inicio');
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 			}
 
 		} catch (error) {
