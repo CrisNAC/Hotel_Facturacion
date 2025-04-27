@@ -14,7 +14,6 @@ import consumoRoutes from "./routes/consumo.routes.js";
 import facturaRoutes from "./routes/factura.routes.js";
 import ingresoRoutes from "./routes/ingreso.routes.js";
 import reservaRoutes from "./routes/reserva.routes.js";
-import reservaRoutes from "./routes/reserva.routes.js";
 
 dotenv.config();
 const app = express();
