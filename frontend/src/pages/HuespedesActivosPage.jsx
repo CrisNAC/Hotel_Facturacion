@@ -32,7 +32,7 @@ function HuespedesActivosPage() {
         <>
             <NavBar />
             <div className="p-6 max-w-7xl mx-auto">
-                <h2 className="text-3xl font-bold text-center mb-3" style={{ color: "#1C2324", padding: 10 }}>Huéspedes Activos</h2>
+                <h2 className="text-3xl font-bold text-center mb-3" style={{ color: "#1C2324", padding: 10 }}>Huéspedes</h2>
                 <HuespedesActivos ingresosOriginales={ingresosOriginales} />
             </div>
         </>
