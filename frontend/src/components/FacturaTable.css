@@ -1,0 +1,79 @@
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+body {
+    flex-direction: column !important;
+    align-items: stretch !important;
+}
+
+.color-primario {
+    background-color: #DDE7EA;
+    color: white;
+    border: none;
+}
+.color-primario:hover {
+    background-color: #005599;
+    cursor: pointer;
+}
+
+.factura-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    width: 100%;
+}
+
+.calendar-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.calendar-icon-right {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: #6c757d;
+}  
+
+#tablaFacturas th {
+    border-left: none;
+    border-right: none;
+}
+
+#tablaFacturas td {
+    border-left: none;
+    border-right: none;
+    padding: 0;
+}
+#tablaFacturas {
+    border-collapse: collapse;
+    width: 100% !important;
+    table-layout: fixed;
+}
+#tablaFacturas tr {
+    border-bottom: 1px solid #dee2e6;
+}
+#tablaFacturas thead th {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.2 ease;
+}
+.cursor-pointer:hover {
+    background-color: rgba(212, 212, 212);
+}
+
+@media (prefers-color-scheme: dark) {
+    a {
+        color: #66b2ff;
+    }
+    a:hover {
+        color: #3399ff;
+    }
+}

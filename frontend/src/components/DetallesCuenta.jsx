@@ -2,10 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
-<<<<<<< HEAD
-=======
 import NavBar from "./navbar";
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 const DetallesCuenta = () => {
 
   const items = [
@@ -35,10 +32,7 @@ const DetallesCuenta = () => {
 
   return (    
     <div className="container mt-5">
-<<<<<<< HEAD
-=======
       <NavBar />
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
       {/* Encabezado */}
       <h2 class="d-block mt-n3">Detalles Cuenta</h2>
 

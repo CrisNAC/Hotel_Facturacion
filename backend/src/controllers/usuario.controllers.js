@@ -89,27 +89,17 @@ export const createUsuario = async (req, res) => {
 	}
 };
 
-<<<<<<< HEAD
-export const updateUsuario = async (req, res) => {
-	const { id } = req.params;
-	const { nombre, apellido, nombre_usuario, contrasena_hash } = req.body;
-=======
+
 /*export const updateUsuario = async (req, res) => {
 	const { id } = req.params;
 	const { nombre, apellido, nombre_usuario } = req.body;
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 	try {
 		const user = await prisma.usuario.update({
 			where: { id_usuario: parseInt(id) },
 			data: {
 				nombre,
 				apellido,
-<<<<<<< HEAD
-				nombre_usuario,
-				contrasena_hash
-=======
 				nombre_usuario
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 			}
 		});
 
@@ -118,11 +108,7 @@ export const updateUsuario = async (req, res) => {
 		console.error(error);
 		res.status(500).json({ error: "Internal Server Error: Error al actualizar el usuario" })
 	}
-<<<<<<< HEAD
-};
-=======
 };*/
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 
 export const deleteUsuario = async (req, res) => {
 	const { id } = req.params;

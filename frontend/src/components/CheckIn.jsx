@@ -1,10 +1,7 @@
 import { useState } from "react";
 import WalkIn from "./WalkIn";
 import CheckInReserva from "./CheckInReserva";
-<<<<<<< HEAD
-=======
 import NavBar from "./navbar";
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 
 const CheckIn = () => {
 	const [tieneReserva, setTieneReserva] = useState(true);
@@ -14,12 +11,6 @@ const CheckIn = () => {
 	};
 
 	return (
-<<<<<<< HEAD
-		<div className="container py-4">
-			<div className="row justify-content-center">
-				<div className="col-12 col-md-11 col-lg-10" style={{ maxWidth: "1150px" }}>
-					<div className="card shadow-sm">
-=======
 		
 		<div className="container py-4">
 			<NavBar />
@@ -27,7 +18,6 @@ const CheckIn = () => {
 			<div className="row justify-content-center">
 				<div className="col-12 col-md-11 col-lg-10" style={{ maxWidth: "1150px" }}>
 					<div className="card shadow p-4">
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 						<div className="card-body">
 							<h3 className="text-center mb-3">
 								{tieneReserva ? "Check-In" : "Walk-In"}
@@ -56,43 +46,11 @@ const CheckIn = () => {
 							{tieneReserva ? <CheckInReserva /> : <WalkIn />}
 						</div>
 					</div>
-<<<<<<< HEAD
-				</div>
-			</div>
-=======
-					
-					{/* Switch de reserva */}
-					<div className="d-flex align-items-center justify-content-center mb-4">
-						<div className="form-check form-switch">
-							<input
-								className="form-check-input"
-								type="checkbox"
-								id="reservaSwitch"
-								checked={tieneReserva}
-								onChange={handleSwitch}
-							/>
-							<label
-								className="form-check-label ms-2"
-								htmlFor="reservaSwitch"
-							>
-								¿Tiene reserva?
-							</label>
-						</div>
-					</div>
-
-					{/* Formulario correspondiente */}
-					{tieneReserva ? <CheckInReserva /> : <WalkIn />}
 				</div>
 			</div>
 
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
 		</div>
 	);
 };
 
 export default CheckIn;
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
