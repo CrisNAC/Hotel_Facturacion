@@ -115,7 +115,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                                    value={filtros.estado}
                                    onChange={handleFilterChange}
                                >
-                                   <option value="">Todos los estados</option>  // Opción vacía para limpiar el filtro
+                                   <option value="">Todos</option>  // Opción vacía para limpiar el filtro
                                    <option value="activo">Activo</option>
                                    <option value="pendiente">Pendiente</option>
                                    <option value="cancelado">Cancelado</option>
