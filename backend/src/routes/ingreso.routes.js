@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { getAllIngresos } from '../controllers/ingreso.controller'
+import {getAllIngresos, createIngreso} from '../controllers/ingreso.controllers.js';
 
 const router = Router();
 
-router.get('/ingresos', getAllIngresos);
+router.get('/', getAllIngresos);
+
+router.post('/', createIngreso);
 
 export default router;

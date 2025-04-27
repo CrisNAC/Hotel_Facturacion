@@ -1,5 +1,5 @@
 import { Router } from "express";
-import cuentaController from "../controllers/cuenta.controller.js";
+import cuentaController from "../controllers/cuenta.controllers.js";
 const { postCuenta, closeCuenta } = cuentaController;
 
 const router = Router();

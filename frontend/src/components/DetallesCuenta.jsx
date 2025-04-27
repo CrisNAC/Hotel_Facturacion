@@ -2,6 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+import NavBar from "./navbar";
 const DetallesCuenta = () => {
 
   const items = [
@@ -31,6 +32,7 @@ const DetallesCuenta = () => {
 
   return (    
     <div className="container mt-5">
+      <NavBar />
       {/* Encabezado */}
       <h2 class="d-block mt-n3">Detalles Cuenta</h2>
 

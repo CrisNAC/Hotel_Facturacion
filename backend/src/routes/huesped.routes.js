@@ -1,5 +1,5 @@
 import { Router } from "express";
-import huespedController from "../controllers/huesped.controller.js";
+import huespedController from "../controllers/huesped.controllers.js";
 const { getAllHuespedes, getHuesped, postHuesped, deleteHuesped, putHuesped, patchHuesped } = huespedController;
 
 const router = Router();
