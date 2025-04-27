@@ -11,9 +11,13 @@ const CheckIn = () => {
 	};
 
 	return (
+<<<<<<< HEAD
+		<div className="container py-4">
+=======
 		
 		<div className="container py-4">
 			<NavBar />
+>>>>>>> a5b1a32c1ad34e08d8aaf4a500f0b7522becfe95
 
 			<div className="row justify-content-center">
 				<div className="col-12 col-md-11 col-lg-10" style={{ maxWidth: "1150px" }}>
@@ -46,6 +50,31 @@ const CheckIn = () => {
 							{tieneReserva ? <CheckInReserva /> : <WalkIn />}
 						</div>
 					</div>
+<<<<<<< HEAD
+					
+					{/* Switch de reserva */}
+					<div className="d-flex align-items-center justify-content-center mb-4">
+						<div className="form-check form-switch">
+							<input
+								className="form-check-input"
+								type="checkbox"
+								id="reservaSwitch"
+								checked={tieneReserva}
+								onChange={handleSwitch}
+							/>
+							<label
+								className="form-check-label ms-2"
+								htmlFor="reservaSwitch"
+							>
+								¿Tiene reserva?
+							</label>
+						</div>
+					</div>
+
+					{/* Formulario correspondiente */}
+					{tieneReserva ? <CheckInReserva /> : <WalkIn />}
+=======
+>>>>>>> a5b1a32c1ad34e08d8aaf4a500f0b7522becfe95
 				</div>
 			</div>
 
@@ -54,3 +83,8 @@ const CheckIn = () => {
 };
 
 export default CheckIn;
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> a5b1a32c1ad34e08d8aaf4a500f0b7522becfe95
