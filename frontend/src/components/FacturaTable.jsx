@@ -66,7 +66,7 @@ const FacturaTable = () => {
 
         setFiltered(nuevasFacturas);
         setCurrentPage(0); // Reinicia la paginación al cambiar filtros
-    }, [filters]);
+    }, [filters, facturas]);
 
     const handleChange = (e) => {
         const { id, value } = e.target;
