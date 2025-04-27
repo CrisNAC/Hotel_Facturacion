@@ -14,11 +14,16 @@ const prisma = new PrismaClient();
 const getAllfacturas = async (req, res) => {
     try {
         const result = await prisma.factura.findMany({
-			include: {fecha_emision}
+            include: {
+                cuenta: true,
+                timbrado: true,
+                usuario: true,
+            }
         });
         if (!result) return res.status(404).json({ error: "Facturas no encontradas" });
         res.status(200).json(result);//.end()
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: "Error al obtener facturas" });
     }
 };

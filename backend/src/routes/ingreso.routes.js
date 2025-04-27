@@ -6,4 +6,6 @@ const router = Router();
 router.get('/', getAllIngresos);
 router.post('/', createIngreso);
 
+router.post('/', createIngreso);
+
 export default router;

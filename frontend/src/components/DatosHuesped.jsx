@@ -1,11 +1,16 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom';
+import NavBar from "./navbar";
 
 const DatosHuesped = () => {
 	const navigate = useNavigate();
 
 	return (
 		<div className="container py-4">
+<<<<<<< HEAD
+=======
+			<NavBar />
+>>>>>>> a5b1a32c1ad34e08d8aaf4a500f0b7522becfe95
 			<div className="row justify-content-center">
 				<div className="col-lg-10">
 					<div className="card shadow p-4">

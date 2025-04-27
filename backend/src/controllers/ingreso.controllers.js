@@ -19,6 +19,10 @@ export const getAllIngresos = async (req, res) => {
 	try { 
 		const ingresos = await prisma.ingreso.findMany({
 			where: { activo: true },
+  			orderBy: {
+    			reserva: {
+      			check_in: 'asc' 
+    		}},
 			select: {
 				id_ingreso: true,
 				estado: true,
@@ -27,6 +31,16 @@ export const getAllIngresos = async (req, res) => {
 					select: {
 						check_in: true,
 						check_out: true
+					}
+				},
+				huesped: {
+					select: {
+						id_huesped: true,
+						nombre: true,
+						apellido: true,
+						nacionalidad: true,
+						telefono: true,
+						email: true
 					}
 				},
 
@@ -118,4 +132,3 @@ export const createIngreso = async (req, res) => {
 		res.status(500).json({ error: "Internal Server Error: Error al crear el ingreso" });
 	}
 }
-

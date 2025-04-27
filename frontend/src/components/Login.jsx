@@ -28,7 +28,8 @@ const Login = () => {
 
 			if(response) {
 				setErrors([]);
-				navigate('/');
+
+				navigate('/Inicio');
 			}
 
 		} catch (error) {

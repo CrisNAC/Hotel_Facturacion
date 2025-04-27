@@ -1,6 +1,7 @@
 import { useState } from "react";
 import WalkIn from "./WalkIn";
 import CheckInReserva from "./CheckInReserva";
+import NavBar from "./navbar";
 
 const CheckIn = () => {
 	const [tieneReserva, setTieneReserva] = useState(true);
@@ -10,7 +11,13 @@ const CheckIn = () => {
 	};
 
 	return (
+<<<<<<< HEAD
 		<div className="container py-4">
+=======
+		
+		<div className="container py-4">
+			<NavBar />
+>>>>>>> a5b1a32c1ad34e08d8aaf4a500f0b7522becfe95
 
 			<div className="row justify-content-center">
 				<div className="col-12 col-md-11 col-lg-10" style={{ maxWidth: "1150px" }}>
@@ -43,6 +50,7 @@ const CheckIn = () => {
 							{tieneReserva ? <CheckInReserva /> : <WalkIn />}
 						</div>
 					</div>
+<<<<<<< HEAD
 					
 					{/* Switch de reserva */}
 					<div className="d-flex align-items-center justify-content-center mb-4">
@@ -65,6 +73,8 @@ const CheckIn = () => {
 
 					{/* Formulario correspondiente */}
 					{tieneReserva ? <CheckInReserva /> : <WalkIn />}
+=======
+>>>>>>> a5b1a32c1ad34e08d8aaf4a500f0b7522becfe95
 				</div>
 			</div>
 
@@ -73,5 +83,8 @@ const CheckIn = () => {
 };
 
 export default CheckIn;
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> a5b1a32c1ad34e08d8aaf4a500f0b7522becfe95
