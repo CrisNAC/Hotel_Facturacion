@@ -1,9 +1,11 @@
 import React from "react";
 import { FaEdit, FaTrash, FaUserPlus } from "react-icons/fa";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import NavBar from "./navbar";
 
 const ConfirmarReserva = () => {
+	const location = useLocation();
+	const huespedes = location.state?.huespedes || [];
 
 	const navigate = useNavigate();
 
@@ -21,7 +23,7 @@ const ConfirmarReserva = () => {
 							color: "white",
 							border: "#003366",
 						}}
-						onClick={() => navigate('/DatosHuesped')}
+						onClick={() => navigate('/AgregarHuesped')}
 					>
 						<FaUserPlus className="me-2" /> Agregar
 					</button>
@@ -62,13 +64,14 @@ const ConfirmarReserva = () => {
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>1</td>
-							<td>Juan</td>
-							<td>Pérez</td>
-							<td>Paraguay</td>
-							<td>+595998123456</td>
-							<td>juan@mail.com</td>
+						{huespedes.map((huesped, index) => (
+						<tr key={index}>
+							<td>{index + 1}</td>
+							<td>{huesped.nombre}</td>
+							<td>{huesped.apellido}</td>
+							<td>{huesped.nacionalidad}</td>
+							<td>{huesped.telefono}</td>
+							<td>{huesped.email}</td>
 							<td className="d-flex justify-content-center align-items-center">
 								<button
 									type="button"
@@ -100,44 +103,7 @@ const ConfirmarReserva = () => {
 								</button>
 							</td>
 						</tr>
-						<tr>
-							<td>2</td>
-							<td>María</td>
-							<td>López</td>
-							<td>Paraguay</td>
-							<td>+595981654234</td>
-							<td>maria@mail.com</td>
-							<td className="d-flex justify-content-center align-items-center">
-								<button
-								type="button"
-									className="btn plus rounded-circle d-flex align-items-center justify-content-center"
-									style={{
-										backgroundColor: "#003366",
-										color: "white",
-										width: "30px",
-										height: "30px",
-										padding: 0,
-										fontSize: "14px",
-									}}
-								>
-									<FaEdit />
-								</button>
-								<button
-								type="button"
-									className="btn plus rounded-circle d-flex align-items-center justify-content-center"
-									style={{
-										backgroundColor: "#003366",
-										color: "white",
-										width: "30px",
-										height: "30px",
-										padding: 0,
-										fontSize: "14px",
-									}}
-								>
-									<FaTrash />
-								</button>
-							</td>
-						</tr>
+						))}
 					</tbody>
 				</table>
 

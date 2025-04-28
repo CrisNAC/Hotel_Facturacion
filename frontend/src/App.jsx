@@ -15,34 +15,34 @@ import Invoice from "./components/Invoice"
 
 import CheckIn from './components/CheckIn'
 import ConfirmarReserva from './components/ConfirmarReserva'
-import DatosHuesped from './components/DatosHuesped'
+import AgregarHuesped from './pages/AgregarHuesped'
 import SeleccionHabitacion from './components/SeleccionHabitacion'
 
 function App() {
   return (
-      <>
+    <>
       <Router>
         <Container>
 
-		  
-		  <Routes>
-          <Route path="/Inicio" element={<Inicio />} />
-          <Route path="/Huespedes" element={<HuespedesActivosPage />} />
 
-          <Route path="/DetallesCuentas" element={<DetallesCuentas />}></Route>
-          <Route path="/VistaFactura" element={<InvoiceComponentEli />}></Route>
+          <Routes>
+            <Route path="/Inicio" element={<Inicio />} />
+            <Route path="/Huespedes" element={<HuespedesActivosPage />} />
 
-          <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
-          <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
-          <Route path="/DatosHuesped" element={<DatosHuesped />}></Route>
-          <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
+            <Route path="/DetallesCuentas" element={<DetallesCuentas />}></Route>
+            <Route path="/VistaFactura" element={<InvoiceComponentEli />}></Route>
 
-          <Route path="/" element={<Login />} />
-          <Route path="/FacturasEmitidas" element={
-            <div style={{ marginTop: "6rem" }}>
-              <FacturaTable />
-            </div>
-          }
+            <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
+            <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
+            <Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
+            <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
+
+            <Route path="/" element={<Login />} />
+            <Route path="/FacturasEmitidas" element={
+              <div style={{ marginTop: "6rem" }}>
+                <FacturaTable />
+              </div>
+            }
             ></Route>
             <Route path="/invoice/:numeroFactura" element={<Invoice />} />
           </Routes>

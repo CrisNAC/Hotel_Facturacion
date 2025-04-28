@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import NavBar from "./navbar";
+import NavBar from '../components/navbar';
 
-const DatosHuesped = () => {
+const AgregarHuesped = () => {
 	const navigate = useNavigate();
 
 	const [formData, setFormData] = useState({
@@ -26,7 +26,7 @@ const DatosHuesped = () => {
 		e.preventDefault();
 
 		try {
-			await axios.post('http://localhost:4000/api/huesped', {
+			const response = await axios.post('http://localhost:4000/api/huesped', {
 				nombre: formData.nombre,
 				apellido: formData.apellido,
 				documento_identidad: formData.documento_identidad,
@@ -38,10 +38,12 @@ const DatosHuesped = () => {
 				fecha_nacimiento: formData.fecha_nacimiento
 			});
 
-			navigate('/ConfirmarReserva');
+			// response.data contiene el huésped creado.
+			navigate('/ConfirmarReserva', { state: { huespedes: [response.data] } });
+
 		} catch (error) {
-			console.error("Error en respuesta:", error.response.data);
-			alert(error.response.data.error);
+			console.error("Error en respuesta:", error.response?.data || error.message);
+			alert(error.response?.data?.error || "Error al crear huésped");
 		}
 	};
 
@@ -204,4 +206,4 @@ const DatosHuesped = () => {
 	);
 };
 
-export default DatosHuesped;
+export default AgregarHuesped;
