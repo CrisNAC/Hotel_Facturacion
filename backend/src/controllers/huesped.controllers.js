@@ -37,7 +37,7 @@ const postHuesped = async (req, res) => {
             nombre,
             apellido,
             documento_identidad,
-			numero_documento,
+            numero_documento,
             ruc,
             nacionalidad,
             telefono,
@@ -45,41 +45,55 @@ const postHuesped = async (req, res) => {
             fecha_nacimiento
         } = req.body;
 
-		const exists_number_document = await prisma.huesped.findUnique({
-			where: { numero_documento }
-		});
+        // Validaciones básicas
+        if (!nombre || !apellido || !documento_identidad || !numero_documento || !nacionalidad) {
+            return res.status(400).json({ error: "Faltan campos requeridos" });
+        }
 
-		if(exists_number_document) return res.status(400).json({ error: "Numero de habitacion ya existente" })
+        // Validar que el número de documento no esté repetido
+        const exists_number_document = await prisma.huesped.findUnique({
+            where: { numero_documento }
+        });
 
-		// Validar enums válidos desde Prisma
-		if (!Object.values(DocumentoIdentidad).includes(documento_identidad)) {
-			return res.status(400).json({ error: "Documento de identidad inválido" });
-		}
-	
-		if (!Object.values(Nacionalidad).includes(nacionalidad)) {
-			return res.status(400).json({ error: "Nacionalidad inválida" });
-		}
+        if (exists_number_document) {
+            return res.status(400).json({ error: "Número de documento ya existente" });
+        }
 
+        // Validar enums válidos desde Prisma
+        if (!Object.values(DocumentoIdentidad).includes(documento_identidad)) {
+            return res.status(400).json({ error: "Documento de identidad inválido" });
+        }
+
+        if (!Object.values(Nacionalidad).includes(nacionalidad)) {
+            return res.status(400).json({ error: "Nacionalidad inválida" });
+        }
+
+        // Crear el huésped
         const result = await prisma.huesped.create({
             data: {
                 nombre,
                 apellido,
                 documento_identidad,
-				numero_documento,
+                numero_documento,
                 ruc: ruc || null,
                 nacionalidad,
                 telefono: telefono || null,
                 email: email || null,
-                fecha_nacimiento: new Date(fecha_nacimiento)
+                fecha_nacimiento: fecha_nacimiento ? new Date(fecha_nacimiento) : null
             }
         });
-        if (!result) return res.status(400).json({ error: "Huesped no creado" });
+
+        if (!result) {
+            return res.status(400).json({ error: "Huésped no creado" });
+        }
+
         res.status(201).json(result);
     } catch (error) {
-		console.error(error);
-        res.status(500).json({ error: "Error al crear huesped" });
+        console.error("Error al crear huésped:", error);
+        res.status(500).json({ error: "Error interno al crear huésped" });
     }
 };
+
 
 const deleteHuesped = async (req, res) => {
     try {
@@ -94,7 +108,7 @@ const deleteHuesped = async (req, res) => {
             }
         });
         if (!result) return res.status(404).json({ error: "Huesped no encontrado" });
-        res.status(204).json({message: "Huesped eliminado con exito" });
+        res.status(204).json({ message: "Huesped eliminado con exito" });
     } catch (error) {
         res.status(500).json({ error: "Error al eliminar huespedes" });
     }

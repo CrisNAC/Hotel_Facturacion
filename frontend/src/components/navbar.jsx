@@ -24,7 +24,7 @@ export const NavBar = () => {
   };
 
   const irALogin = () => {
-    navigate('/Login');
+    navigate('/');
   };
 
   return (
@@ -48,16 +48,16 @@ export const NavBar = () => {
           <a href="#" className="text-white fw-normal text-decoration-none">Reportes</a>
         </div >
 
-  {/* Auth section */ }
+        {/* Auth section */}
 
-        <div className="d-flex align-items-center">
+        <div className="d-flex align-items-center" onClick={irALogin}>
           <FaUser className="text-white ms-2"></FaUser>
           <FaChevronDown className="text-white ms-2" />
         </div >
       </div >
 
-  {/* Contenido debajo del NavBar */ }
-  < div style = {{ marginTop: "60px" }}>
+      {/* Contenido debajo del NavBar */}
+      < div style={{ marginTop: "60px" }}>
       </div >
     </>
   );
