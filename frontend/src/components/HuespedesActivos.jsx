@@ -41,7 +41,7 @@ function HuespedesActivos({ ingresosOriginales }) {
 
         setIngresosFiltrados(filtrado);
         setPage(1);
-    }, [debouncedFiltros, ingresosOriginales]);
+    }, [debouncedFiltros, ingresosOriginales, filtros]);
 
     const paginatedItems = ingresosFiltrados.slice((page - 1) * itemsPerPage, page * itemsPerPage);
     const totalPages = Math.ceil(ingresosFiltrados.length / itemsPerPage);
