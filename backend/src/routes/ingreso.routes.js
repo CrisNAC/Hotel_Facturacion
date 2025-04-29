@@ -4,6 +4,7 @@ import {getAllIngresos, createIngreso} from '../controllers/ingreso.controllers.
 const router = Router();
 
 router.get('/', getAllIngresos);
+router.post('/', createIngreso);
 
 router.post('/', createIngreso);
 

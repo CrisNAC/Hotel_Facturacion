@@ -11,7 +11,7 @@ const CheckIn = () => {
 	};
 
 	return (
-		
+
 		<div className="container py-4">
 			<NavBar />
 
@@ -48,7 +48,6 @@ const CheckIn = () => {
 					</div>
 				</div>
 			</div>
-
 		</div>
 	);
 };

@@ -2,27 +2,28 @@ import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
 /*const getAllIngresos = async (req, res) => {
-    try {
-        const result = await prisma.ingreso.findMany({
-            where: {
-                activo: true
-            }
-        });
-        if (!result) return res.status(404).json({ error: 'Ingresos no enontrados' });
-        res.status(200).json(result);
-    } catch (error) {
-        res.status(500).json({ error: 'Error al obtener Ingresos' });
-    }
+	try {
+		const result = await prisma.ingreso.findMany({
+			where: {
+				activo: true
+			}
+		});
+		if (!result) return res.status(404).json({ error: 'Ingresos no enontrados' });
+		res.status(200).json(result);
+	} catch (error) {
+		res.status(500).json({ error: 'Error al obtener Ingresos' });
+	}
 };*/
 
 export const getAllIngresos = async (req, res) => {
-	try { 
+	try {
 		const ingresos = await prisma.ingreso.findMany({
 			where: { activo: true },
-  			orderBy: {
-    			reserva: {
-      			check_in: 'asc' 
-    		}},
+			orderBy: {
+				reserva: {
+					check_in: 'asc'
+				}
+			},
 			select: {
 				id_ingreso: true,
 				estado: true,
@@ -63,7 +64,7 @@ export const getAllIngresos = async (req, res) => {
 			}
 		});
 		res.status(200).json(ingresos);
-		
+
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: "Internal Server Error: Error al listar ingresos" });
@@ -83,7 +84,7 @@ export const createIngreso = async (req, res) => {
 
 	try {
 		const nuevoIngreso = await prisma.ingreso.create({
-			data : {
+			data: {
 				fk_reserva,
 				fk_habitacion,
 				fk_huesped,
