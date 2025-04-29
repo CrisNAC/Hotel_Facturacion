@@ -50,7 +50,11 @@ const Login = () => {
                     <form onSubmit={handleLogin}>
 
                         <div className="mb-3">
+<<<<<<< HEAD
                             <label htmlFor="nombre_usuario" name="nombre_usuario" className="form-label">Usuario:</label>
+=======
+                            <label htmlFor="nombre_usuario" name='nombre_usuario' className="form-label">Usuario:</label>
+>>>>>>> 08b19c7bd172f13e58abc7cc850f49da833ae6e7
                             <input
                                 type="text"
 								id="nombre_usuario"
@@ -62,7 +66,11 @@ const Login = () => {
                         </div>
 
                         <div className="mb-3">
+<<<<<<< HEAD
                             <label htmlFor="contrasena" name="contrasena" className="form-label">Contraseña:</label>
+=======
+                            <label htmlFor="contrasena" name='contrasena' className="form-label">Contraseña:</label>
+>>>>>>> 08b19c7bd172f13e58abc7cc850f49da833ae6e7
                             <input
                                 type="password"
 								id="contrasena"
