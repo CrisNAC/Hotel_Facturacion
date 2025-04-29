@@ -93,15 +93,7 @@ model Tarifa {
 
 model Habitacion {
   id_habitacion      Int      @id @default(autoincrement())
-<<<<<<< HEAD
   numero             String   @unique
-=======
-<<<<<<< HEAD
-  numero             String
-=======
-  numero             String   @unique
->>>>>>> 2d2cff4063d654bb974da5cd325cd3fde12e60d1
->>>>>>> a5b1a32c1ad34e08d8aaf4a500f0b7522becfe95
   fk_tipo_habitacion Int
   piso               String
   estado             String
@@ -220,13 +212,12 @@ model Factura {
 }
 
 model DetalleFactura {
-  id_detalle_factura Int    @id @default(autoincrement())
+  id_detalle_factura Int     @id @default(autoincrement())
   fk_factura         Int
   descripcion        String
   cantidad           Int
   precio_unitario    Int
   descuento          Int
   porcentaje_iva     Int
-
-  factura Factura @relation(fields: [fk_factura], references: [id_factura])
+  factura            Factura @relation(fields: [fk_factura], references: [id_factura])
 }
