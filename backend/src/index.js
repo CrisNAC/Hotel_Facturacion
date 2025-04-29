@@ -44,8 +44,3 @@ app.use('/api/reserva', reservaRoutes);					//Jazmín
 app.listen(PORT, () => {
 	console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
-
-
-
-
-

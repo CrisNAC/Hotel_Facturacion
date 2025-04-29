@@ -89,6 +89,7 @@ export const createUsuario = async (req, res) => {
 	}
 };
 
+
 /*export const updateUsuario = async (req, res) => {
 	const { id } = req.params;
 	const { nombre, apellido, nombre_usuario } = req.body;

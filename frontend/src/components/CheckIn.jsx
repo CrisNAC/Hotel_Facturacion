@@ -46,28 +46,6 @@ const CheckIn = () => {
 							{tieneReserva ? <CheckInReserva /> : <WalkIn />}
 						</div>
 					</div>
-					
-					{/* Switch de reserva */}
-					<div className="d-flex align-items-center justify-content-center mb-4">
-						<div className="form-check form-switch">
-							<input
-								className="form-check-input"
-								type="checkbox"
-								id="reservaSwitch"
-								checked={tieneReserva}
-								onChange={handleSwitch}
-							/>
-							<label
-								className="form-check-label ms-2"
-								htmlFor="reservaSwitch"
-							>
-								¿Tiene reserva?
-							</label>
-						</div>
-					</div>
-
-					{/* Formulario correspondiente */}
-					{tieneReserva ? <CheckInReserva /> : <WalkIn />}
 				</div>
 			</div>
 
@@ -76,5 +54,3 @@ const CheckIn = () => {
 };
 
 export default CheckIn;
-
-
