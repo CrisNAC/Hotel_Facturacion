@@ -30,7 +30,8 @@ function HuespedesActivos({ ingresosOriginales }) {
             if (filtros.habitacion && !ingreso.habitacion?.numero?.toString().includes(filtros.habitacion)) return false;
             if (filtros.estado && ingreso.estado?.toLowerCase() !== filtros.estado.toLowerCase()) return false;
 
-            const fecha = debouncedFiltros.fecha;
+            const fecha = debouncedFiltros.fecha;   
+            console.log(fecha)
             if (fecha) {
                 const fechaComparar = debouncedFiltros.checkIn ? ingreso.reserva?.check_in : ingreso.reserva?.check_out;
                 if (!fechaComparar?.includes(fecha)) return false;
@@ -42,7 +43,7 @@ function HuespedesActivos({ ingresosOriginales }) {
         setIngresosFiltrados(filtrado);
         setPage(1);
     }, [debouncedFiltros, ingresosOriginales]);
-
+    
     const paginatedItems = ingresosFiltrados.slice((page - 1) * itemsPerPage, page * itemsPerPage);
     const totalPages = Math.ceil(ingresosFiltrados.length / itemsPerPage);
 
@@ -83,7 +84,7 @@ function HuespedesActivos({ ingresosOriginales }) {
     return (
         <>
         {/* Filtro */}
-        <div className="row border border-gray rounded-2 p-3 align-items-center" 
+        <div className="row border border-gray rounded-2 p-1 align-items-center" 
             style={{ margin: 0, marginTop: "0.5rem", marginBottom: "1rem" }}>
             <div className="mb-3 col">
                 <label htmlFor="huesped" className="form-label">Huesped</label>
@@ -95,43 +96,42 @@ function HuespedesActivos({ ingresosOriginales }) {
                     onChange={handleFilterChange}
                 />
             </div>
+            <div className="mb-3 col">
+                <label htmlFor="habitacion" className="form-label">Habitacion</label>
+                <input 
+                    type="text" 
+                    className="form-control" 
+                    name="habitacion"
+                    value={filtros.habitacion}
+                    onChange={handleFilterChange}
+                />
+            </div>
            
-                           <div className="mb-3 col">
-                               <label htmlFor="habitacion" className="form-label">Habitacion</label>
-                               <input 
-                                   type="text" 
-                                   className="form-control" 
-                                   name="habitacion"
-                                   value={filtros.habitacion}
-                                   onChange={handleFilterChange}
-                               />
-                           </div>
+            <div className="mb-3 col">
+                <label htmlFor="estado" className="form-label">Estado</label>
+                <select
+                    className="form-select" 
+                    name="estado"
+                    value={filtros.estado}
+                    onChange={handleFilterChange}
+                >
+                    <option value="">Todos los estados</option>  // Opción vacía para limpiar el filtro
+                    <option value="activo">Activo</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="cancelado">Cancelado</option>
+                </select>
+            </div>
            
-                           <div className="mb-3 col">
-                               <label htmlFor="estado" className="form-label">Estado</label>
-                               <select
-                                   className="form-select" 
-                                   name="estado"
-                                   value={filtros.estado}
-                                   onChange={handleFilterChange}
-                               >
-                                   <option value="">Todos los estados</option>  // Opción vacía para limpiar el filtro
-                                   <option value="activo">Activo</option>
-                                   <option value="pendiente">Pendiente</option>
-                                   <option value="cancelado">Cancelado</option>
-                               </select>
-                           </div>
-           
-                           <div className="mb-3 col">
-                               <label htmlFor="fecha" className="form-label">Fecha</label>
-                               <input 
-                                   type="date" 
-                                   className="form-control" 
-                                   name="fecha"
-                                   value={filtros.fecha}
-                                   onChange={handleFilterChange}
-                               />
-                           </div>
+            <div className="mb-3 col">
+                <label htmlFor="fecha" className="form-label">Fecha</label>
+                <input 
+                    type="date" 
+                    className="form-control" 
+                    name="fecha"
+                    value={filtros.fecha}
+                    onChange={handleFilterChange}
+                />
+            </div>
            
                            <div className='col d-flex row'>
                                <div className="d-flex justify-content-around align-items-center">
@@ -157,7 +157,7 @@ function HuespedesActivos({ ingresosOriginales }) {
            
                        {/* Tabla */}
                        <div>
-                           <table className="table table-hover">
+                           <table className="table table-hover table-sm" >
                                <thead>
                                    <tr className='text-center'>
                                        <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color:"#2E2E2E" }}>#</th>
@@ -170,14 +170,15 @@ function HuespedesActivos({ ingresosOriginales }) {
                                        <th className="align-middle text-center" style={{ backgroundColor: "#E6E6E6", color:"#2E2E2E"}}>Acciones</th>
                                    </tr>
                                </thead>
-                               <tbody>
+                               <tbody className=''   >
                                    {paginatedItems.map((item, index) => (
                                        <tr key={item.id_ingreso}>
                                            <td>{(page - 1) * itemsPerPage + index + 1}</td>
-                                           <td>{`${item.huesped?.nombre || 'N/A'} ${item.huesped?.apellido || ''}`}</td>
-                                           <td className="text-center">{item.habitacion?.numero || '—'}</td>
-                                           <td className="text-center">{formatDMY(item.reserva?.check_in) || '—'}</td>
-                                           <td className="text-center">{formatDMY(item.reserva?.check_out) || '—'}</td>
+                                           <td>{`${item.huesped?.nombre || 'N/A'} `}</td>
+                                           <td>{`${item.huesped?.apellido || ''}`}</td>
+                                           <td>{`${item.huesped?.nacionalidad || ''}`}</td>
+                                           <td>{`${item.huesped?.telefono || ''}`}</td>
+                                           <td>{`${item.huesped?.correo || ''}`}</td>
                                            
                                            <td className="text-center">
                                            <span style={{
@@ -197,28 +198,27 @@ function HuespedesActivos({ ingresosOriginales }) {
                                                {item.estado || '—'}
                                            </span>
                                            </td>
-                                           <td className="text-end">
+                                           <td className="text-end" > 
                                                {item.cuenta?.length > 0 && item.cuenta[0].consumos?.length > 0 
                                                    ? item.cuenta[0].consumos.reduce((acc, consumo) => acc + (consumo.monto || 0), 0).toLocaleString() 
                                                    : '—'}
                                                Gs
                                            </td>                                
-                                           <td className="d-flex justify-content-center">
+                                           <td className="d-flex justify-content-center" >
                                                <button
                                                    className='btn rounded-circle mx-1'
                                                    onClick={() => handleShowDetails(item)}>
-                                                   <FaEye />
+                                                   <FaEye  style={{ width: 15, height: 15 }}/>
                                                </button>
                                                <button
                                                    className='btn rounded-circle mx-1'
                                                    onClick={() => handleShowDelete(item)}>
-                                                   <FaRegTrashAlt />
+                                                   <FaRegTrashAlt style={{ width: 15, height: 15 }}/>
                                                </button>
                                                <button 
-                                                   className='btn rounded-circle mx-1' 
-                                                   style={{width: 35 , height:35}} 
+                                                   className='btn rounded-circle mx-1'
                                                    onClick={irADetCuenta}>
-                                                   <FiFileText />
+                                                   <FiFileText style={{ width: 15, height: 15 }}/>
                                                </button>
                                            </td>
                                        </tr>
@@ -264,17 +264,44 @@ function HuespedesActivos({ ingresosOriginales }) {
                                            <table className="table table-hover">
                                                <thead>
                                                    <tr>
-                                                       <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>#</th>
-                                                       <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Nombre</th>
-                                                       <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Apellido</th>
-                                                       <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Nacionalidad</th>
-                                                       <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Telefono</th>
-                                                       <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Correo</th>
+                                                       <th className="align-middle" style={{ backgroundColor: "#83A3A8", color: "white" }}>#</th>
+                                                       <th className="align-middle" style={{ backgroundColor: "#83A3A8", color: "white" }}>Nombre</th>
+                                                       <th className="align-middle" style={{ backgroundColor: "#83A3A8", color: "white" }}>Apellido</th>
+                                                       <th className="align-middle" style={{ backgroundColor: "#83A3A8", color: "white" }}>Nacionalidad</th>
+                                                       <th className="align-middle" style={{ backgroundColor: "#83A3A8", color: "white" }}>Telefono</th>
+                                                       <th className="align-middle" style={{ backgroundColor: "#83A3A8", color: "white" }}>Correo</th>
                                                    </tr>
                                                </thead>
                                                <tbody>
-                                                   
-                                               </tbody>
+                                                {paginatedItems.map((item, index) => (
+                                                <tr key={item.id_ingreso}>
+                                                    <td>{(page - 1) * itemsPerPage + index + 1}</td>
+                                                    <td>{`${item.huesped?.nombre || 'N/A'} ${item.huesped?.apellido || ''}`}</td>
+                                                    <td className="text-center">{item.habitacion?.numero || '—'}</td>
+                                                    <td className="text-center">{formatDMY(item.reserva?.check_in) || '—'}</td>
+                                                    <td className="text-center">{formatDMY(item.reserva?.check_out) || '—'}</td>
+                                           
+                                           <td className="text-center">
+                                           <span style={{
+                                               padding: '4px 8px',
+                                               borderRadius: '12px',
+                                               fontSize: '14px',
+                                               display: 'inline-block',
+                                               backgroundColor:
+                                                   item.estado === 'Pendiente' ? '#fff3cd' :
+                                                   item.estado === 'Cancelado' ? '#f8d7da' :
+                                                   '#d4edda',
+                                               color:
+                                                   item.estado === 'Pendiente' ? '#856404' :
+                                                   item.estado === 'Cancelado' ? '#721c24' :
+                                                   '#155724'
+                                               }}>
+                                               {item.estado || '—'}
+                                           </span>
+                                           </td>
+                                       </tr>
+                                   ))}
+                               </tbody>
                                            </table>
                                        </div>
                                        <div className="modal-footer d-flex justify-content-center">
