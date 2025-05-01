@@ -21,6 +21,10 @@ class HTTPClient {
         return this.instance.get("/ingresos");
     }
 
+    getHuespedById(huespedId){
+        return this.instance.get(`/ingresos/${huespedId}`)
+    }
+
     /****        HUESPEDES        ****/ 
 
     /*getHuespedes() {

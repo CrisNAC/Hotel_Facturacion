@@ -10,9 +10,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_DEPLOY_URL")
-  //directUrl = env("DIRECT_URL")
+  provider  = "postgresql"
+  //url = env("DATABASE_DEPLOY_URL")
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Usuario {
@@ -212,13 +213,12 @@ model Factura {
 }
 
 model DetalleFactura {
-  id_detalle_factura Int    @id @default(autoincrement())
+  id_detalle_factura Int     @id @default(autoincrement())
   fk_factura         Int
   descripcion        String
   cantidad           Int
   precio_unitario    Int
   descuento          Int
   porcentaje_iva     Int
-
-  factura Factura @relation(fields: [fk_factura], references: [id_factura])
+  factura            Factura @relation(fields: [fk_factura], references: [id_factura])
 }

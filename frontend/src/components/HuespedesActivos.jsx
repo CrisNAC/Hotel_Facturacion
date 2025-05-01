@@ -30,7 +30,8 @@ function HuespedesActivos({ ingresosOriginales }) {
             if (filtros.habitacion && !ingreso.habitacion?.numero?.toString().includes(filtros.habitacion)) return false;
             if (filtros.estado && ingreso.estado?.toLowerCase() !== filtros.estado.toLowerCase()) return false;
 
-            const fecha = debouncedFiltros.fecha;
+            const fecha = debouncedFiltros.fecha;   
+            console.log(fecha)
             if (fecha) {
                 const fechaComparar = debouncedFiltros.checkIn ? ingreso.reserva?.check_in : ingreso.reserva?.check_out;
                 if (!fechaComparar?.includes(fecha)) return false;
@@ -41,7 +42,7 @@ function HuespedesActivos({ ingresosOriginales }) {
 
         setIngresosFiltrados(filtrado);
         setPage(1);
-    }, [debouncedFiltros, ingresosOriginales]);
+    }, [debouncedFiltros, ingresosOriginales, filtros]);
 
     const paginatedItems = ingresosFiltrados.slice((page - 1) * itemsPerPage, page * itemsPerPage);
     const totalPages = Math.ceil(ingresosFiltrados.length / itemsPerPage);
@@ -86,8 +87,9 @@ function HuespedesActivos({ ingresosOriginales }) {
             <div className="row border border-gray rounded-2 p-3 align-items-center"
                 style={{ margin: 0, marginTop: "0.5rem", marginBottom: "1rem" }}>
                 <div className="mb-3 col">
-                    <label htmlFor="huesped" className="form-label">Huesped</label>
+                    <label htmlFor="huesped" name="huesped" className="form-label">Huesped</label>
                     <input
+                        id="huesped"
                         type="text"
                         className="form-control"
                         name="huesped"
@@ -97,8 +99,9 @@ function HuespedesActivos({ ingresosOriginales }) {
                 </div>
 
                 <div className="mb-3 col">
-                    <label htmlFor="habitacion" className="form-label">Habitacion</label>
+                    <label htmlFor="habitacion" name="habitacion" className="form-label">Habitacion</label>
                     <input
+                        id="habitacion"
                         type="text"
                         className="form-control"
                         name="habitacion"
@@ -108,8 +111,9 @@ function HuespedesActivos({ ingresosOriginales }) {
                 </div>
 
                 <div className="mb-3 col">
-                    <label htmlFor="estado" className="form-label">Estado</label>
+                    <label htmlFor="estado" name="estado" className="form-label">Estado</label>
                     <select
+                        id="estado"
                         className="form-select"
                         name="estado"
                         value={filtros.estado}
@@ -123,8 +127,9 @@ function HuespedesActivos({ ingresosOriginales }) {
                 </div>
 
                 <div className="mb-3 col">
-                    <label htmlFor="fecha" className="form-label">Fecha</label>
+                    <label htmlFor="fecha" name="fecha" className="form-label">Fecha</label>
                     <input
+                        id="fecha"
                         type="date"
                         className="form-control"
                         name="fecha"
@@ -135,8 +140,9 @@ function HuespedesActivos({ ingresosOriginales }) {
 
                 <div className='col d-flex row'>
                     <div className="d-flex justify-content-around align-items-center">
-                        <label htmlFor="checkIn">Check-in</label>
+                        <label htmlFor="checkIn" name="checkIn">Check-in</label>
                         <input
+                            id="checkIn"
                             type='checkbox'
                             name="checkIn"
                             checked={filtros.checkIn}
@@ -144,8 +150,9 @@ function HuespedesActivos({ ingresosOriginales }) {
                         />
                     </div>
                     <div className="d-flex justify-content-around align-items-center">
-                        <label htmlFor="checkOut">Check-out</label>
+                        <label htmlFor="checkOut" name="checkOut">Check-out</label>
                         <input
+                            id="checkOut"
                             type='checkbox'
                             name="checkOut"
                             checked={!filtros.checkIn}

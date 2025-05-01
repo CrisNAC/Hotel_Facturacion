@@ -7247,7 +7247,7 @@ export namespace Prisma {
     numero: string | null
     fk_tipo_habitacion: number | null
     piso: string | null
-    estado: string | null
+    estado: boolean | null
     activo: boolean | null
     created_at: Date | null
     updated_at: Date | null
@@ -7258,7 +7258,7 @@ export namespace Prisma {
     numero: string | null
     fk_tipo_habitacion: number | null
     piso: string | null
-    estado: string | null
+    estado: boolean | null
     activo: boolean | null
     created_at: Date | null
     updated_at: Date | null
@@ -7412,7 +7412,7 @@ export namespace Prisma {
     numero: string
     fk_tipo_habitacion: number
     piso: string
-    estado: string
+    estado: boolean
     activo: boolean
     created_at: Date
     updated_at: Date
@@ -7510,7 +7510,7 @@ export namespace Prisma {
       numero: string
       fk_tipo_habitacion: number
       piso: string
-      estado: string
+      estado: boolean
       activo: boolean
       created_at: Date
       updated_at: Date
@@ -7943,7 +7943,7 @@ export namespace Prisma {
     readonly numero: FieldRef<"Habitacion", 'String'>
     readonly fk_tipo_habitacion: FieldRef<"Habitacion", 'Int'>
     readonly piso: FieldRef<"Habitacion", 'String'>
-    readonly estado: FieldRef<"Habitacion", 'String'>
+    readonly estado: FieldRef<"Habitacion", 'Boolean'>
     readonly activo: FieldRef<"Habitacion", 'Boolean'>
     readonly created_at: FieldRef<"Habitacion", 'DateTime'>
     readonly updated_at: FieldRef<"Habitacion", 'DateTime'>
@@ -18462,7 +18462,7 @@ export namespace Prisma {
     numero?: StringFilter<"Habitacion"> | string
     fk_tipo_habitacion?: IntFilter<"Habitacion"> | number
     piso?: StringFilter<"Habitacion"> | string
-    estado?: StringFilter<"Habitacion"> | string
+    estado?: BoolFilter<"Habitacion"> | boolean
     activo?: BoolFilter<"Habitacion"> | boolean
     created_at?: DateTimeFilter<"Habitacion"> | Date | string
     updated_at?: DateTimeFilter<"Habitacion"> | Date | string
@@ -18491,7 +18491,7 @@ export namespace Prisma {
     NOT?: HabitacionWhereInput | HabitacionWhereInput[]
     fk_tipo_habitacion?: IntFilter<"Habitacion"> | number
     piso?: StringFilter<"Habitacion"> | string
-    estado?: StringFilter<"Habitacion"> | string
+    estado?: BoolFilter<"Habitacion"> | boolean
     activo?: BoolFilter<"Habitacion"> | boolean
     created_at?: DateTimeFilter<"Habitacion"> | Date | string
     updated_at?: DateTimeFilter<"Habitacion"> | Date | string
@@ -18523,7 +18523,7 @@ export namespace Prisma {
     numero?: StringWithAggregatesFilter<"Habitacion"> | string
     fk_tipo_habitacion?: IntWithAggregatesFilter<"Habitacion"> | number
     piso?: StringWithAggregatesFilter<"Habitacion"> | string
-    estado?: StringWithAggregatesFilter<"Habitacion"> | string
+    estado?: BoolWithAggregatesFilter<"Habitacion"> | boolean
     activo?: BoolWithAggregatesFilter<"Habitacion"> | boolean
     created_at?: DateTimeWithAggregatesFilter<"Habitacion"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"Habitacion"> | Date | string
@@ -19501,7 +19501,7 @@ export namespace Prisma {
   export type HabitacionCreateInput = {
     numero: string
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -19514,7 +19514,7 @@ export namespace Prisma {
     numero: string
     fk_tipo_habitacion: number
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -19524,7 +19524,7 @@ export namespace Prisma {
   export type HabitacionUpdateInput = {
     numero?: StringFieldUpdateOperationsInput | string
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19537,7 +19537,7 @@ export namespace Prisma {
     numero?: StringFieldUpdateOperationsInput | string
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19549,7 +19549,7 @@ export namespace Prisma {
     numero: string
     fk_tipo_habitacion: number
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -19558,7 +19558,7 @@ export namespace Prisma {
   export type HabitacionUpdateManyMutationInput = {
     numero?: StringFieldUpdateOperationsInput | string
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19569,7 +19569,7 @@ export namespace Prisma {
     numero?: StringFieldUpdateOperationsInput | string
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22856,7 +22856,7 @@ export namespace Prisma {
   export type HabitacionCreateWithoutTipoHabitacionInput = {
     numero: string
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -22867,7 +22867,7 @@ export namespace Prisma {
     id_habitacion?: number
     numero: string
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -22972,7 +22972,7 @@ export namespace Prisma {
     numero?: StringFilter<"Habitacion"> | string
     fk_tipo_habitacion?: IntFilter<"Habitacion"> | number
     piso?: StringFilter<"Habitacion"> | string
-    estado?: StringFilter<"Habitacion"> | string
+    estado?: BoolFilter<"Habitacion"> | boolean
     activo?: BoolFilter<"Habitacion"> | boolean
     created_at?: DateTimeFilter<"Habitacion"> | Date | string
     updated_at?: DateTimeFilter<"Habitacion"> | Date | string
@@ -23534,7 +23534,7 @@ export namespace Prisma {
   export type HabitacionCreateWithoutIngresosInput = {
     numero: string
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -23546,7 +23546,7 @@ export namespace Prisma {
     numero: string
     fk_tipo_habitacion: number
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -23757,7 +23757,7 @@ export namespace Prisma {
   export type HabitacionUpdateWithoutIngresosInput = {
     numero?: StringFieldUpdateOperationsInput | string
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23769,7 +23769,7 @@ export namespace Prisma {
     numero?: StringFieldUpdateOperationsInput | string
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25036,7 +25036,7 @@ export namespace Prisma {
     id_habitacion?: number
     numero: string
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -25085,7 +25085,7 @@ export namespace Prisma {
   export type HabitacionUpdateWithoutTipoHabitacionInput = {
     numero?: StringFieldUpdateOperationsInput | string
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25096,7 +25096,7 @@ export namespace Prisma {
     id_habitacion?: IntFieldUpdateOperationsInput | number
     numero?: StringFieldUpdateOperationsInput | string
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25107,7 +25107,7 @@ export namespace Prisma {
     id_habitacion?: IntFieldUpdateOperationsInput | number
     numero?: StringFieldUpdateOperationsInput | string
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
