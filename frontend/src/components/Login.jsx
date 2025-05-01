@@ -50,7 +50,7 @@ const Login = () => {
                     <form onSubmit={handleLogin}>
 
                         <div className="mb-3">
-                            <label htmlFor="nombre_usuario" name='nombre_usuario' className="form-label">Usuario:</label>
+                            <label htmlFor="nombre_usuario" name="nombre_usuario" className="form-label">Usuario:</label>
                             <input
                                 type="text"
 								id="nombre_usuario"
@@ -63,6 +63,7 @@ const Login = () => {
 
                         <div className="mb-3">
                             <label htmlFor="contrasena" name='contrasena' className="form-label">Contraseña:</label>
+                            <label htmlFor="contrasena" name="contrasena" className="form-label">Contraseña:</label>
                             <input
                                 type="password"
 								id="contrasena"

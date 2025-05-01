@@ -97,7 +97,7 @@ model Habitacion {
 	numero String @unique
 	fk_tipo_habitacion Int
 	piso String
-	estado String
+	estado Boolean
 	activo Boolean @default(true)
 	created_at DateTime @default(now())
 	updated_at DateTime @updatedAt
@@ -220,6 +220,5 @@ model DetalleFactura {
 	precio_unitario    Int
 	descuento          Int
 	porcentaje_iva     Int
-
 	factura            Factura  @relation(fields: [fk_factura], references: [id_factura])
 }
