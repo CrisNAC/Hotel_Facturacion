@@ -30,7 +30,7 @@ function HuespedesActivos({ ingresosOriginales }) {
             if (filtros.habitacion && !ingreso.habitacion?.numero?.toString().includes(filtros.habitacion)) return false;
             if (filtros.estado && ingreso.estado?.toLowerCase() !== filtros.estado.toLowerCase()) return false;
 
-            const fecha = debouncedFiltros.fecha;   
+            const fecha = debouncedFiltros.fecha;
             console.log(fecha)
             if (fecha) {
                 const fechaComparar = debouncedFiltros.checkIn ? ingreso.reserva?.check_in : ingreso.reserva?.check_out;
@@ -83,38 +83,41 @@ function HuespedesActivos({ ingresosOriginales }) {
 
     return (
         <>
+            <h2 className="text-3xl font-bold text-center p-2">Huéspedes</h2>
             {/* Filtro */}
-            <div className="row border border-gray rounded-2 p-3 align-items-center"
-                style={{ margin: 0, marginTop: "0.5rem", marginBottom: "1rem" }}>
-                <div className="mb-3 col">
-                    <label htmlFor="huesped" name="huesped" className="form-label">Huesped</label>
+            <div
+                className="row border border-gray rounded-2 p-3 d-flex justify-content-center align-items-center"
+                style={{ margin: "0.5rem 0 1rem 0" }}
+            >
+                <div className="col-2 h-100">
+                    <label htmlFor="huesped" name="huesped" className="form-label small">Huesped</label>
                     <input
                         id="huesped"
                         type="text"
-                        className="form-control"
+                        className="form-control form-control-sm"
                         name="huesped"
                         value={filtros.huesped}
                         onChange={handleFilterChange}
                     />
                 </div>
 
-                <div className="mb-3 col">
-                    <label htmlFor="habitacion" name="habitacion" className="form-label">Habitacion</label>
+                <div className="col-2 h-100">
+                    <label htmlFor="habitacion" name="habitacion" className="form-label small">Habitacion</label>
                     <input
                         id="habitacion"
                         type="text"
-                        className="form-control"
+                        className="form-control form-control-sm"
                         name="habitacion"
                         value={filtros.habitacion}
                         onChange={handleFilterChange}
                     />
                 </div>
 
-                <div className="mb-3 col">
-                    <label htmlFor="estado" name="estado" className="form-label">Estado</label>
+                <div className="col-3 h-100">
+                    <label htmlFor="estado" name="estado" className="form-label small">Estado</label>
                     <select
                         id="estado"
-                        className="form-select"
+                        className="form-select form-select-sm"
                         name="estado"
                         value={filtros.estado}
                         onChange={handleFilterChange}
@@ -126,38 +129,44 @@ function HuespedesActivos({ ingresosOriginales }) {
                     </select>
                 </div>
 
-                <div className="mb-3 col">
-                    <label htmlFor="fecha" name="fecha" className="form-label">Fecha</label>
-                    <input
-                        id="fecha"
-                        type="date"
-                        className="form-control"
-                        name="fecha"
-                        value={filtros.fecha}
-                        onChange={handleFilterChange}
-                    />
-                </div>
-
-                <div className='col d-flex row'>
-                    <div className="d-flex justify-content-around align-items-center">
-                        <label htmlFor="checkIn" name="checkIn">Check-in</label>
+                {/* Parte fecha y Checks */}
+                <div
+                    className="col-5 row border border-gray rounded-2 align-items-center p-1"
+                    style={{ margin: 0 }}
+                >
+                    <div className="col">
+                        <label htmlFor="fecha" name="fecha" className="form-label small">Fecha</label>
                         <input
-                            id="checkIn"
-                            type='checkbox'
-                            name="checkIn"
-                            checked={filtros.checkIn}
+                            id="fecha"
+                            type="date"
+                            className="form-control form-control-sm"
+                            name="fecha"
+                            value={filtros.fecha}
                             onChange={handleFilterChange}
                         />
                     </div>
-                    <div className="d-flex justify-content-around align-items-center">
-                        <label htmlFor="checkOut" name="checkOut">Check-out</label>
-                        <input
-                            id="checkOut"
-                            type='checkbox'
-                            name="checkOut"
-                            checked={!filtros.checkIn}
-                            onChange={() => setFiltros(prev => ({ ...prev, checkIn: !prev.checkIn }))}
-                        />
+                    {/* Checks */}
+                    <div className='col d-flex row'>
+                        <div className="d-flex justify-content-evenly align-items-center">
+                            <label htmlFor="checkIn" name="checkIn">Check-in</label>
+                            <input
+                                id="checkIn"
+                                type='checkbox'
+                                name="checkIn"
+                                checked={filtros.checkIn}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
+                        <div className="d-flex justify-content-evenly align-items-center">
+                            <label htmlFor="checkOut" name="checkOut">Check-out</label>
+                            <input
+                                id="checkOut"
+                                type='checkbox'
+                                name="checkOut"
+                                checked={!filtros.checkIn}
+                                onChange={() => setFiltros(prev => ({ ...prev, checkIn: !prev.checkIn }))}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -212,16 +221,19 @@ function HuespedesActivos({ ingresosOriginales }) {
                                 </td>
                                 <td className="d-flex justify-content-center">
                                     <button
+                                        type='button'
                                         className='btn rounded-circle mx-1'
                                         onClick={() => handleShowDetails(item)}>
                                         <FaEye />
                                     </button>
                                     <button
+                                        type='button'
                                         className='btn rounded-circle mx-1'
                                         onClick={() => handleShowDelete(item)}>
                                         <FaRegTrashAlt />
                                     </button>
                                     <button
+                                        type='button'
                                         className='btn rounded-circle mx-1'
                                         style={{ width: 35, height: 35 }}
                                         onClick={irADetCuenta}>
@@ -234,8 +246,9 @@ function HuespedesActivos({ ingresosOriginales }) {
                 </table>
             </div>
             {/* Paginación */}
-            <div className="flex justify-center mt-6 space-x-2">
+            <div className="d-flex justify-content-center mt-6 space-x-2">
                 <button
+                    type='button'
                     className="px-3 py-1 border rounded disabled:opacity-50"
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
@@ -245,6 +258,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                 {Array.from({ length: totalPages }, (_, i) => (
                     <button
                         key={i + 1}
+                        type='button'
                         className={`px-3 py-1 border rounded ${page === i + 1 ? 'bg-secondary' : ''}`}
                         onClick={() => setPage(i + 1)}
                     >
@@ -252,6 +266,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                     </button>
                 ))}
                 <button
+                    type='button'
                     className="px-3 py-1 border rounded disabled:opacity-50"
                     onClick={() => setPage(page + 1)}
                     disabled={page === totalPages}
