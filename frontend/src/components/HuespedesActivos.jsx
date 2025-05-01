@@ -173,24 +173,24 @@ function HuespedesActivos({ ingresosOriginales }) {
 
             {/* Tabla */}
             <div>
-                <table className="table table-hover">
+                <table className="table table-sm table-hover">
                     <thead>
                         <tr className='text-center'>
-                            <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>#</th>
-                            <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Huésped</th>
-                            <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Habitación</th>
-                            <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-in</th>
-                            <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-out</th>
-                            <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Estado</th>
-                            <th className="align-middle text-center" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Total</th>
-                            <th className="align-middle text-center" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Acciones</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>#</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Huésped</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Habitación</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-in</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-out</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Estado</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Total</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {paginatedItems.map((item, index) => (
                             <tr key={item.id_ingreso}>
-                                <td>{(page - 1) * itemsPerPage + index + 1}</td>
-                                <td>{`${item.huesped?.nombre || 'N/A'} ${item.huesped?.apellido || ''}`}</td>
+                                <th scope='row' className='text-center'>{(page - 1) * itemsPerPage + index + 1}</th>
+                                <td className='text-start'>{`${item.huesped?.nombre || 'N/A'} ${item.huesped?.apellido || ''}`}</td>
                                 <td className="text-center">{item.habitacion?.numero || '—'}</td>
                                 <td className="text-center">{formatDMY(item.reserva?.check_in) || '—'}</td>
                                 <td className="text-center">{formatDMY(item.reserva?.check_out) || '—'}</td>
@@ -213,7 +213,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                                         {item.estado || '—'}
                                     </span>
                                 </td>
-                                <td className="text-end">
+                                <td className="text-center">
                                     {item.cuenta?.length > 0 && item.cuenta[0].consumos?.length > 0
                                         ? item.cuenta[0].consumos.reduce((acc, consumo) => acc + (consumo.monto || 0), 0).toLocaleString()
                                         : '—'}
@@ -286,12 +286,12 @@ function HuespedesActivos({ ingresosOriginales }) {
                                 <table className="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>#</th>
-                                            <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Nombre</th>
-                                            <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Apellido</th>
-                                            <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Nacionalidad</th>
-                                            <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Telefono</th>
-                                            <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Correo</th>
+                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>#</th>
+                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Nombre</th>
+                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Apellido</th>
+                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Nacionalidad</th>
+                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Telefono</th>
+                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Correo</th>
                                         </tr>
                                     </thead>
                                     <tbody>
