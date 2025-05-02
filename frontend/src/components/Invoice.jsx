@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import React from "react";
 import "./Invoice.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import NavBar from "../components/navbar.jsx";
 
 const Invoice = () => {
 
@@ -175,103 +176,106 @@ const Invoice = () => {
   };
 
   return (
-    <div className="invoice">
-      {/* Encabezado */}
-      <div className="invoice-header">
-        <div className="hotel-name">{invoiceData.hotelName}</div>
-        <div className="invoice-title">Factura Electrónica</div>
-        <div className="commercial-info">
-          {invoiceData.activity}
-          <br />
-          {invoiceData.address}
-        </div>
-        <div className="invoice-meta text-start">
-          <div><span>RUC:</span> {invoiceData.ruc}</div>
-          <div><span>Timbrado N°:</span> {invoiceData.timbrado}</div>
-          <div><span>Inicio Vigencia:</span> {invoiceData.vigencia}</div>
-          <div>
-            <span>Factura Electrónica<br />N°:</span> {invoiceData.invoiceNumber}
+    <>
+      <NavBar />
+      <div className="invoice">
+        {/* Encabezado */}
+        <div className="invoice-header">
+          <div className="hotel-name">{invoiceData.hotelName}</div>
+          <div className="invoice-title">Factura Electrónica</div>
+          <div className="commercial-info">
+            {invoiceData.activity}
+            <br />
+            {invoiceData.address}
+          </div>
+          <div className="invoice-meta text-start">
+            <div><span>RUC:</span> {invoiceData.ruc}</div>
+            <div><span>Timbrado N°:</span> {invoiceData.timbrado}</div>
+            <div><span>Inicio Vigencia:</span> {invoiceData.vigencia}</div>
+            <div>
+              <span>Factura Electrónica<br />N°:</span> {invoiceData.invoiceNumber}
+            </div>
           </div>
         </div>
-      </div>
-      <br></br>
-      {/* Información del cliente */}
-      <div className="customer-section">
-        <div className="customer-info text-start">
-          <div><span>Nombre o Razón Social: </span>{invoiceData.customer.name}</div>
-          <div><span>RUC / Documento de Identidad: </span>{invoiceData.customer.document}</div>
-          <div><span>Correo Electrónico: </span>{invoiceData.customer.email}</div>
-          <div><span>Teléfono: </span>{invoiceData.customer.phone}</div>
+        <br></br>
+        {/* Información del cliente */}
+        <div className="customer-section">
+          <div className="customer-info text-start">
+            <div><span>Nombre o Razón Social: </span>{invoiceData.customer.name}</div>
+            <div><span>RUC / Documento de Identidad: </span>{invoiceData.customer.document}</div>
+            <div><span>Correo Electrónico: </span>{invoiceData.customer.email}</div>
+            <div><span>Teléfono: </span>{invoiceData.customer.phone}</div>
+          </div>
+          <div className="invoice-details text-start">
+            <div><span>Fecha y hora de emisión: </span>{invoiceData.invoiceDetails.date}</div>
+            <div><span>Cond. Venta: </span>{invoiceData.invoiceDetails.condition}</div>
+            <div><span>Moneda: </span>{invoiceData.invoiceDetails.currency}</div>
+          </div>
         </div>
-        <div className="invoice-details text-start">
-          <div><span>Fecha y hora de emisión: </span>{invoiceData.invoiceDetails.date}</div>
-          <div><span>Cond. Venta: </span>{invoiceData.invoiceDetails.condition}</div>
-          <div><span>Moneda: </span>{invoiceData.invoiceDetails.currency}</div>
-        </div>
-      </div>
-      <br></br>
-      {/* Tabla de items */}
-      <table className="items-table">
-        <thead>
-          <tr className="table-header table-bordered">
-            <th>Código</th>
-            <th>Descripción</th>
-            <th>Unidad</th>
-            <th>Cantidad</th>
-            <th>Precio Unitario</th>
-            <th>Descuentos</th>
-            <th>Exentas</th>
-            <th>5%</th>
-            <th>10%</th>
-          </tr>
-        </thead>
-        <tbody>
-          {invoiceData.items.map((item, index) => (
-            <tr className="table-row" key={index}>
-              <td>{item.code}</td>
-              <td>{item.description}</td>
-              <td>{item.unit}</td>
-              <td>{item.quantity}</td>
-              <td>{item.unitPrice}</td>
-              <td>{item.discount}</td>
-              <td>{item.exempt}</td>
-              <td>{item.tax5}</td>
-              <td>{item.tax10}</td>
+        <br></br>
+        {/* Tabla de items */}
+        <table className="items-table">
+          <thead>
+            <tr className="table-header table-bordered">
+              <th>Código</th>
+              <th>Descripción</th>
+              <th>Unidad</th>
+              <th>Cantidad</th>
+              <th>Precio Unitario</th>
+              <th>Descuentos</th>
+              <th>Exentas</th>
+              <th>5%</th>
+              <th>10%</th>
             </tr>
-          ))}
+          </thead>
+          <tbody>
+            {invoiceData.items.map((item, index) => (
+              <tr className="table-row" key={index}>
+                <td>{item.code}</td>
+                <td>{item.description}</td>
+                <td>{item.unit}</td>
+                <td>{item.quantity}</td>
+                <td>{item.unitPrice}</td>
+                <td>{item.discount}</td>
+                <td>{item.exempt}</td>
+                <td>{item.tax5}</td>
+                <td>{item.tax10}</td>
+              </tr>
+            ))}
 
-        </tbody>
-      </table>
-      <br></br>
-      {/* Totales */}
-      <div className="totals-section">
-        <div className="total-row">
-          <div className="total-label">SUBTOTAL:</div>
-          <div>{invoiceData.totals.subtotal}</div>
+          </tbody>
+        </table>
+        <br></br>
+        {/* Totales */}
+        <div className="totals-section">
+          <div className="total-row">
+            <div className="total-label">SUBTOTAL:</div>
+            <div>{invoiceData.totals.subtotal}</div>
+          </div>
+          <div className="total-row">
+            <div className="total-label">TOTAL DE LA OPERACIÓN:</div>
+            <div>{invoiceData.totals.totalOperation}</div>
+          </div>
+          <div className="total-row">
+            <div className="total-label">TOTAL EN GUARANÍES:</div>
+            <div>{invoiceData.totals.totalGuaranies}</div>
+          </div>
+          <div className="total-row">
+            <div className="total-label">LIQUIDACIÓN IVA:</div>
+            <div>{invoiceData.totals.taxLiquidation}</div>
+          </div>
         </div>
-        <div className="total-row">
-          <div className="total-label">TOTAL DE LA OPERACIÓN:</div>
-          <div>{invoiceData.totals.totalOperation}</div>
-        </div>
-        <div className="total-row">
-          <div className="total-label">TOTAL EN GUARANÍES:</div>
-          <div>{invoiceData.totals.totalGuaranies}</div>
-        </div>
-        <div className="total-row">
-          <div className="total-label">LIQUIDACIÓN IVA:</div>
-          <div>{invoiceData.totals.taxLiquidation}</div>
+        <div className="d-flex justify-content-center align-items-center  mt-4" style={{ gap: "30px" }}>
+          <button
+            className="btn btn-secondary fw-bold"
+            onClick={handleBack}
+            style={{ width: "150px", height: "40px" }}
+          >
+            Atrás
+          </button>
         </div>
       </div>
-      <div className="d-flex justify-content-center align-items-center  mt-4" style={{ gap: "30px" }}>
-        <button
-          className="btn btn-secondary fw-bold"
-          onClick={handleBack}
-          style={{ width: "150px", height: "40px" }}
-        >
-          Atrás
-        </button>
-      </div>
-    </div>
+    </>
   );
 };
 

@@ -17,17 +17,22 @@ const getAllHuespedes = async (req, res) => {
 
 const getHuesped = async (req, res) => {
     try {
-        const { id } = req.params;
+        const id = parseInt(req.params.id, 10);
+        if (isNaN(id)) {
+            return res.status(400).json({ error: "ID inválido" });
+        }
+
         const result = await prisma.huesped.findFirst({
             where: {
                 id_huesped: id,
                 activo: true
             }
         });
-        if (!result) return res.status(404).json({ error: "Huesped no encontrado" });
+
+        if (!result) return res.status(404).json({ error: "Huésped no encontrado" });
         res.status(200).json(result);
     } catch (error) {
-        res.status(500).json({ error: "Error al obtener huesped" });
+        res.status(500).json({ error: "Error al obtener huésped" });
     }
 };
 
@@ -94,11 +99,13 @@ const postHuesped = async (req, res) => {
     }
 };
 
-
 const deleteHuesped = async (req, res) => {
     try {
+        const id = parseInt(req.params.id, 10);
+        if (isNaN(id)) {
+            return res.status(400).json({ error: "ID inválido" });
+        }
 
-        const { id } = req.params;
         const result = await prisma.huesped.update({
             where: {
                 id_huesped: id
@@ -107,10 +114,15 @@ const deleteHuesped = async (req, res) => {
                 activo: false
             }
         });
-        if (!result) return res.status(404).json({ error: "Huesped no encontrado" });
-        res.status(204).json({ message: "Huesped eliminado con exito" });
+
+        res.status(200).json({ message: "Huésped eliminado con éxito" });
     } catch (error) {
-        res.status(500).json({ error: "Error al eliminar huespedes" });
+        if (error.code === 'P2025') {
+            // Prisma no encontró el registro
+            return res.status(404).json({ error: "Huésped no encontrado" });
+        }
+
+        res.status(500).json({ error: "Error al eliminar huésped" });
     }
 };
 
@@ -135,13 +147,15 @@ const putHuesped = async (req, res) => {
             return res.status(400).json({ error: "Faltan campos requeridos" });
         }
 
-        // Validar si el número de documento ya existe
-        const existingHuesped = await prisma.huesped.findUnique({
-            where: { numero_documento }
+        const existingHuesped = await prisma.huesped.findFirst({
+            where: {
+                numero_documento,
+                NOT: { id_huesped }
+            }
         });
 
-        if (existingHuesped && existingHuesped.id_huesped !== id_huesped) {
-            return res.status(400).json({ error: "El número de documento ya está en uso" });
+        if (existingHuesped) {
+            return res.status(400).json({ error: "El número de documento ya está en uso por otro huésped" });
         }
 
         const result = await prisma.huesped.update({

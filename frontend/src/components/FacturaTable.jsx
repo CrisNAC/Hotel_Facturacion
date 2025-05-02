@@ -76,12 +76,12 @@ const FacturaTable = () => {
             const filtroHasta = hasta ? new Date(hasta) : null;
 
             const nombreCompleto = normalizarTexto(f.huesped);
-
+            
             return (
                 (!filtroDesde || fechaEmision >= filtroDesde) &&
                 (!filtroHasta || fechaEmision <= filtroHasta) &&
                 (!huesped || nombreCompleto.includes(huespedNormalizado)) &&
-                (condicion === "Todos" || f.condicion_venta === condicion)
+                (condicion === "Todos" || f.condicion === condicion)
             );
         });
 
