@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext  } from 'react';
 import { FaRegTrashAlt, FaEye } from "react-icons/fa";
 import { FiFileText } from "react-icons/fi";
-import { useNavigate } from 'react-router-dom';
+
+import { HuespedesActivosContext } from '../context/HuespedesActivosContexto';
 
 function HuespedesActivos({ ingresosOriginales }) {
     const [ingresosFiltrados, setIngresosFiltrados] = useState([]);
     const [filtros, setFiltros] = useState({ huesped: '', habitacion: '', estado: '', fecha: '', checkIn: true });
     const [debouncedFiltros, setDebouncedFiltros] = useState(filtros);
     const [page, setPage] = useState(1);
+    const { setMainPage } = useContext(HuespedesActivosContext);
     const itemsPerPage = 10;
 
     const [selectedItem, setSelectedItem] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -66,6 +66,7 @@ function HuespedesActivos({ ingresosOriginales }) {
 
     const handleShowDetails = (item) => {
         setSelectedItem(item);
+        console.log(item.cuenta);
         setShowDetailModal(true);
     };
 
@@ -79,7 +80,9 @@ function HuespedesActivos({ ingresosOriginales }) {
         setShowDeleteModal(false);
     };
 
-    const irADetCuenta = () => navigate('/DetallesCuentas');
+    const irADetCuenta = () =>{
+        setMainPage(false);
+    } 
 
     return (
         <>

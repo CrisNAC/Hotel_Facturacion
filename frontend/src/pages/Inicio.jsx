@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaRegTrashAlt, FaEye } from "react-icons/fa";
 import { FiFileText } from "react-icons/fi";
-import { useNavigate } from 'react-router-dom';
 import HTTPClient from '../api/HTTPClient.js';
 import NavBar from '../components/navbar.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -33,7 +32,7 @@ const Inicio = () => {
               >
                 <Card.Body className="d-flex flex-column justify-content-center">
                   <Card.Title className="text-center" style={{ fontSize: '2.5rem' }}>{card.value}</Card.Title>
-                  <Card.Text className="text-start" style={{ fontSize: '1.2rem' }}>
+                  <Card.Text className="text-center" style={{ fontSize: '1.2rem' }}>
                     {card.label}
                   </Card.Text>
                 </Card.Body>

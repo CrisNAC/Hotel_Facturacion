@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { Skeleton } from '@mui/material';
+import { Container } from 'react-bootstrap';
+
 import HTTPClient from '../api/HTTPClient';
 import NavBar from '../components/navbar';
 import HuespedesActivos from '../components/HuespedesActivos.jsx';
+import DetallesFactura from '../components/DetallesCuenta.jsx';
+import Invoice from "../components/InvoiceComponentEli.jsx";
 import NavBarSkeleton from '../skeleton/narbar.skeleton.jsx';
-import { Skeleton } from '@mui/material';
-import { Container } from 'react-bootstrap';
+
+import { HuespedesActivosContext, HuespedesActivosProvider } from '../context/HuespedesActivosContexto.jsx';
 
 function HuespedesActivosPage() {
     const client = new HTTPClient();
     const [ingresosOriginales, setIngresosOriginales] = useState([]);
-    const [mainPage, setMainPage] = useState(true);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -52,27 +56,33 @@ function HuespedesActivosPage() {
         <div className="text-center py-5 text-danger">Error: {error}</div>
     );
 
-    if (loading) return skeletonPage();
-    if (error) return errorPage();
-
     return (
         <>
-            {
-                loading ? skeletonPage() :
-                    error ? errorPage() :
-                        (
-                            <>
-                                <NavBar />
-                                {mainPage ?
-                                    <Container>
-                                        <HuespedesActivos ingresosOriginales={ingresosOriginales} />
-                                    </Container>
-                                    :
-                                    <h1>Pantalla de consumos</h1>
-                                }
-                            </>
-                        )
-            }
+            <HuespedesActivosProvider>
+                <HuespedesActivosContext.Consumer>
+                    {({ mainPage, vistaFactura }) => (
+                        <>
+                            <NavBar />
+                            {mainPage ? (
+                                <Container>
+                                    {loading ? skeletonPage() :
+                                        error ? errorPage() : (
+                                            <HuespedesActivos ingresosOriginales={ingresosOriginales} />)
+                                    }
+                                </Container>
+                            ) : vistaFactura ? (
+                                <Container>
+                                    <Invoice></Invoice>
+                                </Container>
+                            ) : (
+                                <Container>
+                                    <DetallesFactura />
+                                </Container>
+                            )}
+                        </>
+                    )}
+                </HuespedesActivosContext.Consumer>
+            </HuespedesActivosProvider>
         </>
     );
 }

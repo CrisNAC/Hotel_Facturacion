@@ -194,7 +194,8 @@ exports.Prisma.IngresoScalarFieldEnum = {
   fk_habitacion: 'fk_habitacion',
   fk_huesped: 'fk_huesped',
   fk_tarifa: 'fk_tarifa',
-  fecha_ingreso: 'fecha_ingreso',
+  checkIn: 'checkIn',
+  checkOut: 'checkOut',
   estado: 'estado',
   fk_usuario: 'fk_usuario',
   activo: 'activo',
@@ -285,6 +286,12 @@ exports.Nacionalidad = exports.$Enums.Nacionalidad = {
   BRASIL: 'BRASIL',
   ARGENTINA: 'ARGENTINA',
   OTRO: 'OTRO'
+};
+
+exports.EstadoDelHuesped = exports.$Enums.EstadoDelHuesped = {
+  Activo: 'Activo',
+  Pendiente: 'Pendiente',
+  Cancelado: 'Cancelado'
 };
 
 exports.Prisma.ModelName = {
