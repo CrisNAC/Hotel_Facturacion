@@ -11,9 +11,10 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  //url = env("DATABASE_DEPLOY_URL")
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  // url = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
+  url       = env("DATABASE_DEPLOY_URL")
+  directUrl = env("DATABASE_DEPLOY_DIRECT_URL")
 }
 
 model Usuario {
@@ -97,7 +98,7 @@ model Habitacion {
   numero             String   @unique
   fk_tipo_habitacion Int
   piso               String
-  estado             String
+  estado             Boolean
   activo             Boolean  @default(true)
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
@@ -107,16 +108,16 @@ model Habitacion {
 }
 
 model Reserva {
-  id_reserva         Int      @id @default(autoincrement())
+  id_reserva         Int              @id @default(autoincrement())
   fk_huesped         Int
   fk_tipo_habitacion Int
   check_in           DateTime
   check_out          DateTime
-  estado             String
+  estado             EstadoDelHuesped
   fk_usuario         Int
-  activo             Boolean  @default(true)
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
+  activo             Boolean          @default(true)
+  created_at         DateTime         @default(now())
+  updated_at         DateTime         @updatedAt
 
   huesped        Huesped        @relation(fields: [fk_huesped], references: [id_huesped])
   tipoHabitacion TipoHabitacion @relation(fields: [fk_tipo_habitacion], references: [id_tipo_habitacion])
@@ -125,17 +126,18 @@ model Reserva {
 }
 
 model Ingreso {
-  id_ingreso    Int      @id @default(autoincrement())
+  id_ingreso    Int              @id @default(autoincrement())
   fk_reserva    Int?
   fk_habitacion Int
   fk_huesped    Int
   fk_tarifa     Int
-  fecha_ingreso DateTime
-  estado        String
+  checkIn       DateTime
+  checkOut      DateTime
+  estado        EstadoDelHuesped
   fk_usuario    Int
-  activo        Boolean  @default(true)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  activo        Boolean          @default(true)
+  created_at    DateTime         @default(now())
+  updated_at    DateTime         @updatedAt
 
   reserva    Reserva?   @relation(fields: [fk_reserva], references: [id_reserva])
   habitacion Habitacion @relation(fields: [fk_habitacion], references: [id_habitacion])
@@ -145,6 +147,12 @@ model Ingreso {
 
   huespedesHabitaciones HuespedHabitacion[]
   cuenta                Cuenta[]
+}
+
+enum EstadoDelHuesped {
+  Activo
+  Pendiente
+  Cancelado
 }
 
 model HuespedHabitacion {
@@ -162,7 +170,7 @@ model HuespedHabitacion {
 model Cuenta {
   id_cuenta  Int      @id @default(autoincrement())
   fk_ingreso Int
-  estado     String
+  estado     String   @default("Abierto") // Cambiar a Bolean para el deploy
   activo     Boolean  @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -213,13 +221,12 @@ model Factura {
 }
 
 model DetalleFactura {
-  id_detalle_factura Int    @id @default(autoincrement())
+  id_detalle_factura Int     @id @default(autoincrement())
   fk_factura         Int
   descripcion        String
   cantidad           Int
   precio_unitario    Int
   descuento          Int
   porcentaje_iva     Int
-
-  factura Factura @relation(fields: [fk_factura], references: [id_factura])
+  factura            Factura @relation(fields: [fk_factura], references: [id_factura])
 }

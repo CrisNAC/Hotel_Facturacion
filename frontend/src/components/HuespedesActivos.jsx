@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext  } from 'react';
 import { FaRegTrashAlt, FaEye } from "react-icons/fa";
 import { FiFileText } from "react-icons/fi";
-import { useNavigate } from 'react-router-dom';
+
+import { HuespedesActivosContext } from '../context/HuespedesActivosContexto';
 
 function HuespedesActivos({ ingresosOriginales }) {
     const [ingresosFiltrados, setIngresosFiltrados] = useState([]);
     const [filtros, setFiltros] = useState({ huesped: '', habitacion: '', estado: '', fecha: '', checkIn: true });
     const [debouncedFiltros, setDebouncedFiltros] = useState(filtros);
     const [page, setPage] = useState(1);
+    const { setMainPage } = useContext(HuespedesActivosContext);
     const itemsPerPage = 10;
 
     const [selectedItem, setSelectedItem] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -30,7 +30,7 @@ function HuespedesActivos({ ingresosOriginales }) {
             if (filtros.habitacion && !ingreso.habitacion?.numero?.toString().includes(filtros.habitacion)) return false;
             if (filtros.estado && ingreso.estado?.toLowerCase() !== filtros.estado.toLowerCase()) return false;
 
-            const fecha = debouncedFiltros.fecha;   
+            const fecha = debouncedFiltros.fecha;
             console.log(fecha)
             if (fecha) {
                 const fechaComparar = debouncedFiltros.checkIn ? ingreso.reserva?.check_in : ingreso.reserva?.check_out;
@@ -66,6 +66,7 @@ function HuespedesActivos({ ingresosOriginales }) {
 
     const handleShowDetails = (item) => {
         setSelectedItem(item);
+        console.log(item.cuenta);
         setShowDetailModal(true);
     };
 
@@ -79,45 +80,47 @@ function HuespedesActivos({ ingresosOriginales }) {
         setShowDeleteModal(false);
     };
 
-    const irADetCuenta = (ingreso) => {
-        console.log(ingreso)
-        //navigate(`/DetallesCuentas/${ingreso.id_ingreso}`);
-    };
-    
+    const irADetCuenta = () =>{
+        setMainPage(false);
+    } 
+
     return (
         <>
+            <h2 className="text-3xl font-bold text-center p-2">Huéspedes</h2>
             {/* Filtro */}
-            <div className="row border border-gray rounded-2 p-3 align-items-center"
-                style={{ margin: 0, marginTop: "0.5rem", marginBottom: "1rem" }}>
-                <div className="mb-3 col">
-                    <label htmlFor="huesped" name="huesped" className="form-label">Huesped</label>
+            <div
+                className="row border border-gray rounded-2 p-3 d-flex justify-content-center align-items-center"
+                style={{ margin: "0.5rem 0 1rem 0" }}
+            >
+                <div className="col-2 h-100">
+                    <label htmlFor="huesped" name="huesped" className="form-label small">Huesped</label>
                     <input
                         id="huesped"
                         type="text"
-                        className="form-control"
+                        className="form-control form-control-sm"
                         name="huesped"
                         value={filtros.huesped}
                         onChange={handleFilterChange}
                     />
                 </div>
 
-                <div className="mb-3 col">
-                    <label htmlFor="habitacion" name="habitacion" className="form-label">Habitacion</label>
+                <div className="col-2 h-100">
+                    <label htmlFor="habitacion" name="habitacion" className="form-label small">Habitacion</label>
                     <input
                         id="habitacion"
                         type="text"
-                        className="form-control"
+                        className="form-control form-control-sm"
                         name="habitacion"
                         value={filtros.habitacion}
                         onChange={handleFilterChange}
                     />
                 </div>
 
-                <div className="mb-3 col">
-                    <label htmlFor="estado" name="estado" className="form-label">Estado</label>
+                <div className="col-3 h-100">
+                    <label htmlFor="estado" name="estado" className="form-label small">Estado</label>
                     <select
                         id="estado"
-                        className="form-select"
+                        className="form-select form-select-sm"
                         name="estado"
                         value={filtros.estado}
                         onChange={handleFilterChange}
@@ -129,62 +132,68 @@ function HuespedesActivos({ ingresosOriginales }) {
                     </select>
                 </div>
 
-                <div className="mb-3 col">
-                    <label htmlFor="fecha" name="fecha" className="form-label">Fecha</label>
-                    <input
-                        id="fecha"
-                        type="date"
-                        className="form-control"
-                        name="fecha"
-                        value={filtros.fecha}
-                        onChange={handleFilterChange}
-                    />
-                </div>
-
-                <div className='col d-flex row'>
-                    <div className="d-flex justify-content-around align-items-center">
-                        <label htmlFor="checkIn" name="checkIn">Check-in</label>
+                {/* Parte fecha y Checks */}
+                <div
+                    className="col-5 row border border-gray rounded-2 align-items-center p-1"
+                    style={{ margin: 0 }}
+                >
+                    <div className="col">
+                        <label htmlFor="fecha" name="fecha" className="form-label small">Fecha</label>
                         <input
-                            id="checkIn"
-                            type='checkbox'
-                            name="checkIn"
-                            checked={filtros.checkIn}
+                            id="fecha"
+                            type="date"
+                            className="form-control form-control-sm"
+                            name="fecha"
+                            value={filtros.fecha}
                             onChange={handleFilterChange}
                         />
                     </div>
-                    <div className="d-flex justify-content-around align-items-center">
-                        <label htmlFor="checkOut" name="checkOut">Check-out</label>
-                        <input
-                            id="checkOut"
-                            type='checkbox'
-                            name="checkOut"
-                            checked={!filtros.checkIn}
-                            onChange={() => setFiltros(prev => ({ ...prev, checkIn: !prev.checkIn }))}
-                        />
+                    {/* Checks */}
+                    <div className='col d-flex row'>
+                        <div className="d-flex justify-content-evenly align-items-center">
+                            <label htmlFor="checkIn" name="checkIn">Check-in</label>
+                            <input
+                                id="checkIn"
+                                type='checkbox'
+                                name="checkIn"
+                                checked={filtros.checkIn}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
+                        <div className="d-flex justify-content-evenly align-items-center">
+                            <label htmlFor="checkOut" name="checkOut">Check-out</label>
+                            <input
+                                id="checkOut"
+                                type='checkbox'
+                                name="checkOut"
+                                checked={!filtros.checkIn}
+                                onChange={() => setFiltros(prev => ({ ...prev, checkIn: !prev.checkIn }))}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Tabla */}
             <div>
-                <table className="table table-hover">
+                <table className="table table-sm table-hover">
                     <thead>
                         <tr className='text-center'>
-                            <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>#</th>
-                            <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Huésped</th>
-                            <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Habitación</th>
-                            <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-in</th>
-                            <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-out</th>
-                            <th className="align-middle" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Estado</th>
-                            <th className="align-middle text-center" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Total</th>
-                            <th className="align-middle text-center" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Acciones</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>#</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Huésped</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Habitación</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-in</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-out</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Estado</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Total</th>
+                            <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {paginatedItems.map((item, index) => (
                             <tr key={item.id_ingreso}>
-                                <td>{(page - 1) * itemsPerPage + index + 1}</td>
-                                <td>{`${item.huesped?.nombre || 'N/A'} ${item.huesped?.apellido || ''}`}</td>
+                                <th scope='row' className='text-center'>{(page - 1) * itemsPerPage + index + 1}</th>
+                                <td className='text-start'>{`${item.huesped?.nombre || 'N/A'} ${item.huesped?.apellido || ''}`}</td>
                                 <td className="text-center">{item.habitacion?.numero || '—'}</td>
                                 <td className="text-center">{formatDMY(item.reserva?.check_in) || '—'}</td>
                                 <td className="text-center">{formatDMY(item.reserva?.check_out) || '—'}</td>
@@ -207,7 +216,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                                         {item.estado || '—'}
                                     </span>
                                 </td>
-                                <td className="text-end">
+                                <td className="text-center">
                                     {item.cuenta?.length > 0 && item.cuenta[0].consumos?.length > 0
                                         ? item.cuenta[0].consumos.reduce((acc, consumo) => acc + (consumo.monto || 0), 0).toLocaleString()
                                         : '—'}
@@ -215,16 +224,19 @@ function HuespedesActivos({ ingresosOriginales }) {
                                 </td>
                                 <td className="d-flex justify-content-center">
                                     <button
+                                        type='button'
                                         className='btn rounded-circle mx-1'
                                         onClick={() => handleShowDetails(item)}>
                                         <FaEye />
                                     </button>
                                     <button
+                                        type='button'
                                         className='btn rounded-circle mx-1'
                                         onClick={() => handleShowDelete(item)}>
                                         <FaRegTrashAlt />
                                     </button>
                                     <button
+                                        type='button'
                                         className='btn rounded-circle mx-1'
                                         style={{ width: 35, height: 35 }}
                                         onClick={() => irADetCuenta(item)}>
@@ -237,8 +249,9 @@ function HuespedesActivos({ ingresosOriginales }) {
                 </table>
             </div>
             {/* Paginación */}
-            <div className="flex justify-center mt-6 space-x-2">
+            <div className="d-flex justify-content-center mt-6 space-x-2">
                 <button
+                    type='button'
                     className="px-3 py-1 border rounded disabled:opacity-50"
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
@@ -248,6 +261,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                 {Array.from({ length: totalPages }, (_, i) => (
                     <button
                         key={i + 1}
+                        type='button'
                         className={`px-3 py-1 border rounded ${page === i + 1 ? 'bg-secondary' : ''}`}
                         onClick={() => setPage(i + 1)}
                     >
@@ -255,6 +269,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                     </button>
                 ))}
                 <button
+                    type='button'
                     className="px-3 py-1 border rounded disabled:opacity-50"
                     onClick={() => setPage(page + 1)}
                     disabled={page === totalPages}
@@ -274,12 +289,12 @@ function HuespedesActivos({ ingresosOriginales }) {
                                 <table className="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>#</th>
-                                            <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Nombre</th>
-                                            <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Apellido</th>
-                                            <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Nacionalidad</th>
-                                            <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Telefono</th>
-                                            <th className="align-middle" style={{ backgroundColor: "#003366", color: "white" }}>Correo</th>
+                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>#</th>
+                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Nombre</th>
+                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Apellido</th>
+                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Nacionalidad</th>
+                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Telefono</th>
+                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Correo</th>
                                         </tr>
                                     </thead>
                                     <tbody>

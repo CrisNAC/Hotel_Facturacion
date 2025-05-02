@@ -22,9 +22,6 @@ function App() {
   return (
     <>
       <Router>
-        <Container>
-
-
           <Routes>
             <Route path="/Inicio" element={<Inicio />} />
             <Route path="/Huespedes" element={<HuespedesActivosPage />} />
@@ -46,7 +43,6 @@ function App() {
             ></Route>
             <Route path="/invoice/:numeroFactura" element={<Invoice />} />
           </Routes>
-        </Container>
       </Router>
     </>
   )

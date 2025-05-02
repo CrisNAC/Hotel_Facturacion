@@ -101,6 +101,15 @@ export const Nacionalidad: {
 
 export type Nacionalidad = (typeof Nacionalidad)[keyof typeof Nacionalidad]
 
+
+export const EstadoDelHuesped: {
+  Activo: 'Activo',
+  Pendiente: 'Pendiente',
+  Cancelado: 'Cancelado'
+};
+
+export type EstadoDelHuesped = (typeof EstadoDelHuesped)[keyof typeof EstadoDelHuesped]
+
 }
 
 export type DocumentoIdentidad = $Enums.DocumentoIdentidad
@@ -110,6 +119,10 @@ export const DocumentoIdentidad: typeof $Enums.DocumentoIdentidad
 export type Nacionalidad = $Enums.Nacionalidad
 
 export const Nacionalidad: typeof $Enums.Nacionalidad
+
+export type EstadoDelHuesped = $Enums.EstadoDelHuesped
+
+export const EstadoDelHuesped: typeof $Enums.EstadoDelHuesped
 
 /**
  * ##  Prisma Client ʲˢ
@@ -7247,7 +7260,7 @@ export namespace Prisma {
     numero: string | null
     fk_tipo_habitacion: number | null
     piso: string | null
-    estado: string | null
+    estado: boolean | null
     activo: boolean | null
     created_at: Date | null
     updated_at: Date | null
@@ -7258,7 +7271,7 @@ export namespace Prisma {
     numero: string | null
     fk_tipo_habitacion: number | null
     piso: string | null
-    estado: string | null
+    estado: boolean | null
     activo: boolean | null
     created_at: Date | null
     updated_at: Date | null
@@ -7412,7 +7425,7 @@ export namespace Prisma {
     numero: string
     fk_tipo_habitacion: number
     piso: string
-    estado: string
+    estado: boolean
     activo: boolean
     created_at: Date
     updated_at: Date
@@ -7510,7 +7523,7 @@ export namespace Prisma {
       numero: string
       fk_tipo_habitacion: number
       piso: string
-      estado: string
+      estado: boolean
       activo: boolean
       created_at: Date
       updated_at: Date
@@ -7943,7 +7956,7 @@ export namespace Prisma {
     readonly numero: FieldRef<"Habitacion", 'String'>
     readonly fk_tipo_habitacion: FieldRef<"Habitacion", 'Int'>
     readonly piso: FieldRef<"Habitacion", 'String'>
-    readonly estado: FieldRef<"Habitacion", 'String'>
+    readonly estado: FieldRef<"Habitacion", 'Boolean'>
     readonly activo: FieldRef<"Habitacion", 'Boolean'>
     readonly created_at: FieldRef<"Habitacion", 'DateTime'>
     readonly updated_at: FieldRef<"Habitacion", 'DateTime'>
@@ -8417,7 +8430,7 @@ export namespace Prisma {
     fk_tipo_habitacion: number | null
     check_in: Date | null
     check_out: Date | null
-    estado: string | null
+    estado: $Enums.EstadoDelHuesped | null
     fk_usuario: number | null
     activo: boolean | null
     created_at: Date | null
@@ -8430,7 +8443,7 @@ export namespace Prisma {
     fk_tipo_habitacion: number | null
     check_in: Date | null
     check_out: Date | null
-    estado: string | null
+    estado: $Enums.EstadoDelHuesped | null
     fk_usuario: number | null
     activo: boolean | null
     created_at: Date | null
@@ -8598,7 +8611,7 @@ export namespace Prisma {
     fk_tipo_habitacion: number
     check_in: Date
     check_out: Date
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo: boolean
     created_at: Date
@@ -8720,7 +8733,7 @@ export namespace Prisma {
       fk_tipo_habitacion: number
       check_in: Date
       check_out: Date
-      estado: string
+      estado: $Enums.EstadoDelHuesped
       fk_usuario: number
       activo: boolean
       created_at: Date
@@ -9157,7 +9170,7 @@ export namespace Prisma {
     readonly fk_tipo_habitacion: FieldRef<"Reserva", 'Int'>
     readonly check_in: FieldRef<"Reserva", 'DateTime'>
     readonly check_out: FieldRef<"Reserva", 'DateTime'>
-    readonly estado: FieldRef<"Reserva", 'String'>
+    readonly estado: FieldRef<"Reserva", 'EstadoDelHuesped'>
     readonly fk_usuario: FieldRef<"Reserva", 'Int'>
     readonly activo: FieldRef<"Reserva", 'Boolean'>
     readonly created_at: FieldRef<"Reserva", 'DateTime'>
@@ -9636,8 +9649,9 @@ export namespace Prisma {
     fk_habitacion: number | null
     fk_huesped: number | null
     fk_tarifa: number | null
-    fecha_ingreso: Date | null
-    estado: string | null
+    checkIn: Date | null
+    checkOut: Date | null
+    estado: $Enums.EstadoDelHuesped | null
     fk_usuario: number | null
     activo: boolean | null
     created_at: Date | null
@@ -9650,8 +9664,9 @@ export namespace Prisma {
     fk_habitacion: number | null
     fk_huesped: number | null
     fk_tarifa: number | null
-    fecha_ingreso: Date | null
-    estado: string | null
+    checkIn: Date | null
+    checkOut: Date | null
+    estado: $Enums.EstadoDelHuesped | null
     fk_usuario: number | null
     activo: boolean | null
     created_at: Date | null
@@ -9664,7 +9679,8 @@ export namespace Prisma {
     fk_habitacion: number
     fk_huesped: number
     fk_tarifa: number
-    fecha_ingreso: number
+    checkIn: number
+    checkOut: number
     estado: number
     fk_usuario: number
     activo: number
@@ -9698,7 +9714,8 @@ export namespace Prisma {
     fk_habitacion?: true
     fk_huesped?: true
     fk_tarifa?: true
-    fecha_ingreso?: true
+    checkIn?: true
+    checkOut?: true
     estado?: true
     fk_usuario?: true
     activo?: true
@@ -9712,7 +9729,8 @@ export namespace Prisma {
     fk_habitacion?: true
     fk_huesped?: true
     fk_tarifa?: true
-    fecha_ingreso?: true
+    checkIn?: true
+    checkOut?: true
     estado?: true
     fk_usuario?: true
     activo?: true
@@ -9726,7 +9744,8 @@ export namespace Prisma {
     fk_habitacion?: true
     fk_huesped?: true
     fk_tarifa?: true
-    fecha_ingreso?: true
+    checkIn?: true
+    checkOut?: true
     estado?: true
     fk_usuario?: true
     activo?: true
@@ -9827,8 +9846,9 @@ export namespace Prisma {
     fk_habitacion: number
     fk_huesped: number
     fk_tarifa: number
-    fecha_ingreso: Date
-    estado: string
+    checkIn: Date
+    checkOut: Date
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo: boolean
     created_at: Date
@@ -9860,7 +9880,8 @@ export namespace Prisma {
     fk_habitacion?: boolean
     fk_huesped?: boolean
     fk_tarifa?: boolean
-    fecha_ingreso?: boolean
+    checkIn?: boolean
+    checkOut?: boolean
     estado?: boolean
     fk_usuario?: boolean
     activo?: boolean
@@ -9882,7 +9903,8 @@ export namespace Prisma {
     fk_habitacion?: boolean
     fk_huesped?: boolean
     fk_tarifa?: boolean
-    fecha_ingreso?: boolean
+    checkIn?: boolean
+    checkOut?: boolean
     estado?: boolean
     fk_usuario?: boolean
     activo?: boolean
@@ -9901,7 +9923,8 @@ export namespace Prisma {
     fk_habitacion?: boolean
     fk_huesped?: boolean
     fk_tarifa?: boolean
-    fecha_ingreso?: boolean
+    checkIn?: boolean
+    checkOut?: boolean
     estado?: boolean
     fk_usuario?: boolean
     activo?: boolean
@@ -9920,7 +9943,8 @@ export namespace Prisma {
     fk_habitacion?: boolean
     fk_huesped?: boolean
     fk_tarifa?: boolean
-    fecha_ingreso?: boolean
+    checkIn?: boolean
+    checkOut?: boolean
     estado?: boolean
     fk_usuario?: boolean
     activo?: boolean
@@ -9928,7 +9952,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type IngresoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_ingreso" | "fk_reserva" | "fk_habitacion" | "fk_huesped" | "fk_tarifa" | "fecha_ingreso" | "estado" | "fk_usuario" | "activo" | "created_at" | "updated_at", ExtArgs["result"]["ingreso"]>
+  export type IngresoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_ingreso" | "fk_reserva" | "fk_habitacion" | "fk_huesped" | "fk_tarifa" | "checkIn" | "checkOut" | "estado" | "fk_usuario" | "activo" | "created_at" | "updated_at", ExtArgs["result"]["ingreso"]>
   export type IngresoInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     reserva?: boolean | Ingreso$reservaArgs<ExtArgs>
     habitacion?: boolean | HabitacionDefaultArgs<ExtArgs>
@@ -9971,8 +9995,9 @@ export namespace Prisma {
       fk_habitacion: number
       fk_huesped: number
       fk_tarifa: number
-      fecha_ingreso: Date
-      estado: string
+      checkIn: Date
+      checkOut: Date
+      estado: $Enums.EstadoDelHuesped
       fk_usuario: number
       activo: boolean
       created_at: Date
@@ -10412,8 +10437,9 @@ export namespace Prisma {
     readonly fk_habitacion: FieldRef<"Ingreso", 'Int'>
     readonly fk_huesped: FieldRef<"Ingreso", 'Int'>
     readonly fk_tarifa: FieldRef<"Ingreso", 'Int'>
-    readonly fecha_ingreso: FieldRef<"Ingreso", 'DateTime'>
-    readonly estado: FieldRef<"Ingreso", 'String'>
+    readonly checkIn: FieldRef<"Ingreso", 'DateTime'>
+    readonly checkOut: FieldRef<"Ingreso", 'DateTime'>
+    readonly estado: FieldRef<"Ingreso", 'EstadoDelHuesped'>
     readonly fk_usuario: FieldRef<"Ingreso", 'Int'>
     readonly activo: FieldRef<"Ingreso", 'Boolean'>
     readonly created_at: FieldRef<"Ingreso", 'DateTime'>
@@ -17917,7 +17943,8 @@ export namespace Prisma {
     fk_habitacion: 'fk_habitacion',
     fk_huesped: 'fk_huesped',
     fk_tarifa: 'fk_tarifa',
-    fecha_ingreso: 'fecha_ingreso',
+    checkIn: 'checkIn',
+    checkOut: 'checkOut',
     estado: 'estado',
     fk_usuario: 'fk_usuario',
     activo: 'activo',
@@ -18107,6 +18134,20 @@ export namespace Prisma {
    * Reference to a field of type 'Nacionalidad[]'
    */
   export type ListEnumNacionalidadFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Nacionalidad[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'EstadoDelHuesped'
+   */
+  export type EnumEstadoDelHuespedFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EstadoDelHuesped'>
+    
+
+
+  /**
+   * Reference to a field of type 'EstadoDelHuesped[]'
+   */
+  export type ListEnumEstadoDelHuespedFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EstadoDelHuesped[]'>
     
 
 
@@ -18462,7 +18503,7 @@ export namespace Prisma {
     numero?: StringFilter<"Habitacion"> | string
     fk_tipo_habitacion?: IntFilter<"Habitacion"> | number
     piso?: StringFilter<"Habitacion"> | string
-    estado?: StringFilter<"Habitacion"> | string
+    estado?: BoolFilter<"Habitacion"> | boolean
     activo?: BoolFilter<"Habitacion"> | boolean
     created_at?: DateTimeFilter<"Habitacion"> | Date | string
     updated_at?: DateTimeFilter<"Habitacion"> | Date | string
@@ -18491,7 +18532,7 @@ export namespace Prisma {
     NOT?: HabitacionWhereInput | HabitacionWhereInput[]
     fk_tipo_habitacion?: IntFilter<"Habitacion"> | number
     piso?: StringFilter<"Habitacion"> | string
-    estado?: StringFilter<"Habitacion"> | string
+    estado?: BoolFilter<"Habitacion"> | boolean
     activo?: BoolFilter<"Habitacion"> | boolean
     created_at?: DateTimeFilter<"Habitacion"> | Date | string
     updated_at?: DateTimeFilter<"Habitacion"> | Date | string
@@ -18523,7 +18564,7 @@ export namespace Prisma {
     numero?: StringWithAggregatesFilter<"Habitacion"> | string
     fk_tipo_habitacion?: IntWithAggregatesFilter<"Habitacion"> | number
     piso?: StringWithAggregatesFilter<"Habitacion"> | string
-    estado?: StringWithAggregatesFilter<"Habitacion"> | string
+    estado?: BoolWithAggregatesFilter<"Habitacion"> | boolean
     activo?: BoolWithAggregatesFilter<"Habitacion"> | boolean
     created_at?: DateTimeWithAggregatesFilter<"Habitacion"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"Habitacion"> | Date | string
@@ -18538,7 +18579,7 @@ export namespace Prisma {
     fk_tipo_habitacion?: IntFilter<"Reserva"> | number
     check_in?: DateTimeFilter<"Reserva"> | Date | string
     check_out?: DateTimeFilter<"Reserva"> | Date | string
-    estado?: StringFilter<"Reserva"> | string
+    estado?: EnumEstadoDelHuespedFilter<"Reserva"> | $Enums.EstadoDelHuesped
     fk_usuario?: IntFilter<"Reserva"> | number
     activo?: BoolFilter<"Reserva"> | boolean
     created_at?: DateTimeFilter<"Reserva"> | Date | string
@@ -18575,7 +18616,7 @@ export namespace Prisma {
     fk_tipo_habitacion?: IntFilter<"Reserva"> | number
     check_in?: DateTimeFilter<"Reserva"> | Date | string
     check_out?: DateTimeFilter<"Reserva"> | Date | string
-    estado?: StringFilter<"Reserva"> | string
+    estado?: EnumEstadoDelHuespedFilter<"Reserva"> | $Enums.EstadoDelHuesped
     fk_usuario?: IntFilter<"Reserva"> | number
     activo?: BoolFilter<"Reserva"> | boolean
     created_at?: DateTimeFilter<"Reserva"> | Date | string
@@ -18613,7 +18654,7 @@ export namespace Prisma {
     fk_tipo_habitacion?: IntWithAggregatesFilter<"Reserva"> | number
     check_in?: DateTimeWithAggregatesFilter<"Reserva"> | Date | string
     check_out?: DateTimeWithAggregatesFilter<"Reserva"> | Date | string
-    estado?: StringWithAggregatesFilter<"Reserva"> | string
+    estado?: EnumEstadoDelHuespedWithAggregatesFilter<"Reserva"> | $Enums.EstadoDelHuesped
     fk_usuario?: IntWithAggregatesFilter<"Reserva"> | number
     activo?: BoolWithAggregatesFilter<"Reserva"> | boolean
     created_at?: DateTimeWithAggregatesFilter<"Reserva"> | Date | string
@@ -18629,8 +18670,9 @@ export namespace Prisma {
     fk_habitacion?: IntFilter<"Ingreso"> | number
     fk_huesped?: IntFilter<"Ingreso"> | number
     fk_tarifa?: IntFilter<"Ingreso"> | number
-    fecha_ingreso?: DateTimeFilter<"Ingreso"> | Date | string
-    estado?: StringFilter<"Ingreso"> | string
+    checkIn?: DateTimeFilter<"Ingreso"> | Date | string
+    checkOut?: DateTimeFilter<"Ingreso"> | Date | string
+    estado?: EnumEstadoDelHuespedFilter<"Ingreso"> | $Enums.EstadoDelHuesped
     fk_usuario?: IntFilter<"Ingreso"> | number
     activo?: BoolFilter<"Ingreso"> | boolean
     created_at?: DateTimeFilter<"Ingreso"> | Date | string
@@ -18650,7 +18692,8 @@ export namespace Prisma {
     fk_habitacion?: SortOrder
     fk_huesped?: SortOrder
     fk_tarifa?: SortOrder
-    fecha_ingreso?: SortOrder
+    checkIn?: SortOrder
+    checkOut?: SortOrder
     estado?: SortOrder
     fk_usuario?: SortOrder
     activo?: SortOrder
@@ -18674,8 +18717,9 @@ export namespace Prisma {
     fk_habitacion?: IntFilter<"Ingreso"> | number
     fk_huesped?: IntFilter<"Ingreso"> | number
     fk_tarifa?: IntFilter<"Ingreso"> | number
-    fecha_ingreso?: DateTimeFilter<"Ingreso"> | Date | string
-    estado?: StringFilter<"Ingreso"> | string
+    checkIn?: DateTimeFilter<"Ingreso"> | Date | string
+    checkOut?: DateTimeFilter<"Ingreso"> | Date | string
+    estado?: EnumEstadoDelHuespedFilter<"Ingreso"> | $Enums.EstadoDelHuesped
     fk_usuario?: IntFilter<"Ingreso"> | number
     activo?: BoolFilter<"Ingreso"> | boolean
     created_at?: DateTimeFilter<"Ingreso"> | Date | string
@@ -18695,7 +18739,8 @@ export namespace Prisma {
     fk_habitacion?: SortOrder
     fk_huesped?: SortOrder
     fk_tarifa?: SortOrder
-    fecha_ingreso?: SortOrder
+    checkIn?: SortOrder
+    checkOut?: SortOrder
     estado?: SortOrder
     fk_usuario?: SortOrder
     activo?: SortOrder
@@ -18717,8 +18762,9 @@ export namespace Prisma {
     fk_habitacion?: IntWithAggregatesFilter<"Ingreso"> | number
     fk_huesped?: IntWithAggregatesFilter<"Ingreso"> | number
     fk_tarifa?: IntWithAggregatesFilter<"Ingreso"> | number
-    fecha_ingreso?: DateTimeWithAggregatesFilter<"Ingreso"> | Date | string
-    estado?: StringWithAggregatesFilter<"Ingreso"> | string
+    checkIn?: DateTimeWithAggregatesFilter<"Ingreso"> | Date | string
+    checkOut?: DateTimeWithAggregatesFilter<"Ingreso"> | Date | string
+    estado?: EnumEstadoDelHuespedWithAggregatesFilter<"Ingreso"> | $Enums.EstadoDelHuesped
     fk_usuario?: IntWithAggregatesFilter<"Ingreso"> | number
     activo?: BoolWithAggregatesFilter<"Ingreso"> | boolean
     created_at?: DateTimeWithAggregatesFilter<"Ingreso"> | Date | string
@@ -19501,7 +19547,7 @@ export namespace Prisma {
   export type HabitacionCreateInput = {
     numero: string
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -19514,7 +19560,7 @@ export namespace Prisma {
     numero: string
     fk_tipo_habitacion: number
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -19524,7 +19570,7 @@ export namespace Prisma {
   export type HabitacionUpdateInput = {
     numero?: StringFieldUpdateOperationsInput | string
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19537,7 +19583,7 @@ export namespace Prisma {
     numero?: StringFieldUpdateOperationsInput | string
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19549,7 +19595,7 @@ export namespace Prisma {
     numero: string
     fk_tipo_habitacion: number
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -19558,7 +19604,7 @@ export namespace Prisma {
   export type HabitacionUpdateManyMutationInput = {
     numero?: StringFieldUpdateOperationsInput | string
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19569,7 +19615,7 @@ export namespace Prisma {
     numero?: StringFieldUpdateOperationsInput | string
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19578,7 +19624,7 @@ export namespace Prisma {
   export type ReservaCreateInput = {
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -19594,7 +19640,7 @@ export namespace Prisma {
     fk_tipo_habitacion: number
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -19605,7 +19651,7 @@ export namespace Prisma {
   export type ReservaUpdateInput = {
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19621,7 +19667,7 @@ export namespace Prisma {
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19635,7 +19681,7 @@ export namespace Prisma {
     fk_tipo_habitacion: number
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -19645,7 +19691,7 @@ export namespace Prisma {
   export type ReservaUpdateManyMutationInput = {
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19657,7 +19703,7 @@ export namespace Prisma {
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19665,8 +19711,9 @@ export namespace Prisma {
   }
 
   export type IngresoCreateInput = {
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -19685,8 +19732,9 @@ export namespace Prisma {
     fk_habitacion: number
     fk_huesped: number
     fk_tarifa: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -19696,8 +19744,9 @@ export namespace Prisma {
   }
 
   export type IngresoUpdateInput = {
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19716,8 +19765,9 @@ export namespace Prisma {
     fk_habitacion?: IntFieldUpdateOperationsInput | number
     fk_huesped?: IntFieldUpdateOperationsInput | number
     fk_tarifa?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19732,8 +19782,9 @@ export namespace Prisma {
     fk_habitacion: number
     fk_huesped: number
     fk_tarifa: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -19741,8 +19792,9 @@ export namespace Prisma {
   }
 
   export type IngresoUpdateManyMutationInput = {
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19754,8 +19806,9 @@ export namespace Prisma {
     fk_habitacion?: IntFieldUpdateOperationsInput | number
     fk_huesped?: IntFieldUpdateOperationsInput | number
     fk_tarifa?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19821,7 +19874,7 @@ export namespace Prisma {
   }
 
   export type CuentaCreateInput = {
-    estado: string
+    estado?: string
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -19833,7 +19886,7 @@ export namespace Prisma {
   export type CuentaUncheckedCreateInput = {
     id_cuenta?: number
     fk_ingreso: number
-    estado: string
+    estado?: string
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -19865,7 +19918,7 @@ export namespace Prisma {
   export type CuentaCreateManyInput = {
     id_cuenta?: number
     fk_ingreso: number
-    estado: string
+    estado?: string
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -20624,6 +20677,13 @@ export namespace Prisma {
     fk_tipo_habitacion?: SortOrder
   }
 
+  export type EnumEstadoDelHuespedFilter<$PrismaModel = never> = {
+    equals?: $Enums.EstadoDelHuesped | EnumEstadoDelHuespedFieldRefInput<$PrismaModel>
+    in?: $Enums.EstadoDelHuesped[] | ListEnumEstadoDelHuespedFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EstadoDelHuesped[] | ListEnumEstadoDelHuespedFieldRefInput<$PrismaModel>
+    not?: NestedEnumEstadoDelHuespedFilter<$PrismaModel> | $Enums.EstadoDelHuesped
+  }
+
   export type HuespedScalarRelationFilter = {
     is?: HuespedWhereInput
     isNot?: HuespedWhereInput
@@ -20687,6 +20747,16 @@ export namespace Prisma {
     fk_usuario?: SortOrder
   }
 
+  export type EnumEstadoDelHuespedWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EstadoDelHuesped | EnumEstadoDelHuespedFieldRefInput<$PrismaModel>
+    in?: $Enums.EstadoDelHuesped[] | ListEnumEstadoDelHuespedFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EstadoDelHuesped[] | ListEnumEstadoDelHuespedFieldRefInput<$PrismaModel>
+    not?: NestedEnumEstadoDelHuespedWithAggregatesFilter<$PrismaModel> | $Enums.EstadoDelHuesped
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumEstadoDelHuespedFilter<$PrismaModel>
+    _max?: NestedEnumEstadoDelHuespedFilter<$PrismaModel>
+  }
+
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -20729,7 +20799,8 @@ export namespace Prisma {
     fk_habitacion?: SortOrder
     fk_huesped?: SortOrder
     fk_tarifa?: SortOrder
-    fecha_ingreso?: SortOrder
+    checkIn?: SortOrder
+    checkOut?: SortOrder
     estado?: SortOrder
     fk_usuario?: SortOrder
     activo?: SortOrder
@@ -20752,7 +20823,8 @@ export namespace Prisma {
     fk_habitacion?: SortOrder
     fk_huesped?: SortOrder
     fk_tarifa?: SortOrder
-    fecha_ingreso?: SortOrder
+    checkIn?: SortOrder
+    checkOut?: SortOrder
     estado?: SortOrder
     fk_usuario?: SortOrder
     activo?: SortOrder
@@ -20766,7 +20838,8 @@ export namespace Prisma {
     fk_habitacion?: SortOrder
     fk_huesped?: SortOrder
     fk_tarifa?: SortOrder
-    fecha_ingreso?: SortOrder
+    checkIn?: SortOrder
+    checkOut?: SortOrder
     estado?: SortOrder
     fk_usuario?: SortOrder
     activo?: SortOrder
@@ -21690,6 +21763,10 @@ export namespace Prisma {
     connect?: IngresoWhereUniqueInput | IngresoWhereUniqueInput[]
   }
 
+  export type EnumEstadoDelHuespedFieldUpdateOperationsInput = {
+    set?: $Enums.EstadoDelHuesped
+  }
+
   export type HuespedUpdateOneRequiredWithoutReservasNestedInput = {
     create?: XOR<HuespedCreateWithoutReservasInput, HuespedUncheckedCreateWithoutReservasInput>
     connectOrCreate?: HuespedCreateOrConnectWithoutReservasInput
@@ -22385,6 +22462,23 @@ export namespace Prisma {
     _max?: NestedEnumNacionalidadFilter<$PrismaModel>
   }
 
+  export type NestedEnumEstadoDelHuespedFilter<$PrismaModel = never> = {
+    equals?: $Enums.EstadoDelHuesped | EnumEstadoDelHuespedFieldRefInput<$PrismaModel>
+    in?: $Enums.EstadoDelHuesped[] | ListEnumEstadoDelHuespedFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EstadoDelHuesped[] | ListEnumEstadoDelHuespedFieldRefInput<$PrismaModel>
+    not?: NestedEnumEstadoDelHuespedFilter<$PrismaModel> | $Enums.EstadoDelHuesped
+  }
+
+  export type NestedEnumEstadoDelHuespedWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EstadoDelHuesped | EnumEstadoDelHuespedFieldRefInput<$PrismaModel>
+    in?: $Enums.EstadoDelHuesped[] | ListEnumEstadoDelHuespedFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EstadoDelHuesped[] | ListEnumEstadoDelHuespedFieldRefInput<$PrismaModel>
+    not?: NestedEnumEstadoDelHuespedWithAggregatesFilter<$PrismaModel> | $Enums.EstadoDelHuesped
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumEstadoDelHuespedFilter<$PrismaModel>
+    _max?: NestedEnumEstadoDelHuespedFilter<$PrismaModel>
+  }
+
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -22415,7 +22509,7 @@ export namespace Prisma {
   export type ReservaCreateWithoutUsuarioInput = {
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -22430,7 +22524,7 @@ export namespace Prisma {
     fk_tipo_habitacion: number
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -22448,8 +22542,9 @@ export namespace Prisma {
   }
 
   export type IngresoCreateWithoutUsuarioInput = {
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -22467,8 +22562,9 @@ export namespace Prisma {
     fk_habitacion: number
     fk_huesped: number
     fk_tarifa: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -22567,7 +22663,7 @@ export namespace Prisma {
     fk_tipo_habitacion?: IntFilter<"Reserva"> | number
     check_in?: DateTimeFilter<"Reserva"> | Date | string
     check_out?: DateTimeFilter<"Reserva"> | Date | string
-    estado?: StringFilter<"Reserva"> | string
+    estado?: EnumEstadoDelHuespedFilter<"Reserva"> | $Enums.EstadoDelHuesped
     fk_usuario?: IntFilter<"Reserva"> | number
     activo?: BoolFilter<"Reserva"> | boolean
     created_at?: DateTimeFilter<"Reserva"> | Date | string
@@ -22599,8 +22695,9 @@ export namespace Prisma {
     fk_habitacion?: IntFilter<"Ingreso"> | number
     fk_huesped?: IntFilter<"Ingreso"> | number
     fk_tarifa?: IntFilter<"Ingreso"> | number
-    fecha_ingreso?: DateTimeFilter<"Ingreso"> | Date | string
-    estado?: StringFilter<"Ingreso"> | string
+    checkIn?: DateTimeFilter<"Ingreso"> | Date | string
+    checkOut?: DateTimeFilter<"Ingreso"> | Date | string
+    estado?: EnumEstadoDelHuespedFilter<"Ingreso"> | $Enums.EstadoDelHuesped
     fk_usuario?: IntFilter<"Ingreso"> | number
     activo?: BoolFilter<"Ingreso"> | boolean
     created_at?: DateTimeFilter<"Ingreso"> | Date | string
@@ -22668,7 +22765,7 @@ export namespace Prisma {
   export type ReservaCreateWithoutHuespedInput = {
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -22682,7 +22779,7 @@ export namespace Prisma {
     fk_tipo_habitacion: number
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -22701,8 +22798,9 @@ export namespace Prisma {
   }
 
   export type IngresoCreateWithoutHuespedInput = {
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -22719,8 +22817,9 @@ export namespace Prisma {
     fk_reserva?: number | null
     fk_habitacion: number
     fk_tarifa: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -22856,7 +22955,7 @@ export namespace Prisma {
   export type HabitacionCreateWithoutTipoHabitacionInput = {
     numero: string
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -22867,7 +22966,7 @@ export namespace Prisma {
     id_habitacion?: number
     numero: string
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -22887,7 +22986,7 @@ export namespace Prisma {
   export type ReservaCreateWithoutTipoHabitacionInput = {
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -22901,7 +23000,7 @@ export namespace Prisma {
     fk_huesped: number
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -22972,7 +23071,7 @@ export namespace Prisma {
     numero?: StringFilter<"Habitacion"> | string
     fk_tipo_habitacion?: IntFilter<"Habitacion"> | number
     piso?: StringFilter<"Habitacion"> | string
-    estado?: StringFilter<"Habitacion"> | string
+    estado?: BoolFilter<"Habitacion"> | boolean
     activo?: BoolFilter<"Habitacion"> | boolean
     created_at?: DateTimeFilter<"Habitacion"> | Date | string
     updated_at?: DateTimeFilter<"Habitacion"> | Date | string
@@ -23023,8 +23122,9 @@ export namespace Prisma {
   }
 
   export type IngresoCreateWithoutTarifaInput = {
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -23041,8 +23141,9 @@ export namespace Prisma {
     fk_reserva?: number | null
     fk_habitacion: number
     fk_huesped: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -23140,8 +23241,9 @@ export namespace Prisma {
   }
 
   export type IngresoCreateWithoutHabitacionInput = {
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -23158,8 +23260,9 @@ export namespace Prisma {
     fk_reserva?: number | null
     fk_huesped: number
     fk_tarifa: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -23329,8 +23432,9 @@ export namespace Prisma {
   }
 
   export type IngresoCreateWithoutReservaInput = {
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -23347,8 +23451,9 @@ export namespace Prisma {
     fk_habitacion: number
     fk_huesped: number
     fk_tarifa: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -23504,7 +23609,7 @@ export namespace Prisma {
   export type ReservaCreateWithoutIngresoInput = {
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -23519,7 +23624,7 @@ export namespace Prisma {
     fk_tipo_habitacion: number
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -23534,7 +23639,7 @@ export namespace Prisma {
   export type HabitacionCreateWithoutIngresosInput = {
     numero: string
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -23546,7 +23651,7 @@ export namespace Prisma {
     numero: string
     fk_tipo_habitacion: number
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -23679,7 +23784,7 @@ export namespace Prisma {
   }
 
   export type CuentaCreateWithoutIngresoInput = {
-    estado: string
+    estado?: string
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -23689,7 +23794,7 @@ export namespace Prisma {
 
   export type CuentaUncheckedCreateWithoutIngresoInput = {
     id_cuenta?: number
-    estado: string
+    estado?: string
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -23721,7 +23826,7 @@ export namespace Prisma {
   export type ReservaUpdateWithoutIngresoInput = {
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23736,7 +23841,7 @@ export namespace Prisma {
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23757,7 +23862,7 @@ export namespace Prisma {
   export type HabitacionUpdateWithoutIngresosInput = {
     numero?: StringFieldUpdateOperationsInput | string
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23769,7 +23874,7 @@ export namespace Prisma {
     numero?: StringFieldUpdateOperationsInput | string
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23974,8 +24079,9 @@ export namespace Prisma {
   }
 
   export type IngresoCreateWithoutHuespedesHabitacionesInput = {
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -23993,8 +24099,9 @@ export namespace Prisma {
     fk_habitacion: number
     fk_huesped: number
     fk_tarifa: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -24065,8 +24172,9 @@ export namespace Prisma {
   }
 
   export type IngresoUpdateWithoutHuespedesHabitacionesInput = {
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24084,8 +24192,9 @@ export namespace Prisma {
     fk_habitacion?: IntFieldUpdateOperationsInput | number
     fk_huesped?: IntFieldUpdateOperationsInput | number
     fk_tarifa?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24094,8 +24203,9 @@ export namespace Prisma {
   }
 
   export type IngresoCreateWithoutCuentaInput = {
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -24113,8 +24223,9 @@ export namespace Prisma {
     fk_habitacion: number
     fk_huesped: number
     fk_tarifa: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -24195,8 +24306,9 @@ export namespace Prisma {
   }
 
   export type IngresoUpdateWithoutCuentaInput = {
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24214,8 +24326,9 @@ export namespace Prisma {
     fk_habitacion?: IntFieldUpdateOperationsInput | number
     fk_huesped?: IntFieldUpdateOperationsInput | number
     fk_tarifa?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24256,7 +24369,7 @@ export namespace Prisma {
   }
 
   export type CuentaCreateWithoutConsumosInput = {
-    estado: string
+    estado?: string
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -24267,7 +24380,7 @@ export namespace Prisma {
   export type CuentaUncheckedCreateWithoutConsumosInput = {
     id_cuenta?: number
     fk_ingreso: number
-    estado: string
+    estado?: string
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -24425,7 +24538,7 @@ export namespace Prisma {
   }
 
   export type CuentaCreateWithoutFacturaInput = {
-    estado: string
+    estado?: string
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -24436,7 +24549,7 @@ export namespace Prisma {
   export type CuentaUncheckedCreateWithoutFacturaInput = {
     id_cuenta?: number
     fk_ingreso: number
-    estado: string
+    estado?: string
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -24718,7 +24831,7 @@ export namespace Prisma {
     fk_tipo_habitacion: number
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -24730,8 +24843,9 @@ export namespace Prisma {
     fk_habitacion: number
     fk_huesped: number
     fk_tarifa: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -24758,7 +24872,7 @@ export namespace Prisma {
   export type ReservaUpdateWithoutUsuarioInput = {
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24773,7 +24887,7 @@ export namespace Prisma {
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24786,15 +24900,16 @@ export namespace Prisma {
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IngresoUpdateWithoutUsuarioInput = {
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24812,8 +24927,9 @@ export namespace Prisma {
     fk_habitacion?: IntFieldUpdateOperationsInput | number
     fk_huesped?: IntFieldUpdateOperationsInput | number
     fk_tarifa?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24827,8 +24943,9 @@ export namespace Prisma {
     fk_habitacion?: IntFieldUpdateOperationsInput | number
     fk_huesped?: IntFieldUpdateOperationsInput | number
     fk_tarifa?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24893,7 +25010,7 @@ export namespace Prisma {
     fk_tipo_habitacion: number
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -24905,8 +25022,9 @@ export namespace Prisma {
     fk_reserva?: number | null
     fk_habitacion: number
     fk_tarifa: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -24924,7 +25042,7 @@ export namespace Prisma {
   export type ReservaUpdateWithoutHuespedInput = {
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24938,7 +25056,7 @@ export namespace Prisma {
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24951,7 +25069,7 @@ export namespace Prisma {
     fk_tipo_habitacion?: IntFieldUpdateOperationsInput | number
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24959,8 +25077,9 @@ export namespace Prisma {
   }
 
   export type IngresoUpdateWithoutHuespedInput = {
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24977,8 +25096,9 @@ export namespace Prisma {
     fk_reserva?: NullableIntFieldUpdateOperationsInput | number | null
     fk_habitacion?: IntFieldUpdateOperationsInput | number
     fk_tarifa?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24992,8 +25112,9 @@ export namespace Prisma {
     fk_reserva?: NullableIntFieldUpdateOperationsInput | number | null
     fk_habitacion?: IntFieldUpdateOperationsInput | number
     fk_tarifa?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25036,7 +25157,7 @@ export namespace Prisma {
     id_habitacion?: number
     numero: string
     piso: string
-    estado: string
+    estado: boolean
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -25047,7 +25168,7 @@ export namespace Prisma {
     fk_huesped: number
     check_in: Date | string
     check_out: Date | string
-    estado: string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -25085,7 +25206,7 @@ export namespace Prisma {
   export type HabitacionUpdateWithoutTipoHabitacionInput = {
     numero?: StringFieldUpdateOperationsInput | string
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25096,7 +25217,7 @@ export namespace Prisma {
     id_habitacion?: IntFieldUpdateOperationsInput | number
     numero?: StringFieldUpdateOperationsInput | string
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25107,7 +25228,7 @@ export namespace Prisma {
     id_habitacion?: IntFieldUpdateOperationsInput | number
     numero?: StringFieldUpdateOperationsInput | string
     piso?: StringFieldUpdateOperationsInput | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: BoolFieldUpdateOperationsInput | boolean
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25116,7 +25237,7 @@ export namespace Prisma {
   export type ReservaUpdateWithoutTipoHabitacionInput = {
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25130,7 +25251,7 @@ export namespace Prisma {
     fk_huesped?: IntFieldUpdateOperationsInput | number
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25143,7 +25264,7 @@ export namespace Prisma {
     fk_huesped?: IntFieldUpdateOperationsInput | number
     check_in?: DateTimeFieldUpdateOperationsInput | Date | string
     check_out?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25155,8 +25276,9 @@ export namespace Prisma {
     fk_reserva?: number | null
     fk_habitacion: number
     fk_huesped: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -25164,8 +25286,9 @@ export namespace Prisma {
   }
 
   export type IngresoUpdateWithoutTarifaInput = {
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25182,8 +25305,9 @@ export namespace Prisma {
     fk_reserva?: NullableIntFieldUpdateOperationsInput | number | null
     fk_habitacion?: IntFieldUpdateOperationsInput | number
     fk_huesped?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25197,8 +25321,9 @@ export namespace Prisma {
     fk_reserva?: NullableIntFieldUpdateOperationsInput | number | null
     fk_habitacion?: IntFieldUpdateOperationsInput | number
     fk_huesped?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25210,8 +25335,9 @@ export namespace Prisma {
     fk_reserva?: number | null
     fk_huesped: number
     fk_tarifa: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -25219,8 +25345,9 @@ export namespace Prisma {
   }
 
   export type IngresoUpdateWithoutHabitacionInput = {
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25237,8 +25364,9 @@ export namespace Prisma {
     fk_reserva?: NullableIntFieldUpdateOperationsInput | number | null
     fk_huesped?: IntFieldUpdateOperationsInput | number
     fk_tarifa?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25252,8 +25380,9 @@ export namespace Prisma {
     fk_reserva?: NullableIntFieldUpdateOperationsInput | number | null
     fk_huesped?: IntFieldUpdateOperationsInput | number
     fk_tarifa?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25265,8 +25394,9 @@ export namespace Prisma {
     fk_habitacion: number
     fk_huesped: number
     fk_tarifa: number
-    fecha_ingreso: Date | string
-    estado: string
+    checkIn: Date | string
+    checkOut: Date | string
+    estado: $Enums.EstadoDelHuesped
     fk_usuario: number
     activo?: boolean
     created_at?: Date | string
@@ -25274,8 +25404,9 @@ export namespace Prisma {
   }
 
   export type IngresoUpdateWithoutReservaInput = {
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25292,8 +25423,9 @@ export namespace Prisma {
     fk_habitacion?: IntFieldUpdateOperationsInput | number
     fk_huesped?: IntFieldUpdateOperationsInput | number
     fk_tarifa?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25307,8 +25439,9 @@ export namespace Prisma {
     fk_habitacion?: IntFieldUpdateOperationsInput | number
     fk_huesped?: IntFieldUpdateOperationsInput | number
     fk_tarifa?: IntFieldUpdateOperationsInput | number
-    fecha_ingreso?: DateTimeFieldUpdateOperationsInput | Date | string
-    estado?: StringFieldUpdateOperationsInput | string
+    checkIn?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOut?: DateTimeFieldUpdateOperationsInput | Date | string
+    estado?: EnumEstadoDelHuespedFieldUpdateOperationsInput | $Enums.EstadoDelHuesped
     fk_usuario?: IntFieldUpdateOperationsInput | number
     activo?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25325,7 +25458,7 @@ export namespace Prisma {
 
   export type CuentaCreateManyIngresoInput = {
     id_cuenta?: number
-    estado: string
+    estado?: string
     activo?: boolean
     created_at?: Date | string
     updated_at?: Date | string
