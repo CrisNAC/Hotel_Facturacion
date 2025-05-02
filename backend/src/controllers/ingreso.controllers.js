@@ -72,17 +72,17 @@ export const getAllIngresos = async (req, res) => {
 }
 
 export const createIngreso = async (req, res) => {
-	const {
-		fk_reserva,
-		fk_habitacion,
-		fk_huesped,
-		fk_tarifa,
-		fecha_ingreso,
-		estado,
-		fk_usuario
-	} = req.body;
-
 	try {
+		const {
+			fk_reserva,
+			fk_habitacion,
+			fk_huesped,
+			fk_tarifa,
+			fecha_ingreso,
+			estado,
+			fk_usuario
+		} = req.body;
+
 		const nuevoIngreso = await prisma.ingreso.create({
 			data: {
 				fk_reserva,
@@ -133,3 +133,37 @@ export const createIngreso = async (req, res) => {
 		res.status(500).json({ error: "Internal Server Error: Error al crear el ingreso" });
 	}
 }
+
+export const getDetallesHabitacion = async (req, res) => {
+	try {
+		const { id } = req.body;
+		const result = await prisma.ingreso.findMany({
+			where: {
+				id_ingreso: id,
+				activo: true
+			},
+			include: {
+				huesped: true
+			}
+		});
+	} catch (error) {
+		res.status(500).json({ error: "Error al obtener detalles habitacion" });
+	}
+};
+
+export const cancelarIngreso = async () => {
+	try {
+		const { id } = req.body;
+		const result = await prisma.ingreso.update({
+			where: {
+				id_ingreso: id
+			},
+			data: {
+				//activo: false,
+				estado: "Cancelado"
+			}
+		});
+	} catch (error) {
+		res.status(500).json({ error: "Error al cancelar el ingreso" });
+	}
+};
