@@ -79,8 +79,11 @@ function HuespedesActivos({ ingresosOriginales }) {
         setShowDeleteModal(false);
     };
 
-    const irADetCuenta = () => navigate('/DetallesCuentas');
-
+    const irADetCuenta = (ingreso) => {
+        console.log(ingreso)
+        //navigate(`/DetallesCuentas/${ingreso.id_ingreso}`);
+    };
+    
     return (
         <>
             {/* Filtro */}
@@ -208,7 +211,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                                     {item.cuenta?.length > 0 && item.cuenta[0].consumos?.length > 0
                                         ? item.cuenta[0].consumos.reduce((acc, consumo) => acc + (consumo.monto || 0), 0).toLocaleString()
                                         : '—'}
-                                    Gs
+                                     Gs
                                 </td>
                                 <td className="d-flex justify-content-center">
                                     <button
@@ -224,7 +227,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                                     <button
                                         className='btn rounded-circle mx-1'
                                         style={{ width: 35, height: 35 }}
-                                        onClick={irADetCuenta}>
+                                        onClick={() => irADetCuenta(item)}>
                                         <FiFileText />
                                     </button>
                                 </td>

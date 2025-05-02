@@ -50,6 +50,12 @@ export const getAllIngresos = async (req, res) => {
 						numero: true
 					}
 				},
+				tarifa: {
+					select: {
+						descripcion: true,
+						precio: true
+					}
+				},
 
 				cuenta: {
 					select: {

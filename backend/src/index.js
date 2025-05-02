@@ -14,6 +14,7 @@ import consumoRoutes from "./routes/consumo.routes.js";
 import facturaRoutes from "./routes/factura.routes.js";
 import ingresoRoutes from "./routes/ingreso.routes.js";
 import reservaRoutes from "./routes/reserva.routes.js";
+import detalleRoutes from "./routes/detallefactura.routes.js"
 
 dotenv.config();
 const app = express();
@@ -40,6 +41,7 @@ app.use('/api/consumo', consumoRoutes);					//Cristian
 app.use('/api/facturas', facturaRoutes);				//Cristian
 app.use('/api/ingresos', ingresoRoutes);				//Cristian - Kisser (Modified)
 app.use('/api/reserva', reservaRoutes);					//Jazmín
+app.use('/api/detallefactura', detalleRoutes);	 
 
 app.listen(PORT, () => {
 	console.log(`Servidor corriendo en http://localhost:${PORT}`);

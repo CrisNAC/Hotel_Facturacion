@@ -1,26 +1,34 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import NavBar from "./navbar";
-const DetallesCuenta = () => {
+import axios from 'axios';
 
-  const items = [
-    {
-      descripcion: "Cama Individual",
-      cantidad: 1,
-      precio: 50000,
-      precioTotal: 50000,
-    },
-    {
-      descripcion: "Piscina",
-      cantidad: 2,
-      precio: 15000,
-      precioTotal: 30000,
-    },
-  ];
-
+const DetallesCuenta = (idIngreso) => {
+  const [cuenta, setCuenta] = useState(null);
+  const { idCuenta } = useParams(); // asume que la ruta es /cuenta/:id
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCuenta = async () => {
+      console.log("idCuenta recibido:", idIngreso);
+
+      try {
+        const res = await axios.get(`http://localhost:4000/api/cuenta/${idIngreso}`);
+        setCuenta(res.data);
+      } catch (err) {
+        console.error("Error al obtener la cuenta", err);
+      }
+    };
+    fetchCuenta();
+  }, [idCuenta]);
+
+
+  if (!cuenta) return <div className="text-center mt-5">Cargando...</div>;
+
+  const { huesped, habitacion, consumos } = cuenta;
+  const totalConsumos = consumos?.reduce((acc, item) => acc + item.monto * item.cantidad, 0) || 0;
 
   const irAInicio = () => {
     navigate('/');
@@ -40,19 +48,19 @@ const DetallesCuenta = () => {
       <div className="row mb-4 text-start" >
         <div className="col-md-3">
           <label>Nombre Completo</label>
-          <input type="text" className="form-control" value="María López" readOnly />
+          <input type="text" className="form-control" value={`${huesped?.nombre} ${huesped?.apellido}`}/>
         </div>
         <div className="col-md-3">
           <label>RUC</label>
-          <input type="text" className="form-control" value="3458237" readOnly />
+          <input type="text" className="form-control" value={huesped?.ruc || ''} />
         </div>
         <div className="col-md-3">
           <label>Correo Electrónico</label>
-          <input type="email" className="form-control" value="marialopez@gmail.com" readOnly />
+          <input type="email" className="form-control" value={huesped?.correo || ''} />
         </div>
         <div className="col-md-3">
           <label>Teléfono</label>
-          <input type="text" className="form-control" value="+595981654234" readOnly />
+          <input type="text" className="form-control" value={huesped?.telefono || ''} />
         </div>
       </div>
 
@@ -60,8 +68,8 @@ const DetallesCuenta = () => {
       <div className="mb-4 text-start">
         <label className="me-3">Condición de venta:</label>
         <div>
-            <input type="radio" className="me-1" disabled /> Contado
-            <input type="radio" className="ms-3 me-1" checked readOnly /> Crédito
+            <input type="radio" className="me-1"/> Contado
+            <input type="radio" className="ms-3 me-1"/> Crédito
         </div>
         </div>
 
@@ -70,22 +78,22 @@ const DetallesCuenta = () => {
       <table className="table  table-bordered">
       <thead >
         <tr >
-            <th style={{ backgroundColor: "#003366", color: "white" }}>Descripción</th>
-            <th style={{ backgroundColor: "#003366", color: "white" }}>Cant. Noches</th>
-            <th style={{ backgroundColor: "#003366", color: "white" }}>Nro. Habitación</th>
-            <th style={{ backgroundColor: "#003366", color: "white" }}>Adicionales</th>
-            <th style={{ backgroundColor: "#003366", color: "white" }}>Precio</th>
-            <th style={{ backgroundColor: "#003366", color: "white" }}>Precio Total</th>
+            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Descripción</th>
+            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Cant. Noches</th>
+            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Nro. Habitación</th>
+            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Adicionales</th>
+            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Precio</th>
+            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Precio Total</th>
         </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Habitación Suite</td>
-            <td>3</td>
-            <td>202</td>
-            <td>Desayuno incluido</td>
-            <td class="text-end">300.000</td>
-            <td class="text-end">1.020.000</td>
+            <td>{habitacion?.descripcion}</td>
+            <td>{habitacion?.noches}</td>
+            <td>{habitacion?.numero}</td>
+            <td>{habitacion?.adicionales}</td>
+            <td className="text-end">{habitacion?.precio.toLocaleString()}</td>
+            <td className="text-end">{(habitacion?.precio * habitacion?.noches).toLocaleString()}</td>
           </tr>
         </tbody>
       </table>
@@ -96,34 +104,31 @@ const DetallesCuenta = () => {
       <table className="table table-bordered">
         <thead style={{ backgroundColor: "#003366 !important" }}>
           <tr>
-            <th style={{ backgroundColor: "#003366", color: "white" }}>Descripción</th>
-            <th style={{ backgroundColor: "#003366", color: "white" }}>Cantidad</th>
-            <th style={{ backgroundColor: "#003366", color: "white" }}>Precio</th>
-            <th style={{ backgroundColor: "#003366", color: "white" }}>Precio Total</th>
-            <th style={{ backgroundColor: "#003366", color: "white" }}>Acciones</th>
+            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Descripción</th>
+            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Cantidad</th>
+            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Precio</th>
+            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Precio Total</th>
+            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {items.map((item, index) => (
+        {consumos.map((item, index) => (
             <tr key={index}>
               <td>{item.descripcion}</td>
               <td>{item.cantidad}</td>
-              <td className="text-end">{item.precio}</td>
-              <td className="text-end">{item.precioTotal}</td>
-              <td className="d-flex justify-content-center align-items-center">
-              <button className="btn plus rounded-circle d-flex align-items-center justify-content-center"
-              style={{backgroundColor: "#003366", color: "white",width: "30px",height: "30px",padding: 0,fontSize: "14px"}}><FaPlus /></button>
-              <button className="btn plus rounded-circle d-flex align-items-center justify-content-center"
-              style={{backgroundColor: "#003366", color: "white",width: "30px",height: "30px",padding: 0,fontSize: "14px"}}><FaMinus /></button>
-              <button className="btn plus rounded-circle d-flex align-items-center justify-content-center"
-              style={{backgroundColor: "#003366", color: "white",width: "30px",height: "30px",padding: 0,fontSize: "14px"}}><FaTrash /></button>
+              <td className="text-end">{item.monto.toLocaleString()}</td>
+              <td className="text-end">{(item.monto * item.cantidad).toLocaleString()}</td>
+              <td className="d-flex justify-content-center">
+                <button className="btn plus rounded-circle me-1"><FaPlus /></button>
+                <button className="btn plus rounded-circle me-1"><FaMinus /></button>
+                <button className="btn plus rounded-circle"><FaTrash /></button>
               </td>
             </tr>
           ))}
         </tbody>
           
       </table>
-      <h5 className="text-end"><strong>Total: 80.000 Gs</strong></h5>
+      <h5 className="text-end"><strong>Total: {totalConsumos.toLocaleString()} Gs</strong></h5>
       
 
       {/* Botones finales */}

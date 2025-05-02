@@ -29,7 +29,7 @@ function App() {
             <Route path="/Inicio" element={<Inicio />} />
             <Route path="/Huespedes" element={<HuespedesActivosPage />} />
 
-            <Route path="/DetallesCuentas" element={<DetallesCuentas />}></Route>
+            <Route path="/DetallesCuentas/:idIngreso" element={<DetallesCuentas />} />
             <Route path="/VistaFactura" element={<InvoiceComponentEli />}></Route>
 
             <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
