@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
-import { useNavigate } from 'react-router-dom';
 import NavBar from "./navbar";
-const DetallesCuenta = () => {
+import { HuespedesActivosContext } from "../context/HuespedesActivosContexto";
 
+const DetallesCuenta = () => {
+  const { setMainPage } = useContext(HuespedesActivosContext);
+  const { setVistaFactura } = useContext(HuespedesActivosContext);
+  
   const items = [
     {
       descripcion: "Cama Individual",
@@ -20,21 +23,21 @@ const DetallesCuenta = () => {
     },
   ];
 
-  const navigate = useNavigate();
-
-  const irAInicio = () => {
-    navigate('/');
+  const irAHuespedes = () => {
+    setMainPage(true);
+    setVistaFactura(false);
   };
 
   const irAFactura = () => {
-    navigate('/VistaFactura');
+    setMainPage(false);
+    setVistaFactura(true);
   };
 
-  return (    
+  return (
     <div className="container mt-5">
       <NavBar />
       {/* Encabezado */}
-      <h2 class="d-block mt-n3">Detalles Cuenta</h2>
+      <h2 className="d-block mt-n3">Detalles Cuenta</h2>
 
       {/* Formulario */}
       <div className="row mb-4 text-start" >
@@ -60,23 +63,23 @@ const DetallesCuenta = () => {
       <div className="mb-4 text-start">
         <label className="me-3">Condición de venta:</label>
         <div>
-            <input type="radio" className="me-1" disabled /> Contado
-            <input type="radio" className="ms-3 me-1" checked readOnly /> Crédito
+          <input type="radio" className="me-1" disabled /> Contado
+          <input type="radio" className="ms-3 me-1" checked readOnly /> Crédito
         </div>
-        </div>
+      </div>
 
       {/* Detalles Habitación */}
       <h4 className="text-start">Detalles Habitación</h4>
       <table className="table  table-bordered">
-      <thead >
-        <tr >
+        <thead >
+          <tr >
             <th style={{ backgroundColor: "#003366", color: "white" }}>Descripción</th>
             <th style={{ backgroundColor: "#003366", color: "white" }}>Cant. Noches</th>
             <th style={{ backgroundColor: "#003366", color: "white" }}>Nro. Habitación</th>
             <th style={{ backgroundColor: "#003366", color: "white" }}>Adicionales</th>
             <th style={{ backgroundColor: "#003366", color: "white" }}>Precio</th>
             <th style={{ backgroundColor: "#003366", color: "white" }}>Precio Total</th>
-        </tr>
+          </tr>
         </thead>
         <tbody>
           <tr>
@@ -84,8 +87,8 @@ const DetallesCuenta = () => {
             <td>3</td>
             <td>202</td>
             <td>Desayuno incluido</td>
-            <td class="text-end">300.000</td>
-            <td class="text-end">1.020.000</td>
+            <td className="text-end">300.000</td>
+            <td className="text-end">1.020.000</td>
           </tr>
         </tbody>
       </table>
@@ -111,25 +114,25 @@ const DetallesCuenta = () => {
               <td className="text-end">{item.precio}</td>
               <td className="text-end">{item.precioTotal}</td>
               <td className="d-flex justify-content-center align-items-center">
-              <button className="btn plus rounded-circle d-flex align-items-center justify-content-center"
-              style={{backgroundColor: "#003366", color: "white",width: "30px",height: "30px",padding: 0,fontSize: "14px"}}><FaPlus /></button>
-              <button className="btn plus rounded-circle d-flex align-items-center justify-content-center"
-              style={{backgroundColor: "#003366", color: "white",width: "30px",height: "30px",padding: 0,fontSize: "14px"}}><FaMinus /></button>
-              <button className="btn plus rounded-circle d-flex align-items-center justify-content-center"
-              style={{backgroundColor: "#003366", color: "white",width: "30px",height: "30px",padding: 0,fontSize: "14px"}}><FaTrash /></button>
+                <button className="btn plus rounded-circle d-flex align-items-center justify-content-center"
+                  style={{ backgroundColor: "#003366", color: "white", width: "30px", height: "30px", padding: 0, fontSize: "14px" }}><FaPlus /></button>
+                <button className="btn plus rounded-circle d-flex align-items-center justify-content-center"
+                  style={{ backgroundColor: "#003366", color: "white", width: "30px", height: "30px", padding: 0, fontSize: "14px" }}><FaMinus /></button>
+                <button className="btn plus rounded-circle d-flex align-items-center justify-content-center"
+                  style={{ backgroundColor: "#003366", color: "white", width: "30px", height: "30px", padding: 0, fontSize: "14px" }}><FaTrash /></button>
               </td>
             </tr>
           ))}
         </tbody>
-          
+
       </table>
       <h5 className="text-end"><strong>Total: 80.000 Gs</strong></h5>
-      
+
 
       {/* Botones finales */}
       <div className="d-flex justify-content-center align-items-center  mt-4" style={{ gap: "30px" }}>
-        <button className="btn btn-secondary fw-bold"  style={{ width: "150px", height:"40px" }} onClick={irAInicio}>Volver</button>
-        <button className="btn btn-success fw-bold" style={{ width: "150px", height:"40px" }} onClick={irAFactura}>Generar Factura</button>
+        <button className="btn btn-secondary fw-bold" style={{ width: "150px", height: "40px" }} onClick={irAHuespedes}>Volver</button>
+        <button className="btn btn-success fw-bold" style={{ width: "150px", height: "40px" }} onClick={irAFactura}>Generar Factura</button>
       </div>
     </div>
   );
