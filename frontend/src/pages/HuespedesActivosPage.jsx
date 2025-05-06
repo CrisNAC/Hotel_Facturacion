@@ -18,18 +18,19 @@ function HuespedesActivosPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const fetchIngresos = async () => {
+        try {
+            const response = await client.getIngresos();
+            setIngresosOriginales(response.data);
+        } catch (err) {
+            setError(err.message);
+            console.error('Error al obtener ingresos:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchIngresos = async () => {
-            try {
-                const response = await client.getIngresos();
-                setIngresosOriginales(response.data);
-            } catch (err) {
-                setError(err.message);
-                console.error('Error al obtener ingresos:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchIngresos();
     }, []);
 
@@ -57,7 +58,7 @@ function HuespedesActivosPage() {
                                 <Container>
                                     {loading ? skeletonPage() :
                                         error ? errorPage() : (
-                                            <HuespedesActivos ingresosOriginales={ingresosOriginales} />)
+                                            <HuespedesActivos ingresosOriginales={ingresosOriginales} refresh={fetchIngresos}/>)
                                     }
                                 </Container>
                             ) : vistaFactura ? (

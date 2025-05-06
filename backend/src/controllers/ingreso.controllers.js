@@ -128,24 +128,28 @@ export const createIngreso = async (req, res) => {
 		res.status(201).json(nuevoIngreso);
 
 	} catch (error) {
-		console.error(error);
 		res.status(500).json({ error: "Internal Server Error: Error al crear el ingreso" });
 	}
 }
 
-export const cancelarIngreso = async () => {
+export const cancelarIngreso = async (req, res) => {
 	try {
-		const { id } = req.body;
-		const result = await prisma.ingreso.update({
+		const { id } = req.params;
+		await prisma.ingreso.update({
 			where: {
-				id_ingreso: id
+				id_ingreso: parseInt(id)
 			},
 			data: {
-				//activo: false,
 				estado: "Cancelado"
 			}
 		});
+		res.status(200).end();
 	} catch (error) {
-		res.status(500).json({ error: "Error al cancelar el ingreso" });
+		if (error.code === 'P2025') {
+            res.status(404).json({ error: "Ingreso no encontrado" });
+        } else {
+            console.error(error);
+            res.status(500).json({ error: "Error al cancelar el ingreso" });
+        }
 	}
 };

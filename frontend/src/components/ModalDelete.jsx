@@ -1,4 +1,8 @@
-function ModalDelete({ item, setShowDeleteModal, handleDelete }) {
+import HTTPClient from "../api/HTTPClient.js";
+import ErrorComponent from "../components/ErrorComponent.jsx";
+
+function ModalDelete({ item, setShowDeleteModal, refresh }) {
+    const client = new HTTPClient();
 
     /**
      * Para cambiar el formato de la fecha a Dia/Mes/Año
@@ -15,6 +19,23 @@ function ModalDelete({ item, setShowDeleteModal, handleDelete }) {
         }
     };
 
+    /**
+     * Para la cancelacion del Ingreso
+     */
+    const handleDelete = () => {
+        const cancelarIngreso = async () => {
+            try {
+                await client.cancelarIngreso(item.id_ingreso);
+            } catch (err) {
+                console.error(err.message);
+            } finally {
+                setShowDeleteModal(false);
+                refresh();
+            };
+        };
+        cancelarIngreso();
+    };
+
     return (
         <div className="modal fade show d-block" tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
@@ -22,6 +43,7 @@ function ModalDelete({ item, setShowDeleteModal, handleDelete }) {
                     <div className="modal-header d-flex justify-content-center">
                         <h5 className="modal-title">¿Estás seguro de que quieres cancelar este ingreso?</h5>
                     </div>
+                    {/* Presentacion del contenido */}
                     <div className="modal-body row row-cols-2 text-start py-5">
                         <p><strong>Nombre:</strong> {item.huesped.nombre}</p>
                         <p><strong>Habitación:</strong> {item.habitacion.numero}</p>
@@ -38,6 +60,7 @@ function ModalDelete({ item, setShowDeleteModal, handleDelete }) {
                                 : '0'
                         } Gs</p>
                     </div>
+                    {/* Botones */}
                     <div className="modal-footer d-flex justify-content-center">
                         <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>Volver</button>
                         <button type="button" className="btn btn-danger" onClick={handleDelete}>Cancelar</button>

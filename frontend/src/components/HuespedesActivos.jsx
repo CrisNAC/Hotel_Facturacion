@@ -6,18 +6,25 @@ import { HuespedesActivosContext } from '../context/HuespedesActivosContexto';
 import ModalDetails from "./ModalDetails.jsx";
 import ModalDelete from './ModalDelete.jsx';
 
-function HuespedesActivos({ ingresosOriginales }) {
+function HuespedesActivos({ ingresosOriginales, refresh }) {
+    /**
+     * Todos los estados
+     */
+    // Estados del filtro
     const [ingresosFiltrados, setIngresosFiltrados] = useState([]);
     const [filtros, setFiltros] = useState({ huesped: '', habitacion: '', estado: '', fecha: '', checkIn: true });
     const [debouncedFiltros, setDebouncedFiltros] = useState(filtros);
-    const [page, setPage] = useState(1);
+    // Estado de Cambio de componente. Contexto
     const { setMainPage } = useContext(HuespedesActivosContext);
-    const itemsPerPage = 10;
-
+    // Estados para las Acciones
     const [selectedItem, setSelectedItem] = useState(null);
-    // const [details, setDetails] = useState([]);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    // Estado para la paginacion
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 10;
+    const paginatedItems = ingresosFiltrados.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+    const totalPages = Math.ceil(ingresosFiltrados.length / itemsPerPage);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -32,23 +39,16 @@ function HuespedesActivos({ ingresosOriginales }) {
             if (filtros.huesped && !nombreCompleto.includes(debouncedFiltros.huesped.toLowerCase())) return false;
             if (filtros.habitacion && !ingreso.habitacion?.numero?.toString().includes(filtros.habitacion)) return false;
             if (filtros.estado && ingreso.estado?.toLowerCase() !== filtros.estado.toLowerCase()) return false;
-
             const fecha = debouncedFiltros.fecha;
-            console.log(fecha)
             if (fecha) {
                 const fechaComparar = debouncedFiltros.checkIn ? ingreso.reserva?.check_in : ingreso.reserva?.check_out;
                 if (!fechaComparar?.includes(fecha)) return false;
             }
-
             return true;
         });
-
         setIngresosFiltrados(filtrado);
         setPage(1);
     }, [debouncedFiltros, ingresosOriginales, filtros]);
-
-    const paginatedItems = ingresosFiltrados.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-    const totalPages = Math.ceil(ingresosFiltrados.length / itemsPerPage);
 
     /**
      * Para cambiar el formato de la fecha a Dia/Mes/Año
@@ -70,30 +70,23 @@ function HuespedesActivos({ ingresosOriginales }) {
         setFiltros(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    //const resetFilters = () => setFiltros({ huesped: '', habitacion: '', estado: '', fecha: '', checkIn: true });
-
     /**
      * Para obtener un Ingreso y modificar el estado showDetailModal
      *  
      */
     const handleShowDetails = (item) => {
         setSelectedItem(item);
-        console.log(item);
         setShowDetailModal(true);
     };
 
     /**
-     * Para la cancelacion del Ingreso
+     * Muesta el contenido del ingreso seleccionado.
+     * Cambia el estado de ShowDeleteModal.
      * @param {*} item 
      */
     const handleShowDelete = (item) => {
         setSelectedItem(item);
         setShowDeleteModal(true);
-    };
-
-    const handleDelete = () => {
-        setIngresosFiltrados(prev => prev.filter(item => item.id_ingreso !== selectedItem.id_ingreso));
-        setShowDeleteModal(false);
     };
 
     const irADetCuenta = () => {
@@ -239,7 +232,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                                     Gs
                                 </td>
                                 {/* Botones de la tabla */}
-                                <td className="d-flex justify-content-center">
+                                <td className="text-center">
                                     <button
                                         type='button'
                                         className='btn rounded-circle mx-1'
@@ -255,7 +248,6 @@ function HuespedesActivos({ ingresosOriginales }) {
                                     <button
                                         type='button'
                                         className='btn rounded-circle mx-1'
-                                        style={{ width: 35, height: 35 }}
                                         onClick={irADetCuenta}>
                                         <FiFileText />
                                     </button>
@@ -294,7 +286,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                     Siguiente
                 </button>
             </div>
-            
+
             {/* Modal de detalles */}
             {showDetailModal && selectedItem && (
                 <ModalDetails item={selectedItem} setShowDetailModal={setShowDetailModal}></ModalDetails>
@@ -302,7 +294,7 @@ function HuespedesActivos({ ingresosOriginales }) {
 
             {/* Modal de cancelar ingreso */}
             {showDeleteModal && selectedItem && (
-                <ModalDelete item={selectedItem} setShowDeleteModal={setShowDeleteModal} handleDelete={handleDelete}></ModalDelete>
+                <ModalDelete item={selectedItem} setShowDeleteModal={setShowDeleteModal} refresh={refresh}></ModalDelete>
             )}
         </>
     );

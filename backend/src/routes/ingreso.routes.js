@@ -5,6 +5,6 @@ const router = Router();
 
 router.get('/', getAllIngresos);
 router.post('/', createIngreso);
-router.patch('/', cancelarIngreso);
+router.patch('/:id', cancelarIngreso);
 
 export default router;

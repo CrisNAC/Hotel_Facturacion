@@ -12,11 +12,9 @@ function ModalDetails({ item, setShowDetailModal }) {
         const fetchDetallesHabitacion = async () => {
             try {
                 const response = await client.getDetalleHabitacion(item.id_ingreso);
-                console.log(response.data);
                 setHuespedes(response.data);
             } catch (err) {
                 setError(err);
-                console.error(err);
             } finally {
                 setLoading(false);
             }
