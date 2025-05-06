@@ -64,7 +64,6 @@ export const getAllIngresos = async (req, res) => {
 			}
 		});
 		res.status(200).json(ingresos);
-
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: "Internal Server Error: Error al listar ingresos" });
@@ -133,23 +132,6 @@ export const createIngreso = async (req, res) => {
 		res.status(500).json({ error: "Internal Server Error: Error al crear el ingreso" });
 	}
 }
-
-export const getDetallesHabitacion = async (req, res) => {
-	try {
-		const { id } = req.body;
-		const result = await prisma.ingreso.findMany({
-			where: {
-				id_ingreso: id,
-				activo: true
-			},
-			include: {
-				huesped: true
-			}
-		});
-	} catch (error) {
-		res.status(500).json({ error: "Error al obtener detalles habitacion" });
-	}
-};
 
 export const cancelarIngreso = async () => {
 	try {
