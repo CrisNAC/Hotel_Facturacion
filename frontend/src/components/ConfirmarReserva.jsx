@@ -110,7 +110,7 @@ const ConfirmarReserva = () => {
 										onClick={() =>
 											navigate('/AgregarHuesped', {
 												state: {
-													huespedEditar: huespedes[index],
+													huespedEditar: listaHuespedes[index],
 													indexEditar: index,
 													huespedes: listaHuespedes
 												}
