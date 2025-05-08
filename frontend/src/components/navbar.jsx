@@ -4,9 +4,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FaChevronDown } from "react-icons/fa";
 import { FaSlack } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
+import axios from "axios";
 
 export const NavBar = () => {
+
   const navigate = useNavigate();
+
   const irAInicio = () => {
     navigate('/Inicio');
   };
@@ -27,6 +30,17 @@ export const NavBar = () => {
     navigate('/');
   };
 
+	const handleLogout = async () => {
+		try {
+			const response = await axios.delete('/api/session/', { withCredentials: true});
+			console.log(response.data);
+			irALogin();
+		}
+		catch(error){
+			console.log('Error al intentar hacer logout:', error);
+		}
+	}
+
   return (
     <>
       {/* NavBar */}
@@ -41,11 +55,12 @@ export const NavBar = () => {
 
         {/* Acciones de navegación */}
         <div className="d-flex gap-4 mx-auto">
-          <a href="#" className="text-white fw-normal text-decoration-none" onClick={irAInicio}>Inicio</a>
-          <a href="#" className="text-white fw-normal text-decoration-none" onClick={irAHuespedes}>Huespedes</a>
-          <a href="#" className="text-white fw-normal text-decoration-none" onClick={irAIngresoHuesped}>Ingreso de huésped</a>
-          <a href="#" className="text-white fw-normal text-decoration-none" onClick={irAFacturasEmitidas}>Facturas emitidas</a>
-          <a href="#" className="text-white fw-normal text-decoration-none">Reportes</a>
+          <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAInicio}>Inicio</button>
+          <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAHuespedes}>Huespedes</button>
+          <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAIngresoHuesped}>Ingreso de huésped</button>
+          <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAFacturasEmitidas}>Facturas emitidas</button>
+          <button className="btn btn-link text-white fw-normal text-decoration-none">Reportes</button>
+					<button className="btn btn-link text-white fw-normal text-decoration-none" onClick={handleLogout}>Logout</button>
         </div >
 
         {/* Auth section */}

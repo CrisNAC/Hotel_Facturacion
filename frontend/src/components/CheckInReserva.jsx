@@ -1,10 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { debounce } from "lodash";
 import NavBar from "./navbar";
 
 const CheckInReserva = () => {
 
+	const [reservaId, setReservaId] = useState('');
+	const [reserva, setReserva] = useState(null);
 	const navigate = useNavigate();
+
+	const getReservaById = async (id) => {
+		try {
+			const res = await axios.get(`/api/reserva/${id}`);
+			setReserva(res.data);
+		} catch (error) {
+			console.error(error);
+			setReserva(null);
+		}
+	};
+
+	/*useEffect(() => {
+		getReservaById(reservaId);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);*/
+
+	const handleReservaIdChange = (e) => {
+		setReservaId(e.target.value);
+	}
+
+	const handleBuscarReserva = debounce(() => {
+		if (reservaId) getReservaById(reservaId);
+	}, 3000);
 
 	return (
 		<div>
@@ -17,12 +44,18 @@ const CheckInReserva = () => {
 						<label htmlFor="numReserva" className="form-label">
 							Nº Reserva
 						</label>
-						<input
-							type="text"
-							className="form-control"
-							id="numReserva"
-							defaultValue="1"
-						/>
+						<div className="d-flex">
+							<input
+								type="text"
+								className="form-control me-2"
+								id="numReserva"
+								value={reservaId}
+								onChange={handleReservaIdChange}
+							/>
+							<button type="button" className="btn btn-primary" onClick={handleBuscarReserva}>
+								Buscar
+							</button>
+						</div>
 					</div>
 
 					<div className="col-md-6 col-lg-4">
@@ -33,7 +66,8 @@ const CheckInReserva = () => {
 							type="text"
 							className="form-control"
 							id="titular"
-							defaultValue="Juan Perez"
+							value = {reserva ? `${reserva.huesped.nombre} ${reserva.huesped.apellido}` : ""}
+							readOnly
 						/>
 					</div>
 
@@ -65,13 +99,8 @@ const CheckInReserva = () => {
 						<label htmlFor="tipo_habitacion" className="form-label">
 							Tipo Habitacion
 						</label>
-						<select className="form-select" id="tipo_habitacion" defaultValue="Doble-Matrimonial">
-							<option value="1">Individual</option>
-							<option value="2">Doble</option>
-							<option value="3">Doble-Matrimonial</option>
-							<option value="4">Twin</option>
-							<option value="5">Triple</option>
-							<option value="6">Cuadruple</option>
+						<select className="form-select" id="tipo_habitacion" value={reserva ? reserva.tipoHabitacion.nombre : ""}>
+							
 						</select>
 					</div>
 
@@ -79,7 +108,12 @@ const CheckInReserva = () => {
 						<label htmlFor="checkin" className="form-label">
 							Check-in
 						</label>
-						<input type="date" className="form-control" id="checkin" />
+						<input 
+							type="date" 
+							className="form-control" 
+							id="checkin"
+							value={reserva ? reserva.check_in.substring(0, 10) : ""}
+							readOnly />
 					</div>
 
 					<div className="col-md-6 col-lg-4">
@@ -93,7 +127,7 @@ const CheckInReserva = () => {
 						<label htmlFor="recepcionista" className="form-label">
 							Recepcionista
 						</label>
-						<input type="text" className="form-control" id="recepcionista" defaultValue="Eliana Sanchez" />
+						<input type="text" className="form-control" id="recepcionista" value={reserva && reserva.usuario ? reserva.usuario.nombre_usuario : ""} readOnly/>
 					</div>
 
 				</div>
