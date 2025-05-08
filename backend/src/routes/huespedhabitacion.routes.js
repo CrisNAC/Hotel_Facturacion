@@ -1,11 +1,8 @@
 import { Router } from "express";
-import huespedHabitacionController from "../controllers/huespedhabitacion.controllers.js";
-const { crearRelacion, obtenerTodas, eliminar } = huespedHabitacionController;
+import { getAllHuespedHabitacion } from '../controllers/huespedhabitacion.controllers.js';
 
 const router = Router();
 
-router.post('/', crearRelacion);
-router.get('/', obtenerTodas);
-router.delete('/:id', eliminar);
+router.get('/:id', getAllHuespedHabitacion);
 
 export default router;

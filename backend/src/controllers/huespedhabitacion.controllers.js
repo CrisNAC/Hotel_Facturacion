@@ -1,6 +1,7 @@
 import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
+<<<<<<< HEAD
 // Crear una relación entre huésped e ingreso
 const crearRelacion = async(req, res) => {
 	const { fk_huesped, fk_ingreso } = req.body;
@@ -56,3 +57,25 @@ export default {
     obtenerTodas,
     eliminar
 };
+=======
+export const getAllHuespedHabitacion = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await prisma.huespedHabitacion.findMany({
+            where: {
+                activo: true,
+                ingreso: {
+                    id_ingreso: parseInt(id)
+                }
+            },
+            include: {
+                huesped: true
+            }
+        });
+        if (result.length === 0) return res.status(404).json({ error: 'Error en huespedes habitacion' });
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener huesped habitacion" });
+    }
+};
+>>>>>>> 2d3ec8465eb17774f50ed45051ad1ef5b4de00a5
