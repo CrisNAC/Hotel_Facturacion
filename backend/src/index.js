@@ -23,16 +23,14 @@ const PORT = process.env.PORT || 4000;
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cookieParser());
-/*
-app.use(cors(
-	{
-		origin: 'http://localhost:5173'
-	}
-));  //CONFIGURACION DE POLITICAS DE CORS
-*/
+
 app.use(cors({
-	origin: 'http://localhost:5173',
-	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	origin: [
+		process.env.LOCAL_HOST,
+		process.env.DEV,
+		process.env.PRODUCCION,
+	],
+	methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 	credentials: true // si usas cookies
 }));
 

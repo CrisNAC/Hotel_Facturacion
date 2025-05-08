@@ -15,7 +15,6 @@ export default defineConfig({
 				secure: false,
 				selfHandleResponse: false,
 				configure: (proxy, _options) => {
-					
 					proxy.on('proxyRes', (proxyRes, req, res) => {
 						if (proxyRes.statusCode === 401) {
 							console.log('Redirigiendo...');
