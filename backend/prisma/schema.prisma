@@ -1,205 +1,217 @@
 generator client {
-    provider = "prisma-client-js"
-    output   = "../generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
-    provider  = "postgresql"
-    url       = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Usuario {
-    id_usuario      Int       @id @default(autoincrement())
-    nombre          String
-    apellido        String
-    nombre_usuario  String    @unique
-    contrasena_hash String
-    activo          Boolean   @default(true)
-    created_at      DateTime  @default(now())
-    updated_at      DateTime  @updatedAt
-    consumos        Consumo[]
-    facturas        Factura[]
-    ingresos        Ingreso[]
-    reservas        Reserva[]
+  id_usuario      Int       @id @default(autoincrement())
+  nombre          String
+  apellido        String
+  nombre_usuario  String    @unique
+  contrasena_hash String
+  activo          Boolean   @default(true)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+  consumos        Consumo[]
+  facturas        Factura[]
+  ingresos        Ingreso[]
+  reservas        Reserva[]
 }
 
 model Huesped {
-    id_huesped            Int                 @id @default(autoincrement())
-    nombre                String
-    apellido              String
-    documento_identidad   DocumentoIdentidad
-    numero_documento      String              @unique
-    ruc                   String?
-    nacionalidad          Nacionalidad
-    telefono              String?
-    email                 String?
-    fecha_nacimiento      DateTime
-    activo                Boolean             @default(true)
-    created_at            DateTime            @default(now())
-    updated_at            DateTime            @updatedAt
-    huespedesHabitaciones HuespedHabitacion[]
-    ingresos              Ingreso[]
-    reservas              Reserva[]
+  id_huesped            Int                 @id @default(autoincrement())
+  nombre                String
+  apellido              String
+  documento_identidad   DocumentoIdentidad
+  numero_documento      String              @unique
+  ruc                   String?
+  nacionalidad          Nacionalidad
+  telefono              String?
+  email                 String?
+  fecha_nacimiento      DateTime
+  activo                Boolean             @default(true)
+  created_at            DateTime            @default(now())
+  updated_at            DateTime            @updatedAt
+  huespedesHabitaciones HuespedHabitacion[]
+  ingresos              Ingreso[]
+  reservas              Reserva[]
 }
 
 model TipoHabitacion {
-    id_tipo_habitacion Int          @id @default(autoincrement())
-    nombre             String
-    descripcion        String
-    capacidad          Int
-    activo             Boolean      @default(true)
-    created_at         DateTime     @default(now())
-    updated_at         DateTime     @updatedAt
-    habitaciones       Habitacion[]
-    reservas           Reserva[]
-    tarifas            Tarifa[]
+  id_tipo_habitacion Int          @id @default(autoincrement())
+  nombre             String
+  descripcion        String
+  capacidad          Int
+  activo             Boolean      @default(true)
+  created_at         DateTime     @default(now())
+  updated_at         DateTime     @updatedAt
+  habitaciones       Habitacion[]
+  reservas           Reserva[]
+  tarifas            Tarifa[]
 }
 
 model Tarifa {
-    id_tarifa          Int            @id @default(autoincrement())
-    fk_tipo_habitacion Int
-    descripcion        String
-    precio             Int
-    activo             Boolean        @default(true)
-    created_at         DateTime       @default(now())
-    updated_at         DateTime       @updatedAt
-    ingresos           Ingreso[]
-    tipoHabitacion     TipoHabitacion @relation(fields: [fk_tipo_habitacion], references: [id_tipo_habitacion])
+  id_tarifa          Int            @id @default(autoincrement())
+  fk_tipo_habitacion Int
+  descripcion        String
+  precio             Int
+  activo             Boolean        @default(true)
+  created_at         DateTime       @default(now())
+  updated_at         DateTime       @updatedAt
+  ingresos           Ingreso[]
+  tipoHabitacion     TipoHabitacion @relation(fields: [fk_tipo_habitacion], references: [id_tipo_habitacion])
 }
 
 model Habitacion {
-    id_habitacion      Int            @id @default(autoincrement())
-    numero             String         @unique
-    fk_tipo_habitacion Int
-    piso               String
-    estado             Boolean        @default(true)
-    activo             Boolean        @default(true)
-    created_at         DateTime       @default(now())
-    updated_at         DateTime       @updatedAt
-    tipoHabitacion     TipoHabitacion @relation(fields: [fk_tipo_habitacion], references: [id_tipo_habitacion])
-    ingresos           Ingreso[]
+  id_habitacion      Int            @id @default(autoincrement())
+  numero             String         @unique
+  fk_tipo_habitacion Int
+  piso               String
+  estado             Boolean        @default(true)
+  activo             Boolean        @default(true)
+  created_at         DateTime       @default(now())
+  updated_at         DateTime       @updatedAt
+  tipoHabitacion     TipoHabitacion @relation(fields: [fk_tipo_habitacion], references: [id_tipo_habitacion])
+  ingresos           Ingreso[]
 }
 
 model Reserva {
-    id_reserva         Int            @id @default(autoincrement())
-    fk_huesped         Int
-    fk_tipo_habitacion Int
-    check_in           DateTime
-    check_out          DateTime
-    estado             String
-    fk_usuario         Int
-    activo             Boolean        @default(true)
-    created_at         DateTime       @default(now())
-    updated_at         DateTime       @updatedAt
-    ingreso            Ingreso[]
-    huesped            Huesped        @relation(fields: [fk_huesped], references: [id_huesped])
-    tipoHabitacion     TipoHabitacion @relation(fields: [fk_tipo_habitacion], references: [id_tipo_habitacion])
-    usuario            Usuario        @relation(fields: [fk_usuario], references: [id_usuario])
+  id_reserva         Int            @id @default(autoincrement())
+  fk_huesped         Int
+  fk_tipo_habitacion Int
+  check_in           DateTime
+  check_out          DateTime
+  estado             EstadoReserva  @default(Confirmada)
+  fk_usuario         Int
+  activo             Boolean        @default(true)
+  created_at         DateTime       @default(now())
+  updated_at         DateTime       @updatedAt
+  ingreso            Ingreso[]
+  huesped            Huesped        @relation(fields: [fk_huesped], references: [id_huesped])
+  tipoHabitacion     TipoHabitacion @relation(fields: [fk_tipo_habitacion], references: [id_tipo_habitacion])
+  usuario            Usuario        @relation(fields: [fk_usuario], references: [id_usuario])
 }
 
 model Ingreso {
-    id_ingreso            Int                 @id @default(autoincrement())
-    fk_reserva            Int?
-    fk_habitacion         Int
-    fk_huesped            Int
-    fk_tarifa             Int
-    checkIn               DateTime            @db.Timestamptz(6)
-    estado                String
-    fk_usuario            Int
-    activo                Boolean             @default(true)
-    created_at            DateTime            @default(now())
-    updated_at            DateTime            @updatedAt
-    checkOut              DateTime?           @db.Timestamptz(6)
-    cuenta                Cuenta[]
-    huespedesHabitaciones HuespedHabitacion[]
-    habitacion            Habitacion          @relation(fields: [fk_habitacion], references: [id_habitacion])
-    huesped               Huesped             @relation(fields: [fk_huesped], references: [id_huesped])
-    reserva               Reserva?            @relation(fields: [fk_reserva], references: [id_reserva])
-    tarifa                Tarifa              @relation(fields: [fk_tarifa], references: [id_tarifa])
-    usuario               Usuario             @relation(fields: [fk_usuario], references: [id_usuario])
+  id_ingreso            Int                 @id @default(autoincrement())
+  fk_reserva            Int?
+  fk_habitacion         Int
+  fk_huesped            Int
+  fk_tarifa             Int
+  checkIn               DateTime            @db.Timestamptz(6)
+  estado                EstadoIngreso       @default(Activo)
+  fk_usuario            Int
+  activo                Boolean             @default(true)
+  created_at            DateTime            @default(now())
+  updated_at            DateTime            @updatedAt
+  checkOut              DateTime?           @db.Timestamptz(6)
+  cuenta                Cuenta[]
+  huespedesHabitaciones HuespedHabitacion[]
+  habitacion            Habitacion          @relation(fields: [fk_habitacion], references: [id_habitacion])
+  huesped               Huesped             @relation(fields: [fk_huesped], references: [id_huesped])
+  reserva               Reserva?            @relation(fields: [fk_reserva], references: [id_reserva])
+  tarifa                Tarifa              @relation(fields: [fk_tarifa], references: [id_tarifa])
+  usuario               Usuario             @relation(fields: [fk_usuario], references: [id_usuario])
 }
 
 model HuespedHabitacion {
-    id_huesped_habitacion Int      @id @default(autoincrement())
-    fk_huesped            Int
-    fk_ingreso            Int
-    activo                Boolean  @default(true)
-    created_at            DateTime @default(now())
-    updated_at            DateTime @updatedAt
-    huesped               Huesped  @relation(fields: [fk_huesped], references: [id_huesped])
-    ingreso               Ingreso  @relation(fields: [fk_ingreso], references: [id_ingreso])
+  id_huesped_habitacion Int      @id @default(autoincrement())
+  fk_huesped            Int
+  fk_ingreso            Int
+  activo                Boolean  @default(true)
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+  huesped               Huesped  @relation(fields: [fk_huesped], references: [id_huesped])
+  ingreso               Ingreso  @relation(fields: [fk_ingreso], references: [id_ingreso])
 }
 
 model Cuenta {
-    id_cuenta  Int       @id @default(autoincrement())
-    fk_ingreso Int
-    estado     Boolean   @default(true)
-    activo     Boolean   @default(true)
-    created_at DateTime  @default(now())
-    updated_at DateTime  @updatedAt
-    consumos   Consumo[]
-    ingreso    Ingreso   @relation(fields: [fk_ingreso], references: [id_ingreso])
-    factura    Factura[]
+  id_cuenta  Int       @id @default(autoincrement())
+  fk_ingreso Int
+  estado     Boolean   @default(true)
+  activo     Boolean   @default(true)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  consumos   Consumo[]
+  ingreso    Ingreso   @relation(fields: [fk_ingreso], references: [id_ingreso])
+  factura    Factura[]
 }
 
 model Consumo {
-    id_consumo  Int     @id @default(autoincrement())
-    fk_cuenta   Int
-    descripcion String
-    cantidad    Int
-    monto       Int
-    fk_usuario  Int
-    activo      Boolean @default(true)
-    cuenta      Cuenta  @relation(fields: [fk_cuenta], references: [id_cuenta])
-    usuario     Usuario @relation(fields: [fk_usuario], references: [id_usuario])
+  id_consumo  Int     @id @default(autoincrement())
+  fk_cuenta   Int
+  descripcion String
+  cantidad    Int
+  monto       Int
+  fk_usuario  Int
+  activo      Boolean @default(true)
+  cuenta      Cuenta  @relation(fields: [fk_cuenta], references: [id_cuenta])
+  usuario     Usuario @relation(fields: [fk_usuario], references: [id_usuario])
 }
 
 model Timbrado {
-    id_timbrado              Int       @id @default(autoincrement())
-    fecha_inicio             DateTime
-    fecha_fin                DateTime
-    codigo_sucursal          Int
-    codigo_punto_facturacion Int
-    numero_secuencial        Int
-    activo                   Boolean   @default(true)
-    facturas                 Factura[]
+  id_timbrado              Int       @id @default(autoincrement())
+  fecha_inicio             DateTime
+  fecha_fin                DateTime
+  codigo_sucursal          Int
+  codigo_punto_facturacion Int
+  numero_secuencial        Int
+  activo                   Boolean   @default(true)
+  facturas                 Factura[]
 }
 
 model Factura {
-    id_factura      Int              @id @default(autoincrement())
-    fk_cuenta       Int
-    fk_timbrado     Int
-    fecha_emision   DateTime         @default(now())
-    condicion_venta String
-    total           Int
-    fk_usuario      Int
-    detalles        DetalleFactura[]
-    cuenta          Cuenta           @relation(fields: [fk_cuenta], references: [id_cuenta])
-    timbrado        Timbrado         @relation(fields: [fk_timbrado], references: [id_timbrado])
-    usuario         Usuario          @relation(fields: [fk_usuario], references: [id_usuario])
+  id_factura      Int              @id @default(autoincrement())
+  fk_cuenta       Int
+  fk_timbrado     Int
+  fecha_emision   DateTime         @default(now())
+  condicion_venta String
+  total           Int
+  fk_usuario      Int
+  detalles        DetalleFactura[]
+  cuenta          Cuenta           @relation(fields: [fk_cuenta], references: [id_cuenta])
+  timbrado        Timbrado         @relation(fields: [fk_timbrado], references: [id_timbrado])
+  usuario         Usuario          @relation(fields: [fk_usuario], references: [id_usuario])
 }
 
 model DetalleFactura {
-    id_detalle_factura Int     @id @default(autoincrement())
-    fk_factura         Int
-    descripcion        String
-    cantidad           Int
-    precio_unitario    Int
-    descuento          Int
-    porcentaje_iva     Int
-    factura            Factura @relation(fields: [fk_factura], references: [id_factura])
+  id_detalle_factura Int     @id @default(autoincrement())
+  fk_factura         Int
+  descripcion        String
+  cantidad           Int
+  precio_unitario    Int
+  descuento          Int
+  porcentaje_iva     Int
+  factura            Factura @relation(fields: [fk_factura], references: [id_factura])
 }
 
 enum DocumentoIdentidad {
-    DNI
-    PASAPORTE
-    LICENCIA
+  DNI
+  PASAPORTE
+  LICENCIA
 }
 
 enum Nacionalidad {
-    PARAGUAY
-    BRASIL
-    ARGENTINA
-    OTRO
+  PARAGUAY
+  BRASIL
+  ARGENTINA
+  OTRO
+}
+
+enum EstadoIngreso {
+  Activo
+  Pendiente
+  Cancelado
+}
+
+enum EstadoReserva {
+  Confirmada
+  Pendiente
+  Finalizada
 }
