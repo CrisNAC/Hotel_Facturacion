@@ -63,7 +63,6 @@ const Login = () => {
 
                         <div className="mb-3">
                             <label htmlFor="contrasena" name='contrasena' className="form-label">Contraseña:</label>
-                            <label htmlFor="contrasena" name="contrasena" className="form-label">Contraseña:</label>
                             <input
                                 type="password"
 								id="contrasena"

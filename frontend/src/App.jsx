@@ -18,7 +18,7 @@ import Invoice from "./components/Invoice"
 
 import CheckIn from './components/CheckIn'
 import ConfirmarReserva from './components/ConfirmarReserva'
-import AgregarHuesped from './pages/AgregarHuesped'
+import AgregarHuesped from './pages/AgregarHuesped.jsx';
 import SeleccionHabitacion from './components/SeleccionHabitacion'
 
 function App() {
