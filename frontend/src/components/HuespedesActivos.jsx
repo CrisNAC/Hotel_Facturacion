@@ -1,20 +1,30 @@
-import React, { useState, useEffect, useContext  } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { FaRegTrashAlt, FaEye } from "react-icons/fa";
 import { FiFileText } from "react-icons/fi";
 
 import { HuespedesActivosContext } from '../context/HuespedesActivosContexto';
+import ModalDetails from "./ModalDetails.jsx";
+import ModalDelete from './ModalDelete.jsx';
 
-function HuespedesActivos({ ingresosOriginales }) {
+function HuespedesActivos({ ingresosOriginales, refresh }) {
+    /**
+     * Todos los estados
+     */
+    // Estados del filtro
     const [ingresosFiltrados, setIngresosFiltrados] = useState([]);
     const [filtros, setFiltros] = useState({ huesped: '', habitacion: '', estado: '', fecha: '', checkIn: true });
     const [debouncedFiltros, setDebouncedFiltros] = useState(filtros);
-    const [page, setPage] = useState(1);
-    const { setMainPage , setHuespedSeleccionado, setVistaFactura } = useContext(HuespedesActivosContext);
-    const itemsPerPage = 10;
-
+    // Estado de Cambio de componente. Contexto
+    const { setMainPage } = useContext(HuespedesActivosContext);
+    // Estados para las Acciones
     const [selectedItem, setSelectedItem] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    // Estado para la paginacion
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 10;
+    const paginatedItems = ingresosFiltrados.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+    const totalPages = Math.ceil(ingresosFiltrados.length / itemsPerPage);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -29,24 +39,22 @@ function HuespedesActivos({ ingresosOriginales }) {
             if (filtros.huesped && !nombreCompleto.includes(debouncedFiltros.huesped.toLowerCase())) return false;
             if (filtros.habitacion && !ingreso.habitacion?.numero?.toString().includes(filtros.habitacion)) return false;
             if (filtros.estado && ingreso.estado?.toLowerCase() !== filtros.estado.toLowerCase()) return false;
-
             const fecha = debouncedFiltros.fecha;
-            console.log(fecha)
             if (fecha) {
                 const fechaComparar = debouncedFiltros.checkIn ? ingreso.reserva?.check_in : ingreso.reserva?.check_out;
                 if (!fechaComparar?.includes(fecha)) return false;
             }
-
             return true;
         });
-
         setIngresosFiltrados(filtrado);
         setPage(1);
     }, [debouncedFiltros, ingresosOriginales, filtros]);
 
-    const paginatedItems = ingresosFiltrados.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-    const totalPages = Math.ceil(ingresosFiltrados.length / itemsPerPage);
-
+    /**
+     * Para cambiar el formato de la fecha a Dia/Mes/Año
+     * @param {*} dateString Se le pasa el una fecha
+     * @returns Retorna la fecha modifica en caso de exito o si no en caso de fracaso -
+     */
     const formatDMY = (dateString) => {
         if (!dateString) return '—';
         try {
@@ -73,29 +81,28 @@ function HuespedesActivos({ ingresosOriginales }) {
         setFiltros(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    //const resetFilters = () => setFiltros({ huesped: '', habitacion: '', estado: '', fecha: '', checkIn: true });
-
+    /**
+     * Para obtener un Ingreso y modificar el estado showDetailModal
+     *  
+     */
     const handleShowDetails = (item) => {
         setSelectedItem(item);
-        console.log(item.cuenta);
         setShowDetailModal(true);
     };
 
+    /**
+     * Muesta el contenido del ingreso seleccionado.
+     * Cambia el estado de ShowDeleteModal.
+     * @param {*} item 
+     */
     const handleShowDelete = (item) => {
         setSelectedItem(item);
         setShowDeleteModal(true);
     };
 
-    const handleDelete = () => {
-        setIngresosFiltrados(prev => prev.filter(item => item.id_ingreso !== selectedItem.id_ingreso));
-        setShowDeleteModal(false);
-    };
-
-    const irADetCuenta = (item) => {
-        setHuespedSeleccionado(item); // Guarda todo el objeto del huésped
+    const irADetCuenta = () => {
         setMainPage(false);
-        setVistaFactura(false); 
-    };
+    }
 
     return (
         <>
@@ -205,7 +212,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                     <tbody>
                         {paginatedItems.map((item, index) => (
                             <tr key={item.id_ingreso}>
-                                <th scope='row' className='text-center'>{(page - 1) * itemsPerPage + index + 1}</th>
+                                <td className='text-center'>{(page - 1) * itemsPerPage + index + 1}</td>
                                 <td className='text-start'>{`${item.huesped?.nombre || 'N/A'} ${item.huesped?.apellido || ''}`}</td>
                                 <td className="text-center">{item.habitacion?.numero || '—'}</td>
                                 <td className="text-center">{formatDMY(item.reserva?.check_in) || '—'}</td>
@@ -239,7 +246,8 @@ function HuespedesActivos({ ingresosOriginales }) {
                                     return total > 0 ? `${total.toLocaleString()} Gs` : '—';
                                 })()}
                                 </td>
-                                <td className="d-flex justify-content-center">
+                                {/* Botones de la tabla */}
+                                <td className="text-center">
                                     <button
                                         type='button'
                                         className='btn rounded-circle mx-1'
@@ -255,8 +263,7 @@ function HuespedesActivos({ ingresosOriginales }) {
                                     <button
                                         type='button'
                                         className='btn rounded-circle mx-1'
-                                        style={{ width: 35, height: 35 }}
-                                        onClick={() => irADetCuenta(item)}>
+                                        onClick={irADetCuenta}>
                                         <FiFileText />
                                     </button>
                                 </td>
@@ -294,62 +301,15 @@ function HuespedesActivos({ ingresosOriginales }) {
                     Siguiente
                 </button>
             </div>
+
             {/* Modal de detalles */}
             {showDetailModal && selectedItem && (
-                <div className="modal fade show d-block" tabIndex="-1" role="dialog">
-                    <div className="modal-dialog" role="document">
-                        <div className="modal-content">
-                            <div className="modal-header d-flex justify-content-center">
-                                <h4 className="modal-title">Detalles del huésped</h4>
-                            </div>
-                            <div className="modal-body">
-                                <table className="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>#</th>
-                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Nombre</th>
-                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Apellido</th>
-                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Nacionalidad</th>
-                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Telefono</th>
-                                            <th scope='col' style={{ backgroundColor: "#003366", color: "white" }}>Correo</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className="modal-footer d-flex justify-content-center">
-                                <button type="button" className="btn btn-secondary" onClick={() => setShowDetailModal(false)}>Volver</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <ModalDetails item={selectedItem} setShowDetailModal={setShowDetailModal}></ModalDetails>
             )}
 
             {/* Modal de cancelar ingreso */}
             {showDeleteModal && selectedItem && (
-                <div className="modal fade show d-block" tabIndex="-1" role="dialog">
-                    <div className="modal-dialog" role="document">
-                        <div className="modal-content">
-                            <div className="modal-header d-flex justify-content-center">
-                                <h5 className="modal-title">¿Estás seguro de que quieres cancelar este ingreso?</h5>
-                            </div>
-                            <div className="modal-body row row-cols-2 text-start py-5">
-                                <p ><strong>Nombre:</strong> {selectedItem.huesped}</p>
-                                <p className='text-left'><strong>Habitación:</strong> {selectedItem.habitacion}</p>
-                                <p><strong>Check-in:</strong> {selectedItem.checkIn}</p>
-                                <p><strong>Check-out:</strong> {selectedItem.checkOut}</p>
-                                <p><strong>Estado ingreso:</strong> {selectedItem.estadoIngreso.toLocaleString()}</p>
-                                <p><strong>Total:</strong> {selectedItem.total.toLocaleString()} Gs</p>
-                            </div>
-                            <div className="modal-footer d-flex justify-content-center">
-                                <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>Volver</button>
-                                <button type="button" className="btn btn-danger" onClick={handleDelete}>Cancelar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <ModalDelete item={selectedItem} setShowDeleteModal={setShowDeleteModal} refresh={refresh}></ModalDelete>
             )}
         </>
     );
