@@ -41,7 +41,8 @@ export const getAllIngresos = async (req, res) => {
 						apellido: true,
 						nacionalidad: true,
 						telefono: true,
-						email: true
+						email: true,
+						ruc: true
 					}
 				},
 
@@ -50,21 +51,36 @@ export const getAllIngresos = async (req, res) => {
 						numero: true
 					}
 				},
+				tarifa: {
+					select: {
+						descripcion: true,
+						precio: true
+					}
+				},
 
 				cuenta: {
 					select: {
+						id_cuenta: true,
 						consumos: {
 							select: {
+								id_consumo: true,
+								descripcion:true,
 								cantidad: true,
-								monto: true
+								monto: true,
+								activo: true
 							}
 						}
 					}
+				},
+				usuario: {
+					select: {
+						id_usuario: true
+					}
 				}
+
 			}
 		});
 		res.status(200).json(ingresos);
-
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: "Internal Server Error: Error al listar ingresos" });
@@ -72,17 +88,17 @@ export const getAllIngresos = async (req, res) => {
 }
 
 export const createIngreso = async (req, res) => {
-	const {
-		fk_reserva,
-		fk_habitacion,
-		fk_huesped,
-		fk_tarifa,
-		fecha_ingreso,
-		estado,
-		fk_usuario
-	} = req.body;
-
 	try {
+		const {
+			fk_reserva,
+			fk_habitacion,
+			fk_huesped,
+			fk_tarifa,
+			fecha_ingreso,
+			estado,
+			fk_usuario
+		} = req.body;
+
 		const nuevoIngreso = await prisma.ingreso.create({
 			data: {
 				fk_reserva,
@@ -129,7 +145,28 @@ export const createIngreso = async (req, res) => {
 		res.status(201).json(nuevoIngreso);
 
 	} catch (error) {
-		console.error(error);
 		res.status(500).json({ error: "Internal Server Error: Error al crear el ingreso" });
 	}
 }
+
+export const cancelarIngreso = async (req, res) => {
+	try {
+		const { id } = req.params;
+		await prisma.ingreso.update({
+			where: {
+				id_ingreso: parseInt(id)
+			},
+			data: {
+				estado: "Cancelado"
+			}
+		});
+		res.status(200).end();
+	} catch (error) {
+		if (error.code === 'P2025') {
+            res.status(404).json({ error: "Ingreso no encontrado" });
+        } else {
+            console.error(error);
+            res.status(500).json({ error: "Error al cancelar el ingreso" });
+        }
+	}
+};

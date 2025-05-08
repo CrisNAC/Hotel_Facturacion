@@ -1,11 +1,10 @@
 import { Router } from "express";
-import {getAllIngresos, createIngreso} from '../controllers/ingreso.controllers.js';
+import { getAllIngresos, createIngreso, cancelarIngreso } from '../controllers/ingreso.controllers.js';
 
 const router = Router();
 
 router.get('/', getAllIngresos);
 router.post('/', createIngreso);
-
-router.post('/', createIngreso);
+router.patch('/:id', cancelarIngreso);
 
 export default router;

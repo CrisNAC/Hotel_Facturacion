@@ -1,6 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Container } from '@mui/material'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 import Inicio from './pages/Inicio.jsx'
 import NavBar from './components/navbar.jsx'
@@ -15,21 +18,19 @@ import Invoice from "./components/Invoice"
 
 import CheckIn from './components/CheckIn'
 import ConfirmarReserva from './components/ConfirmarReserva'
-import AgregarHuesped from './pages/AgregarHuesped'
+import AgregarHuesped from './pages/AgregarHuesped.jsx';
 import SeleccionHabitacion from './components/SeleccionHabitacion'
 
 function App() {
   return (
     <>
-      <Router>
-        <Container>
-
-
+    <QueryClientProvider client={queryClient}>
+    <Router>
           <Routes>
             <Route path="/Inicio" element={<Inicio />} />
             <Route path="/Huespedes" element={<HuespedesActivosPage />} />
 
-            <Route path="/DetallesCuentas" element={<DetallesCuentas />}></Route>
+            <Route path="/DetallesCuentas/:idIngreso" element={<DetallesCuentas />} />
             <Route path="/VistaFactura" element={<InvoiceComponentEli />}></Route>
 
             <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
@@ -46,10 +47,12 @@ function App() {
             ></Route>
             <Route path="/invoice/:numeroFactura" element={<Invoice />} />
           </Routes>
-        </Container>
       </Router>
+    </QueryClientProvider>
+      
     </>
   )
 }
 
 export default App
+
