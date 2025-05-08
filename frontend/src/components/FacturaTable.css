@@ -79,11 +79,13 @@ body {
 }
 
 /* Estilos para ocultar el icono de calendario nativo en navegadores WebKit */
+/*
 input[type="date"]::-webkit-calendar-picker-indicator {
     opacity: 0;
-    cursor: pointer; /* Mantener la funcionalidad del selector */
+    cursor: pointer;
 }
 
 input[type="date"] {
     padding-right: 2.5rem;
 }
+*/

@@ -31,8 +31,8 @@ export const NavBar = () => {
     <>
       {/* NavBar */}
       <div
-        className="nav-bar fixed-top w-100 d-flex align-items-center py-2 px-4"
-        style={{ backgroundColor: "#83A3A8", height: "60px" }}
+        className="nav-bar fixed-top w-100 d-flex align-items-center py-2 px-4 mb-1"
+        style={{ backgroundColor: "#83A3A8", height: "50px" }}
       >
         {/* Logo */}
         <div className="d-flex align-items-center text-white fw-bold fs-4" onClick={irAInicio}>
@@ -57,7 +57,7 @@ export const NavBar = () => {
       </div >
 
       {/* Contenido debajo del NavBar */}
-      < div style={{ marginTop: "60px" }}>
+      < div style={{ marginTop: "50px" }}>
       </div >
     </>
   );

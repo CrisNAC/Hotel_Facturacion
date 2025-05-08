@@ -1,13 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaEdit, FaTrash, FaUserPlus } from "react-icons/fa";
 import { useNavigate, useLocation } from 'react-router-dom';
 import NavBar from "./navbar";
 
 const ConfirmarReserva = () => {
-	const location = useLocation();
-	const huespedes = location.state?.huespedes || [];
-
 	const navigate = useNavigate();
+	const location = useLocation();
+
+	const [listaHuespedes, setListaHuespedes] = useState(location.state?.huespedes || []);
+
+	// Función para eliminar huésped
+	const eliminarHuesped = async (id) => {
+		try {
+			const response = await fetch(`http://localhost:4000/api/huesped/${id}`, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+
+			const data = await response.json();
+
+			if (response.ok) {
+				alert(data.message || "Huésped eliminado con éxito");
+				setListaHuespedes(prev => prev.filter(h => h.id_huesped !== id));
+			} else {
+				alert(data.error || "Error al eliminar huésped");
+			}
+		} catch (error) {
+			alert("Error de conexión con el servidor");
+		}
+	};
 
 	return (
 		<div>
@@ -23,86 +46,96 @@ const ConfirmarReserva = () => {
 							color: "white",
 							border: "#003366",
 						}}
-						onClick={() => navigate('/AgregarHuesped')}
+						onClick={() => navigate('/AgregarHuesped', { state: { huespedes: listaHuespedes } })}
 					>
 						<FaUserPlus className="me-2" /> Agregar
 					</button>
 				</div>
 
-				<table className="table table-hover">
-					<thead style={{ backgroundColor: "#003366" }}>
+				<table className="table table-bordered table-hover w-100 text-center">
+					<thead style={{ backgroundColor: "#E6E6E6" }}>
 						<tr>
-							<th style={{ backgroundColor: "#003366", color: "white" }}>#</th>
-							<th style={{ backgroundColor: "#003366", color: "white" }}>
+							<th style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}>#</th>
+							<th style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}>
 								Nombre
 							</th>
 							<th
-								style={{ backgroundColor: "#003366", color: "white" }}
+								style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}
 							>
 								Apellido
 							</th>
 							<th
-								style={{ backgroundColor: "#003366", color: "white" }}
+								style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}
 							>
 								Nacionalidad
 							</th>
 							<th
-								style={{ backgroundColor: "#003366", color: "white" }}
+								style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}
 							>
 								Teléfono
 							</th>
 							<th
-								style={{ backgroundColor: "#003366", color: "white" }}
+								style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}
 							>
 								Correo
 							</th>
 							<th
-								style={{ backgroundColor: "#003366", color: "white" }}
+								style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}
 							>
 								Acciones
 							</th>
 						</tr>
 					</thead>
 					<tbody>
-						{huespedes.map((huesped, index) => (
-						<tr key={index}>
-							<td>{index + 1}</td>
-							<td>{huesped.nombre}</td>
-							<td>{huesped.apellido}</td>
-							<td>{huesped.nacionalidad}</td>
-							<td>{huesped.telefono}</td>
-							<td>{huesped.email}</td>
-							<td className="d-flex justify-content-center align-items-center">
-								<button
-									type="button"
-									className="btn plus rounded-circle d-flex align-items-center justify-content-center"
-									style={{
-										backgroundColor: "#003366",
-										color: "white",
-										width: "30px",
-										height: "30px",
-										padding: 0,
-										fontSize: "14px",
-									}}
-								>
-									<FaEdit />
-								</button>
-								<button
-									type="button"
-									className="btn plus rounded-circle d-flex align-items-center justify-content-center"
-									style={{
-										backgroundColor: "#003366",
-										color: "white",
-										width: "30px",
-										height: "30px",
-										padding: 0,
-										fontSize: "14px",
-									}}
-								>
-									<FaTrash />
-								</button>
-							</td>
-						</tr>
+						{listaHuespedes.map((huesped, index) => (
+							<tr key={huesped.id_huesped}>
+								<td>{index + 1}</td>
+								<td>{huesped.nombre}</td>
+								<td>{huesped.apellido}</td>
+								<td>{huesped.nacionalidad}</td>
+								<td>{huesped.telefono}</td>
+								<td>{huesped.email}</td>
+								<td className="d-flex justify-content-center align-items-center">
+									<button
+										type="button"
+										className="btn plus rounded-circle d-flex align-items-center justify-content-center"
+										style={{
+											backgroundColor: "#003366",
+											color: "white",
+											width: "30px",
+											height: "30px",
+											padding: 0,
+											fontSize: "14px",
+										}}
+										onClick={() =>
+											navigate('/AgregarHuesped', {
+												state: {
+													huespedEditar: listaHuespedes[index],
+													indexEditar: index,
+													huespedes: listaHuespedes
+												}
+											})
+										}
+									>
+										<FaEdit />
+									</button>
+									<button
+										type="button"
+										className="btn plus rounded-circle d-flex align-items-center justify-content-center"
+										style={{
+											backgroundColor: "#003366",
+											color: "white",
+											width: "30px",
+											height: "30px",
+											padding: 0,
+											fontSize: "14px",
+										}}
+										onClick={() => eliminarHuesped(huesped.id_huesped)}
+									>
+										<FaTrash />
+									</button>
+								</td>
+							</tr>
 						))}
 					</tbody>
 				</table>
