@@ -41,7 +41,8 @@ export const getAllIngresos = async (req, res) => {
 						apellido: true,
 						nacionalidad: true,
 						telefono: true,
-						email: true
+						email: true,
+						ruc: true
 					}
 				},
 
@@ -50,17 +51,33 @@ export const getAllIngresos = async (req, res) => {
 						numero: true
 					}
 				},
+				tarifa: {
+					select: {
+						descripcion: true,
+						precio: true
+					}
+				},
 
 				cuenta: {
 					select: {
+						id_cuenta: true,
 						consumos: {
 							select: {
+								id_consumo: true,
+								descripcion:true,
 								cantidad: true,
-								monto: true
+								monto: true,
+								activo: true
 							}
 						}
 					}
+				},
+				usuario: {
+					select: {
+						id_usuario: true
+					}
 				}
+
 			}
 		});
 		res.status(200).json(ingresos);
