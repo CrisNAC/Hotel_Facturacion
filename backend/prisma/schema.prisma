@@ -170,7 +170,7 @@ model HuespedHabitacion {
 model Cuenta {
 	id_cuenta      Int      @id @default(autoincrement())
 	fk_ingreso     Int		
-	estado         String	@default("Abierto") // Cambiar a Bolean para el deploy
+	estado Boolean @default(true) // Cambiar a Bolean para el deploy
 	activo         Boolean  @default(true)
 	created_at DateTime @default(now())
 	updated_at DateTime @updatedAt

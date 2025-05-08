@@ -9,7 +9,7 @@ function HuespedesActivos({ ingresosOriginales }) {
     const [filtros, setFiltros] = useState({ huesped: '', habitacion: '', estado: '', fecha: '', checkIn: true });
     const [debouncedFiltros, setDebouncedFiltros] = useState(filtros);
     const [page, setPage] = useState(1);
-    const { setMainPage } = useContext(HuespedesActivosContext);
+    const { setMainPage , setHuespedSeleccionado, setVistaFactura } = useContext(HuespedesActivosContext);
     const itemsPerPage = 10;
 
     const [selectedItem, setSelectedItem] = useState(null);
@@ -57,6 +57,17 @@ function HuespedesActivos({ ingresosOriginales }) {
         }
     };
 
+    const calcularNoches = (checkIn, checkOut) => {
+        if (!checkIn || !checkOut) return 0;
+        
+        const unDia = 24 * 60 * 60 * 1000; // milisegundos en un día
+        const fechaInicio = new Date(checkIn);
+        const fechaFin = new Date(checkOut);
+        
+        // Redondear hacia arriba para contar noches completas
+        return Math.round(Math.abs((fechaFin - fechaInicio) / unDia));
+      };
+
     const handleFilterChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFiltros(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
@@ -80,9 +91,11 @@ function HuespedesActivos({ ingresosOriginales }) {
         setShowDeleteModal(false);
     };
 
-    const irADetCuenta = () =>{
+    const irADetCuenta = (item) => {
+        setHuespedSeleccionado(item); // Guarda todo el objeto del huésped
         setMainPage(false);
-    } 
+        setVistaFactura(false); 
+    };
 
     return (
         <>
@@ -217,10 +230,14 @@ function HuespedesActivos({ ingresosOriginales }) {
                                     </span>
                                 </td>
                                 <td className="text-center">
-                                    {item.cuenta?.length > 0 && item.cuenta[0].consumos?.length > 0
-                                        ? item.cuenta[0].consumos.reduce((acc, consumo) => acc + (consumo.monto || 0), 0).toLocaleString()
-                                        : '—'}
-                                     Gs
+                                {(() => {
+                                    const noches = calcularNoches(item.reserva?.check_in, item.reserva?.check_out);
+                                    const costoHabitacion = noches * (item.tarifa?.precio || 0);
+                                    const totalConsumos = item.cuenta?.[0]?.consumos?.reduce((acc, consumo) => acc + (consumo.monto || 0), 0) || 0;
+                                    const total = costoHabitacion + totalConsumos;
+                                    
+                                    return total > 0 ? `${total.toLocaleString()} Gs` : '—';
+                                })()}
                                 </td>
                                 <td className="d-flex justify-content-center">
                                     <button

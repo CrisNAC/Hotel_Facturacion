@@ -1,11 +1,11 @@
 import { Router } from "express";
-import consumoController from "../controllers/consumo.controllers.js";
-const { getAllConsumos, postConsumo, deleteConsumo } = consumoController;
+import { getAllConsumos, postConsumo, deleteConsumo, actualizarCantidadConsumo } from "../controllers/consumo.controllers.js";
 
 const router = Router();
 
 router.get('/', getAllConsumos);
 router.post('/', postConsumo);
-router.delete('/:id', deleteConsumo);
+router.put('/:id', deleteConsumo);
+router.patch('/:id', actualizarCantidadConsumo); 
 
 export default router;

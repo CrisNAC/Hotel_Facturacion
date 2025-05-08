@@ -1,6 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Container } from '@mui/material'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 import Inicio from './pages/Inicio.jsx'
 import NavBar from './components/navbar.jsx'
@@ -21,7 +24,8 @@ import SeleccionHabitacion from './components/SeleccionHabitacion'
 function App() {
   return (
     <>
-      <Router>
+    <QueryClientProvider client={queryClient}>
+    <Router>
           <Routes>
             <Route path="/Inicio" element={<Inicio />} />
             <Route path="/Huespedes" element={<HuespedesActivosPage />} />
@@ -44,8 +48,11 @@ function App() {
             <Route path="/invoice/:numeroFactura" element={<Invoice />} />
           </Routes>
       </Router>
+    </QueryClientProvider>
+      
     </>
   )
 }
 
 export default App
+
