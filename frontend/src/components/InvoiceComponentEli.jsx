@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./InvoiceStyleEli.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useNavigate } from 'react-router-dom';
+
+import { HuespedesActivosContext } from "../context/HuespedesActivosContexto.jsx";
 
 const Invoice = () => {
   // Datos de la factura
@@ -167,11 +168,13 @@ const Invoice = () => {
     }
   };
 
-  const navigate = useNavigate();
+  const { setMainPage } = useContext(HuespedesActivosContext);
+  const { setVistaFactura } = useContext(HuespedesActivosContext);
 
   const irADetCuenta = () => {
-    navigate('/DetallesCuentas');
-};
+    setMainPage(false);
+    setVistaFactura(false);
+  };
 
   return (
     <div className="invoice">
