@@ -130,7 +130,8 @@ model Ingreso {
 	fk_habitacion     Int
 	fk_huesped        Int
 	fk_tarifa         Int
-	fecha_ingreso     DateTime
+	checkIn			  DateTime
+	checkOut		  DateTime
 	estado            String
 	fk_usuario        Int
 	activo Boolean @default(true)
@@ -162,7 +163,7 @@ model HuespedHabitacion {
 model Cuenta {
 	id_cuenta      Int      @id @default(autoincrement())
 	fk_ingreso     Int
-	estado         String
+	estado         Boolean @default(true)
 	activo         Boolean  @default(true)
 	created_at DateTime @default(now())
 	updated_at DateTime @updatedAt
