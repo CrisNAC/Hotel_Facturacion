@@ -91,7 +91,13 @@ export const getReservaPorId = async (req, res) => {
 			include: {
 				huesped: true,
 				tipoHabitacion: true,
-				usuario: true
+				usuario: true,
+				ingreso: {
+					where: { activo: true},
+					include: {
+						huespedesHabitaciones: true,
+					}
+				}
 			}
 		});
 

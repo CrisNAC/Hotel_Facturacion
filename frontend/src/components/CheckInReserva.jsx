@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { debounce } from "lodash";
 import NavBar from "./navbar";
+import { useReserva } from "../context/ReservaContext.jsx";
 
 const CheckInReserva = () => {
 
 	const [reservaId, setReservaId] = useState('');
 	const [reserva, setReserva] = useState(null);
 	const navigate = useNavigate();
+	const { setReservaSeleccionada } = useReserva();
 
 	const getReservaById = async (id) => {
 		try {
@@ -19,6 +21,17 @@ const CheckInReserva = () => {
 			setReserva(null);
 		}
 	};
+
+	const calcularNoches = () => {
+		if (reserva && reserva.check_in && reserva.check_out) {
+			const checkInDate = new Date(reserva.check_in);
+			const checkOutDate = new Date(reserva.check_out);
+			const diffTime = Math.abs(checkOutDate - checkInDate);
+			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+			return diffDays;
+		}
+		return 0;
+	}
 
 	/*useEffect(() => {
 		getReservaById(reservaId);
@@ -37,8 +50,8 @@ const CheckInReserva = () => {
 		<div>
 			<NavBar />
 			{/* Formulario */}
-			<form style={{ marginTop: '70px' }}>
-				<div className="row g-5">
+			<form>
+				<div className="row justify-content-center my-5">
 
 					<div className="col-md-6 col-lg-4">
 						<label htmlFor="numReserva" className="form-label">
@@ -57,7 +70,9 @@ const CheckInReserva = () => {
 							</button>
 						</div>
 					</div>
+				</div>
 
+				<div className="row g-5">
 					<div className="col-md-6 col-lg-4">
 						<label htmlFor="titular" className="form-label">
 							Titular
@@ -71,37 +86,24 @@ const CheckInReserva = () => {
 						/>
 					</div>
 
-					<div className="col-md-6 col-lg-4"></div>
-
-					<div className="col-md-6 col-lg-4">
-						<label htmlFor="noches" className="form-label">
-							Noches
-						</label>
-						<select className="form-select" id="noches" defaultValue="2">
-							<option value="1">1 noche</option>
-							<option value="2">2 noches</option>
-							<option value="3">3 noches</option>
-						</select>
-					</div>
-
-					<div className="col-md-6 col-lg-4">
-						<label htmlFor="huespedes" className="form-label">
-							Huéspedes
-						</label>
-						<select className="form-select" id="huespedes" defaultValue="2">
-							<option value="1">1 huesped</option>
-							<option value="2">2 huespedes</option>
-							<option value="3">3 huespedes</option>
-						</select>
-					</div>
-
 					<div className="col-md-6 col-lg-4">
 						<label htmlFor="tipo_habitacion" className="form-label">
 							Tipo Habitacion
 						</label>
-						<select className="form-select" id="tipo_habitacion" value={reserva ? reserva.tipoHabitacion.nombre : ""}>
-							
+						<select className="form-select" id="tipo_habitacion" value={reserva ? reserva.tipoHabitacion.nombre : ""} readOnly>
+						{reserva && reserva.tipoHabitacion && (
+							<option value={reserva.tipoHabitacion.nombre}>
+								{reserva.tipoHabitacion.nombre}
+							</option>
+						)}
 						</select>
+					</div>
+
+					<div className="col-md-6 col-lg-4">
+						<label htmlFor="recepcionista" className="form-label">
+							Recepcionista
+						</label>
+						<input type="text" className="form-control" id="recepcionista" value={reserva && reserva.usuario ? reserva.usuario.nombre_usuario : ""} readOnly/>
 					</div>
 
 					<div className="col-md-6 col-lg-4">
@@ -117,23 +119,54 @@ const CheckInReserva = () => {
 					</div>
 
 					<div className="col-md-6 col-lg-4">
-						<label htmlFor="horaLlegada" className="form-label">
-							Hora de llegada
+						<label htmlFor="checkout" className="form-label">
+							Check-out
 						</label>
-						<input type="time" className="form-control" id="horaLlegada" />
+						<input 
+							type="date" 
+							className="form-control" 
+							id="checkout"
+							value={reserva ? reserva.check_out.substring(0, 10) : ""}
+							readOnly />
+					</div>
+
+					<div className="col-md-6 col-lg-4"></div>
+
+					<div className="col-md-6 col-lg-4">
+						<label htmlFor="noches" className="form-label">
+							Noches
+						</label>
+						<input
+							type="number"
+							className="form-control"
+							id="noches"
+							value={reserva ? calcularNoches() : ""}
+							readOnly
+						></input>
 					</div>
 
 					<div className="col-md-6 col-lg-4">
-						<label htmlFor="recepcionista" className="form-label">
-							Recepcionista
+						<label htmlFor="huespedes" className="form-label">
+							Huéspedes
 						</label>
-						<input type="text" className="form-control" id="recepcionista" value={reserva && reserva.usuario ? reserva.usuario.nombre_usuario : ""} readOnly/>
+						<input
+							type="number"
+							className="form-control"
+							id="huespedes"
+							value={reserva && reserva.ingreso.length > 0 ? reserva.ingreso[0].huespedesHabitaciones.length : ""}
+							readOnly
+						/>
 					</div>
 
 				</div>
 
 				<div className="text-center" style={{ marginTop: '60px'}}>
-					<button type="button" className="btn btn-success" onClick={() => navigate('/SeleccionHabitacion')}>
+					<button type="button" className="btn btn-success" 
+						onClick={() => {
+							setReservaSeleccionada(reserva);
+							navigate('/SeleccionHabitacion')
+						}}
+					>
 						Verificar Disponibilidad
 					</button>
 				</div>
