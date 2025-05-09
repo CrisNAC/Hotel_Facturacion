@@ -2,7 +2,10 @@ import axios from "axios";
 
 class HTTPClient {
     constructor() {
-		let baseURL;
+         this.instance = axios.create({
+            baseURL: "http://localhost:4000/api"
+        })
+		/*let baseURL;
 
 		if (import.meta.env.MODE === 'development') {
 			baseURL = import.meta.env.VITE_LOCAL_HOST;
@@ -14,7 +17,7 @@ class HTTPClient {
 
 		this.instance = axios.create({
 			baseURL
-		});
+		});*/
 	}
 
     /****               LOGIN                ***/

@@ -2,11 +2,9 @@ import React, { useContext , useState, useEffect} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 import NavBar from "./navbar";
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { HuespedesActivosContext } from "../context/HuespedesActivosContexto";
 
 const DetallesCuenta = () => {
-  
   const { 
     setMainPage, 
     setVistaFactura,
@@ -22,13 +20,12 @@ const DetallesCuenta = () => {
     monto: 0
   });
   
-
   // Extraer datos del huésped seleccionado
   const huesped = huespedSeleccionado?.huesped || {};
   const habitacion = huespedSeleccionado?.habitacion || {};
   const reserva = huespedSeleccionado?.reserva || {};
   const tarifa = huespedSeleccionado?.tarifa || {};
-  const consumos = huespedSeleccionado?.cuenta?.[0]?.consumos || [];
+  const consumos = consumo.length > 0 ? consumo : huespedSeleccionado?.cuenta?.[0]?.consumos || [];
   
   // Función para calcular noches de estadía
   const calcularNoches = (checkIn, checkOut) => {
@@ -43,7 +40,7 @@ const DetallesCuenta = () => {
   const precioHabitacion = tarifa.precio || 0;
   const totalHabitacion = noches * precioHabitacion;
   const totalConsumos = consumos.filter(item => item.activo === true)
-  .reduce((acc, item) => acc + (item.monto*item.cantidad || 0), 0);
+  .reduce((acc, item) => acc + (item.monto * item.cantidad || 0), 0);
   const totalGeneral = totalHabitacion + totalConsumos;
 
   const irAHuespedes = () => {
@@ -70,17 +67,15 @@ const DetallesCuenta = () => {
         throw new Error('No se encontró cuenta o usuario asociado al ingreso');
       }
   
-      
       const consumoData = {
         descripcion: nuevoConsumo.descripcion,
         cantidad: Number(nuevoConsumo.cantidad),
-        monto: Number(nuevoConsumo.cantidad * nuevoConsumo.precio),
+        monto: Number(nuevoConsumo.precio),
         fk_cuenta: idCuenta,
         fk_usuario: idUsuario
       };
       
       console.log("Consumo que se enviará:", consumoData);
-
   
       const response = await fetch('http://localhost:4000/api/consumo', {
         method: 'POST',
@@ -120,14 +115,9 @@ const DetallesCuenta = () => {
         const error = await response.json();
         throw new Error(error.message || 'Error al eliminar');
       }
-  
+
       // Actualización optimista: eliminar el consumo de la lista local
       setConsumos(prev => prev.filter(c => c.id_consumo !== id));
-  
-      // Opcional: Revalidar el estado desde el servidor para asegurar consistencia
-      // Esto es un re-fetch en caso de que haya más actualizaciones en el backend.
-      const refreshedData = await fetch('http://localhost:4000/api/consumo').then(r => r.json());
-      setConsumos(refreshedData);
   
     } catch (error) {
       console.error('Error:', error);
@@ -177,7 +167,12 @@ const DetallesCuenta = () => {
       actualizarCantidad(id, nuevaCantidad);
     }
   };
- 
+ useEffect(() => {
+    if (huespedSeleccionado?.cuenta?.[0]?.consumos) {
+      setConsumos(huespedSeleccionado.cuenta[0].consumos);
+    }
+  }, [huespedSeleccionado]);
+
 
   return (
     <div className="container mt-5">
@@ -263,36 +258,16 @@ const DetallesCuenta = () => {
               <td className="text-center">{item.cantidad || 1}</td>
               <td className="text-end">{(item.monto || item.precio || 0).toLocaleString()}</td>
               <td className="text-end">{((item.monto || item.precio || 0) * (item.cantidad || 1)).toLocaleString()}</td>
-              <td className="d-flex justify-content-center align-items-center">
+              <td className="d-flex justify-content-center align-items-center" style={{ gap: "3px" }}>
                 <button className="btn btn-outline-dark rounded-circle d-flex align-items-center justify-content-center"
-                    style={{ 
-                      width: "30px", 
-                      height: "30px", 
-                      padding: 0, 
-                      border: "2px solid black",
-                      fontSize: "14px"}}
-                      onClick={() => aumentarCantidad(item.id_consumo, item.cantidad)}
-                  >
-                  <FaPlus />
-                </button>
-                <button className="btn plus rounded-circle d-flex align-items-center justify-content-center"
-                  style={{width: "30px", 
-                    height: "30px", 
-                    padding: 0, 
-                    border: "2px solid black",
-                    fontSize: "14px" }}
-                    onClick={() => disminuirCantidad(item.id_consumo, item.cantidad)}>
-                  <FaMinus />
-                </button>
-                <button className="btn plus rounded-circle d-flex align-items-center justify-content-center"
-                  style={{ width: "30px", 
-                    height: "30px", 
-                    padding: 0, 
-                    border: "2px solid black",
-                    fontSize: "14px" }}
-                   onClick={() => eliminarConsumo(item.id_consumo)}>
-                  <FaTrash />
-                </button>
+                    style={{width: "30px", height: "30px", padding: 0, border: "2px solid black"}}
+                    onClick={() => aumentarCantidad(item.id_consumo, item.cantidad)}><FaPlus/> </button>
+                <button className="btn btn-outline-dark rounded-circle d-flex align-items-center justify-content-center"
+                  style={{width: "30px", height: "30px", padding: 0, border: "2px solid black"}}
+                  onClick={() => disminuirCantidad(item.id_consumo, item.cantidad)}><FaMinus/></button>
+                <button className="btn btn-outline-dark rounded-circle d-flex align-items-center justify-content-center"
+                  style={{ width: "30px", height: "30px", padding: 0, border: "2px solid black"}}
+                  onClick={() => eliminarConsumo(item.id_consumo)}><FaTrash/></button>
               </td>
             </tr>
           ))}
@@ -300,7 +275,6 @@ const DetallesCuenta = () => {
 
       </table>
       <h5 className="text-end"><strong>Total: {totalGeneral.toLocaleString()} Gs</strong></h5>
-
 
       {/* Botones finales */}
       <div className="d-flex justify-content-center align-items-center  mt-4" style={{ gap: "30px" }}>
@@ -362,33 +336,16 @@ const DetallesCuenta = () => {
                   />
                 </div>
                 <div className="col-md-12">
-                  <label>Total: {nuevoConsumo.monto.toLocaleString()} Gs.</label>
+                  <label><strong>Total: </strong>{nuevoConsumo.monto.toLocaleString()} Gs.</label>
                 </div>
               </div>
             </div>
             <div className="modal-footer d-flex justify-content-center">
-              <button 
-                type="button" 
-                className="btn btn-secondary" 
+              <button type="button" className="btn btn-secondary" 
                 onClick={() => {
                   setShowDetailModal(false);
-                  setNuevoConsumo({
-                    descripcion: '',
-                    cantidad: 1,
-                    precio: 0,
-                    monto: 0
-                  });
-                }}
-              >
-                Cancelar
-              </button>
-              <button 
-                type="button" 
-                className="btn btn-success"
-                onClick={agregarConsumo}
-              >
-                Agregar
-              </button>
+                  setNuevoConsumo({descripcion: '', cantidad: 1, monto: 0 }); }}>Cancelar</button>
+              <button type="button" className="btn btn-success" onClick={agregarConsumo}>Agregar</button>
             </div>
           </div>
         </div>
