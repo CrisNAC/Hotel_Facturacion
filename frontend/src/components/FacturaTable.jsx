@@ -112,7 +112,7 @@ const FacturaTable = () => {
                 {/* Filtros */}
                 <h2 className="text-center" style={{ paddingBottom: "20px" }}>Facturas emitidas</h2>
                 <div className="bg-light p-3 rounded mb-3">
-                    <div className="row align-items-center" style={{ paddingLeft: "15px"}}>
+                    <div className="row align-items-center filter-row" style={{ paddingLeft: "32px"}}>
                         <div className="col-12 col-md-auto">
                             <label className="form-label">Desde:</label>
                             <div className="position-relative d-flex align-items-center calendar-wrapper">
@@ -123,7 +123,6 @@ const FacturaTable = () => {
                                     value={filters.desde}
                                     onChange={handleChange}
                                 />
-                                <i className="bi bi-calendar calendar-icon-right" onClick={() => document.getElementById("filtroDesde")?.showPicker?.()} style={{ cursor: "pointer" }}></i>
                             </div>
                         </div>
                         <div className="col-12 col-md-auto">
@@ -136,7 +135,6 @@ const FacturaTable = () => {
                                     value={filters.hasta}
                                     onChange={handleChange}
                                 />
-                                <i className="bi bi-calendar calendar-icon-right" onClick={() => document.getElementById("filtroHasta")?.showPicker?.()} style={{ cursor: "pointer" }}></i>
                             </div>
                         </div>
                         <div className="col-12 col-md-auto">
@@ -166,7 +164,7 @@ const FacturaTable = () => {
                         </div>
                         <div className="col-12 col-md-auto">
                             <button className="btn btn-secondary w-100" style={{ marginTop: "25px" }} onClick={handleResetFilters}>
-                                Reestablecer filtro
+                                Reestablecer
                             </button>
                         </div>
                     </div>
