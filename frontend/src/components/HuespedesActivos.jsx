@@ -65,6 +65,17 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
         }
     };
 
+    const calcularNoches = (checkIn, checkOut) => {
+        if (!checkIn || !checkOut) return 0;
+        
+        const unDia = 24 * 60 * 60 * 1000; // milisegundos en un día
+        const fechaInicio = new Date(checkIn);
+        const fechaFin = new Date(checkOut);
+        
+        // Redondear hacia arriba para contar noches completas
+        return Math.round(Math.abs((fechaFin - fechaInicio) / unDia));
+      };
+
     const handleFilterChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFiltros(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
@@ -226,10 +237,14 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                                     </span>
                                 </td>
                                 <td className="text-center">
-                                    {item.cuenta?.length > 0 && item.cuenta[0].consumos?.length > 0
-                                        ? item.cuenta[0].consumos.reduce((acc, consumo) => acc + (consumo.monto || 0), 0).toLocaleString()
-                                        : '—'}
-                                    Gs
+                                {(() => {
+                                    const noches = calcularNoches(item.reserva?.check_in, item.reserva?.check_out);
+                                    const costoHabitacion = noches * (item.tarifa?.precio || 0);
+                                    const totalConsumos = item.cuenta?.[0]?.consumos?.reduce((acc, consumo) => acc + (consumo.monto || 0), 0) || 0;
+                                    const total = costoHabitacion + totalConsumos;
+                                    
+                                    return total > 0 ? `${total.toLocaleString()} Gs` : '—';
+                                })()}
                                 </td>
                                 {/* Botones de la tabla */}
                                 <td className="text-center">
