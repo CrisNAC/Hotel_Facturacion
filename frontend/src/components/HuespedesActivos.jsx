@@ -15,7 +15,7 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
     const [filtros, setFiltros] = useState({ huesped: '', habitacion: '', estado: '', fecha: '', checkIn: true });
     const [debouncedFiltros, setDebouncedFiltros] = useState(filtros);
     // Estado de Cambio de componente. Contexto
-    const { setMainPage } = useContext(HuespedesActivosContext);
+    const { setMainPage, setHuespedSeleccionado, setVistaFactura } = useContext(HuespedesActivosContext);
     // Estados para las Acciones
     const [selectedItem, setSelectedItem] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
@@ -100,8 +100,10 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
         setShowDeleteModal(true);
     };
 
-    const irADetCuenta = () => {
+    const irADetCuenta = (item) => {
+        setHuespedSeleccionado(item); // Guarda todo el objeto del huésped
         setMainPage(false);
+        setVistaFactura(false);
     }
 
     return (
@@ -240,7 +242,9 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                                 {(() => {
                                     const noches = calcularNoches(item.reserva?.check_in, item.reserva?.check_out);
                                     const costoHabitacion = noches * (item.tarifa?.precio || 0);
-                                    const totalConsumos = item.cuenta?.[0]?.consumos?.reduce((acc, consumo) => acc + (consumo.monto || 0), 0) || 0;
+                                    const totalConsumos = item.cuenta?.[0]?.consumos
+                                        ?.filter(consumo => consumo.activo)
+                                        ?.reduce((acc, consumo) => acc + (consumo.monto * consumo.cantidad || 0), 0) || 0;
                                     const total = costoHabitacion + totalConsumos;
                                     
                                     return total > 0 ? `${total.toLocaleString()} Gs` : '—';
@@ -263,7 +267,7 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                                     <button
                                         type='button'
                                         className='btn rounded-circle mx-1'
-                                        onClick={irADetCuenta}>
+                                        onClick={() => irADetCuenta(item)}>
                                         <FiFileText />
                                     </button>
                                 </td>
