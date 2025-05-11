@@ -178,7 +178,7 @@ const ConfirmarReserva = () => {
 
 				{/* Button */}
 				<div className="d-flex justify-content-center mt-4">
-					<button type="button" className="btn btn-success" style={{ width: '180px', height: '50px' }} onClick={() => navigate('/')}>
+					<button type="button" className="btn btn-success" style={{ width: '150px', height: '40px' }} onClick={() => navigate('/')}>
 						Confirmar Reserva
 					</button>
 				</div>

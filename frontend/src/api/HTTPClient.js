@@ -2,7 +2,8 @@ import axios from "axios";
 
 class HTTPClient {
     constructor() {
-		let baseURL;
+        let baseURL;
+
 
 		if (import.meta.env.MODE === 'development') {
 			baseURL = import.meta.env.VITE_LOCAL_HOST;

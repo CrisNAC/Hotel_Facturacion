@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import "./FacturaTable.css";
 import NavBar from "../components/navbar.jsx";
@@ -7,10 +7,8 @@ import NavBar from "../components/navbar.jsx";
 const FacturaTable = () => {
 
     const navigate = useNavigate();
-    const location = useLocation();
-    const { huesped } = location.state || {};
 
-    const initialFilters ={
+    const initialFilters = {
         desde: "",
         hasta: "",
         huesped: "",
@@ -21,13 +19,15 @@ const FacturaTable = () => {
 
     const handleResetFilters = () => {
         setFilters(initialFilters);
-    }
+        setDateError(""); // limpia errores si los hay
+    };
 
     const [filtered, setFiltered] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 15;
     const [facturas, setFacturas] = useState([]);
-
+    const [loading, setLoading] = useState(true);
+    const [dateError, setDateError] = useState(""); // mensaje de error si el rango de fechas seleccionado no es válido
 
     useEffect(() => {
         const fetchFacturas = async () => {
@@ -48,8 +48,10 @@ const FacturaTable = () => {
             } catch (error) {
                 console.error("Error al cargar los datos:", error);
             }
+            finally {
+                setLoading(false); // Finaliza la carga, sea éxito o error
+            }
         };
-
         fetchFacturas();
     }, []);
 
@@ -76,7 +78,7 @@ const FacturaTable = () => {
             const filtroHasta = hasta ? new Date(hasta) : null;
 
             const nombreCompleto = normalizarTexto(f.huesped);
-            
+
             return (
                 (!filtroDesde || fechaEmision >= filtroDesde) &&
                 (!filtroHasta || fechaEmision <= filtroHasta) &&
@@ -91,10 +93,21 @@ const FacturaTable = () => {
 
     const handleChange = (e) => {
         const { id, value } = e.target;
-        setFilters(prev => ({
-            ...prev,
-            [id.replace("filtro", "").toLowerCase()]: value,
-        }));
+        const campo = id.replace("filtro", "").toLowerCase();
+
+        const nuevosFiltros = {
+            ...filters,
+            [campo]: value,
+        };
+
+        const desde = nuevosFiltros.desde ? new Date(nuevosFiltros.desde) : null;
+        const hasta = nuevosFiltros.hasta ? new Date(nuevosFiltros.hasta) : null;
+
+        setFilters(nuevosFiltros); // primero actualizamos los filtros
+
+        if (desde && hasta && desde > hasta) {
+            alert("La fecha 'Desde' no puede ser mayor que la fecha 'Hasta'.");
+        }
     };
 
     const handlePageClick = (event) => {
@@ -112,7 +125,7 @@ const FacturaTable = () => {
                 {/* Filtros */}
                 <h2 className="text-center" style={{ paddingBottom: "20px" }}>Facturas emitidas</h2>
                 <div className="bg-light p-3 rounded mb-3">
-                    <div className="row align-items-center" style={{ paddingLeft: "15px"}}>
+                    <div className="row align-items-center filter-row" style={{ paddingLeft: "32px" }}>
                         <div className="col-12 col-md-auto">
                             <label className="form-label">Desde:</label>
                             <div className="position-relative d-flex align-items-center calendar-wrapper">
@@ -123,7 +136,6 @@ const FacturaTable = () => {
                                     value={filters.desde}
                                     onChange={handleChange}
                                 />
-                                <i className="bi bi-calendar calendar-icon-right" onClick={() => document.getElementById("filtroDesde")?.showPicker?.()} style={{ cursor: "pointer" }}></i>
                             </div>
                         </div>
                         <div className="col-12 col-md-auto">
@@ -136,8 +148,12 @@ const FacturaTable = () => {
                                     value={filters.hasta}
                                     onChange={handleChange}
                                 />
-                                <i className="bi bi-calendar calendar-icon-right" onClick={() => document.getElementById("filtroHasta")?.showPicker?.()} style={{ cursor: "pointer" }}></i>
                             </div>
+                            {dateError && (
+                                <div className="text-danger mt-1" style={{ fontSize: "0.9rem" }}>
+                                    {dateError}
+                                </div>
+                            )}
                         </div>
                         <div className="col-12 col-md-auto">
                             <label className="form-label">Huésped:</label>
@@ -166,7 +182,7 @@ const FacturaTable = () => {
                         </div>
                         <div className="col-12 col-md-auto">
                             <button className="btn btn-secondary w-100" style={{ marginTop: "25px" }} onClick={handleResetFilters}>
-                                Reestablecer filtro
+                                Reestablecer
                             </button>
                         </div>
                     </div>
@@ -185,7 +201,11 @@ const FacturaTable = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filtered.length > 0 ? (
+                        {loading ? (
+                            <tr><td colSpan="6">Cargando...</td></tr>
+                        ) : filtered.length === 0 ? (
+                            <tr><td colSpan="6">No se encontraron resultados.</td></tr>
+                        ) : (
                             currentItems.map((factura, index) => (
                                 <tr key={index}>
                                     <td>{factura.huesped}</td>
@@ -213,23 +233,21 @@ const FacturaTable = () => {
                                     <td>
                                         <button
                                             className="btn btn-sm"
+                                            aria-label="Ver factura"
+                                            title="Ver factura"
                                             onClick={() => navigate(`/invoice/${factura.numero}`)}
                                         >
                                             <i className="bi bi-eye text-black"></i>
                                         </button>
-                                        <button className="btn btn-sm">
+                                        <button className="btn btn-sm" aria-label="Descargar factura" title="Descargar factura">
                                             <i className="bi bi-download text-black"></i>
                                         </button>
-                                        <button className="btn btn-sm">
+                                        <button className="btn btn-sm" aria-label="Imprimir factura" title="Imprimir factura">
                                             <i className="bi bi-printer text-black"></i>
                                         </button>
                                     </td>
                                 </tr>
                             ))
-                        ) : (
-                            <tr>
-                                <td colSpan="6">No se encontraron resultados</td>
-                            </tr>
                         )}
                     </tbody>
                 </table>

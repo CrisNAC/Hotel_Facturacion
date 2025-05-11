@@ -15,6 +15,13 @@ body {
     cursor: pointer;
 }
 
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+
 .factura-wrapper {
     max-width: 1100px;
     margin: 0 auto;
@@ -78,14 +85,6 @@ body {
     }
 }
 
-/* Estilos para ocultar el icono de calendario nativo en navegadores WebKit */
-/*
 input[type="date"]::-webkit-calendar-picker-indicator {
-    opacity: 0;
     cursor: pointer;
 }
-
-input[type="date"] {
-    padding-right: 2.5rem;
-}
-*/

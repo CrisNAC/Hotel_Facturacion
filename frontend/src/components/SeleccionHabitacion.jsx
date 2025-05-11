@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaWifi, FaSnowflake, FaTv, FaBath, FaCouch } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import NavBar from "../components/navbar.jsx";
+import { useReserva } from "../context/ReservaContext.jsx";
+import axios from "axios";
 
-const habitaciones = [
+const tarifs = [
+	{ tipo: "Solo habitación", descripcion: "con cancelación gratuita", precio: "300.000" },
+	{ tipo: "Habitación y Desayuno", descripcion: "incluido con cancelación gratuita", precio: "340.000" },
+	{ tipo: "Habitación, Desayuno y Cena", descripcion: "incluidos con cancelación gratuita", precio: "440.000" }
+]
+
+/*const habitaciones = [
 	{
 		id: 1,
 		titulo: "Cama Doble-Matrimonial Estándar",
@@ -40,11 +48,38 @@ const habitaciones = [
 			{ tipo: "Habitación, Desayuno y Cena", descripcion: "incluidos con cancelación gratuita", precio: "560.000" }
 		]
 	},
-];
+];*/
 
 const SeleccionHabitacion = () => {
 
+	const { reservaSeleccionada } = useReserva();
+
+	console.log(reservaSeleccionada);
+
 	const navigate = useNavigate();
+
+	const [habitacionesDisponibles, setHabitacionesDisponibles] = useState([]);
+	const [cargando, setCargando] = useState(true);
+
+	useEffect(() => {
+		const fetchHabitaciones = async () => {
+			try {
+				const res = await axios.get('/api/habitacion');
+				const allHabitaciones = res.data;
+
+				const filtradas = allHabitaciones.filter(hab => hab.tipoHabitacion.nombre === reservaSeleccionada.tipoHabitacion.nombre);
+				setHabitacionesDisponibles(filtradas);
+			} catch (error) {
+				console.error("Error al obtener las habitaciones: ", error);
+			} finally {
+				setCargando(false);
+			}
+		};
+
+		if(reservaSeleccionada) {
+			fetchHabitaciones();
+		}
+	}, [reservaSeleccionada]);
 
 	return (
 		<>
@@ -52,46 +87,66 @@ const SeleccionHabitacion = () => {
 			<div>
 				<div className="container py-4" style={{ marginTop: '50px' }}>
 					<h4 className="fw-bold mb-4 text-center">Seleccione habitación y tarifa</h4>
-					{habitaciones.map((hab) => (
-						<div key={hab.id} className="row mb-5 border rounded shadow">
-
-							<div className="col-md-4 border rounded ">
-								<img src={hab.imagen} alt={hab.titulo} className="img-fluid rounded" />
-								<h6 className="mt-2 fw-bold text-center">{hab.titulo}</h6>
-								<p className="text-center">Habitacion {hab.numero}</p>
-								<ul>
-									{hab.servicios.map((serv, idx) => (
-										<li key={idx} className="d-flex align-items-center gap-2 mb-1">
-											<div>{serv.icono}</div>
-											<span>{serv.nombre}</span>
-										</li>
-									))}
-								</ul>
+					{cargando ? (
+						<div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+							<div className="spinner-border text-primary" role="status">
+								<span className="visually-hidden">Cargando habitaciones...</span>
 							</div>
+						</div>
+					) : 					
+					habitacionesDisponibles.length === 0 ? (
+						<p className="text-center">No hay habitaciones disponibles para esta reserva</p>
+					) : (
+						habitacionesDisponibles.map((hab) => (
+							<div key={hab.id_habitacion} className="row mb-5 border rounded shadow">
+								
+								<div className="col-md-4 border rounded ">
+									<img src={"/img/hab1-imagen.png"} alt={hab.tipoHabitacion.nombre} className="img-fluid rounded" />
+									<h6 className="mt-2 fw-bold text-center">{hab.tipoHabitacion.nombre}</h6>
+									<p className="text-center">Habitacion {hab.numero}</p>
+									<ul>
+										<li className="d-flex align-items-center gap-2 mb-1">
+											<FaWifi /> <span>Wifi libre</span>
+										</li>
+										<li className="d-flex align-items-center gap-2 mb-1">
+											<FaSnowflake /> <span>Aire Acondicionado</span>
+										</li>
+										<li className="d-flex align-items-center gap-2 mb-1">
+											<FaTv /> <span>TV Smart</span>
+										</li>
+										<li className="d-flex align-items-center gap-2 mb-1">
+											<FaBath /> <span>Baño privado</span>
+										</li>
+										<li className="d-flex align-items-center gap-2 mb-1">
+											<FaCouch /> <span>Cama super acolchonada</span>
+										</li>
+									</ul>
+								</div>
 
-							<div className="col-md-8 border rounded d-grid">
-								{hab.tarifas.map((tarifa, i) => (
-									<div key={i} className="d-flex justify-content-between align-items-center border-bottom py-2 mb-3">
+								<div className="col-md-8 border rounded d-grid">
+									{tarifs.map((t, idx) => (
+										<div key={idx} className="d-flex justify-content-between align-items-center border-bottom py-2 mb-3">
 
 										<div>
-											{i === 0 && <span className="badge bg-dark mb-1">Económico</span>}
-											<h4 className="m-0">{tarifa.tipo}</h4>
-											<h6>{tarifa.descripcion}</h6>
+											{idx === 0 && <span className="badge bg-dark mb-1">Económico</span>}
+											<h4 className="m-0">{t.tipo}</h4>
+											<h6>{t.descripcion}</h6>
 										</div>
 
 										<div className="text-end">
-											<strong>Gs. {tarifa.precio}</strong>
+											<strong>Gs. {t.precio}</strong>
 											<button type="button" className="btn btn-warning btn-sm ms-3 text-white fw-bold"
 												style={{ width: '180px', height: '50px' }}
 												onClick={() => navigate('/ConfirmarReserva')}>Seleccionar
 											</button>
 										</div>
 									</div>
-								))}
-							</div>
+									))}
+								</div>
 
-						</div>
-					))}
+							</div>
+						))
+					)}
 				</div>
 			</div>
 		</>
