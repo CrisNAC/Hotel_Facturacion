@@ -21,24 +21,26 @@ import ConfirmarReserva from './components/ConfirmarReserva'
 import AgregarHuesped from './pages/AgregarHuesped.jsx';
 import SeleccionHabitacion from './components/SeleccionHabitacion'
 
+import ReservaLayout from './components/ReservaLayout.jsx';
+
 function App() {
   return (
     <>
-    <QueryClientProvider client={queryClient}>
-    <Router>
+      <QueryClientProvider client={queryClient}>
+        <Router>
           <Routes>
+            <Route path="/" element={<Login />} />
             <Route path="/Inicio" element={<Inicio />} />
             <Route path="/Huespedes" element={<HuespedesActivosPage />} />
 
-            <Route path="/DetallesCuentas/:idIngreso" element={<DetallesCuentas />} />
-            <Route path="/VistaFactura" element={<InvoiceComponentEli />}></Route>
+            <Route element={<ReservaLayout></ReservaLayout>}>
+              <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
+              <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
+            </Route>
 
-            <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
             <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
             <Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
-            <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
 
-            <Route path="/" element={<Login />} />
             <Route path="/FacturasEmitidas" element={
               <div style={{ marginTop: "6rem" }}>
                 <FacturaTable />
@@ -47,9 +49,9 @@ function App() {
             ></Route>
             <Route path="/invoice/:numeroFactura" element={<Invoice />} />
           </Routes>
-      </Router>
-    </QueryClientProvider>
-      
+        </Router>
+      </QueryClientProvider>
+
     </>
   )
 }

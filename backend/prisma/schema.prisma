@@ -163,6 +163,7 @@ model Timbrado {
   codigo_punto_facturacion Int
   numero_secuencial        Int
   activo                   Boolean   @default(true)
+  ultimo_numero            Int?      @default(0)
   facturas                 Factura[]
 }
 
@@ -171,9 +172,10 @@ model Factura {
   fk_cuenta       Int
   fk_timbrado     Int
   fecha_emision   DateTime         @default(now())
-  condicion_venta String
+  condicion_venta CondicionVenta   @default(Contado)
   total           Int
   fk_usuario      Int
+  numero_factura  String?          @unique
   detalles        DetalleFactura[]
   cuenta          Cuenta           @relation(fields: [fk_cuenta], references: [id_cuenta])
   timbrado        Timbrado         @relation(fields: [fk_timbrado], references: [id_timbrado])
@@ -214,4 +216,9 @@ enum EstadoReserva {
   Confirmada
   Pendiente
   Finalizada
+}
+
+enum CondicionVenta {
+  Contado
+  Credito
 }

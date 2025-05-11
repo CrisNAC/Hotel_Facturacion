@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import "./FacturaTable.css";
 import NavBar from "../components/navbar.jsx";
@@ -49,7 +49,7 @@ const FacturaTable = () => {
                 console.error("Error al cargar los datos:", error);
             }
             finally {
-                setLoading(false); // 👈 Finaliza la carga, sea éxito o error
+                setLoading(false); // Finaliza la carga, sea éxito o error
             }
         };
         fetchFacturas();
