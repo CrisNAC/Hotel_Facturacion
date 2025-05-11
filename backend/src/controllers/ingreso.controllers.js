@@ -30,6 +30,7 @@ export const getAllIngresos = async (req, res) => {
 
 				reserva: {
 					select: {
+						id_reserva: true,
 						check_in: true,
 						check_out: true
 					}

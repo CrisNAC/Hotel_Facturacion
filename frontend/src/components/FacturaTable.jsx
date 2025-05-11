@@ -49,7 +49,7 @@ const FacturaTable = () => {
                 console.error("Error al cargar los datos:", error);
             }
             finally {
-                setLoading(false); // 👈 Finaliza la carga, sea éxito o error
+                setLoading(false); // Finaliza la carga, sea éxito o error
             }
         };
         fetchFacturas();

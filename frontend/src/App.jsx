@@ -21,6 +21,8 @@ import ConfirmarReserva from './components/ConfirmarReserva'
 import AgregarHuesped from './pages/AgregarHuesped.jsx';
 import SeleccionHabitacion from './components/SeleccionHabitacion'
 
+import ReservaLayout from './components/ReservaLayout.jsx';
+
 function App() {
   return (
     <>
@@ -33,10 +35,13 @@ function App() {
             <Route path="/DetallesCuentas/:idIngreso" element={<DetallesCuentas />} />
             <Route path="/VistaFactura" element={<InvoiceComponentEli />}></Route>
 
-            <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
+			<Route element={<ReservaLayout></ReservaLayout>}>
+				<Route path="/IngresoHuesped" element={<CheckIn />}></Route>
+				<Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
+			</Route>
+
             <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
             <Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
-            <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
 
             <Route path="/" element={<Login />} />
             <Route path="/FacturasEmitidas" element={
