@@ -4,6 +4,7 @@ class HTTPClient {
     constructor() {
         let baseURL;
 
+
 		if (import.meta.env.MODE === 'development') {
 			baseURL = import.meta.env.VITE_LOCAL_HOST;
 		} else if (import.meta.env.VITE_BACKEND_ENV === 'dev') {
