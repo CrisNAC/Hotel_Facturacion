@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import "./Invoice.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -7,6 +7,11 @@ const Invoice = () => {
   const { id } = useParams();
   const [factura, setFactura] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate("/FacturasEmitidas");
+  };
 
   useEffect(() => {
     const fetchFactura = async () => {
@@ -43,7 +48,7 @@ const Invoice = () => {
   const habitacion = ingreso?.habitacion;
   const tarifa = ingreso?.tarifa;
 
- return (
+  return (
     <div className="invoice">
       {/* Encabezado */}
       <div className="invoice-header">
@@ -115,9 +120,15 @@ const Invoice = () => {
         {/* Puedes calcular o mostrar IVA aquí si está en los datos */}
       </div>
 
-      {/* Botones */}
-      <div className="d-flex justify-content-center align-items-center mt-4" style={{ gap: "30px" }}>
-        <button className="btn btn-success fw-bold" style={{ width: "150px", height: "40px" }}>Atrás</button>
+      {/* Botón */}
+      <div className="d-flex justify-content-center align-items-center  mt-4" style={{ gap: "30px" }}>
+        <button
+          className="btn btn-secondary fw-bold"
+          onClick={handleBack}
+          style={{ width: "150px", height: "40px" }}
+        >
+          Atrás
+        </button>
       </div>
     </div>
   );
