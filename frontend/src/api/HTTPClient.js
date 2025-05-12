@@ -18,6 +18,10 @@ class HTTPClient {
 	}
 
     /****               LOGIN                ***/
+    cerrarSesion(){
+        return this.instance.delete('/session', { withCredentials: true });
+    };
+    
     /* login(email, password){
         return this.instance.post("/login", {
             email,

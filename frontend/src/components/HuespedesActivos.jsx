@@ -41,7 +41,7 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
             if (filtros.estado && ingreso.estado?.toLowerCase() !== filtros.estado.toLowerCase()) return false;
             const fecha = debouncedFiltros.fecha;
             if (fecha) {
-                const fechaComparar = debouncedFiltros.checkIn ? ingreso.reserva?.check_in : ingreso.reserva?.check_out;
+                const fechaComparar = debouncedFiltros.checkIn ? ingreso.checkIn : ingreso.checkOut;
                 if (!fechaComparar?.includes(fecha)) return false;
             }
             return true;
@@ -56,7 +56,7 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
      * @returns Retorna la fecha modifica en caso de exito o si no en caso de fracaso -
      */
     const formatDMY = (dateString) => {
-        if (!dateString) return '—';
+        if (!dateString) return '--/--/----';
         try {
             const date = new Date(dateString);
             return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
@@ -67,14 +67,14 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
 
     const calcularNoches = (checkIn, checkOut) => {
         if (!checkIn || !checkOut) return 0;
-        
+
         const unDia = 24 * 60 * 60 * 1000; // milisegundos en un día
         const fechaInicio = new Date(checkIn);
         const fechaFin = new Date(checkOut);
-        
+
         // Redondear hacia arriba para contar noches completas
         return Math.round(Math.abs((fechaFin - fechaInicio) / unDia));
-      };
+    };
 
     const handleFilterChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -102,6 +102,8 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
 
     const irADetCuenta = (item) => {
         setHuespedSeleccionado(item); // Guarda todo el objeto del huésped
+        console.log(item);
+
         setMainPage(false);
         setVistaFactura(false);
     }
@@ -217,9 +219,8 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                                 <td className='text-center'>{(page - 1) * itemsPerPage + index + 1}</td>
                                 <td className='text-start'>{`${item.huesped?.nombre || 'N/A'} ${item.huesped?.apellido || ''}`}</td>
                                 <td className="text-center">{item.habitacion?.numero || '—'}</td>
-                                <td className="text-center">{formatDMY(item.reserva?.check_in) || '—'}</td>
-                                <td className="text-center">{formatDMY(item.reserva?.check_out) || '—'}</td>
-
+                                <td className="text-center">{formatDMY(item.checkIn) || '—'}</td>
+                                <td className="text-center">{formatDMY(item.checkOut) || '—'}</td>
                                 <td className="text-center">
                                     <span style={{
                                         padding: '4px 8px',
@@ -239,16 +240,16 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                                     </span>
                                 </td>
                                 <td className="text-center">
-                                {(() => {
-                                    const noches = calcularNoches(item.reserva?.check_in, item.reserva?.check_out);
-                                    const costoHabitacion = noches * (item.tarifa?.precio || 0);
-                                    const totalConsumos = item.cuenta?.[0]?.consumos
-                                        ?.filter(consumo => consumo.activo)
-                                        ?.reduce((acc, consumo) => acc + (consumo.monto * consumo.cantidad || 0), 0) || 0;
-                                    const total = costoHabitacion + totalConsumos;
-                                    
-                                    return total > 0 ? `${total.toLocaleString()} Gs` : '—';
-                                })()}
+                                    {(() => {
+                                        const noches = calcularNoches(item.reserva?.check_in, item.reserva?.check_out);
+                                        const costoHabitacion = noches * (item.tarifa?.precio || 0);
+                                        const totalConsumos = item.cuenta?.[0]?.consumos
+                                            ?.filter(consumo => consumo.activo)
+                                            ?.reduce((acc, consumo) => acc + (consumo.monto * consumo.cantidad || 0), 0) || 0;
+                                        const total = costoHabitacion + totalConsumos;
+
+                                        return total > 0 ? `${total.toLocaleString()} Gs` : '—';
+                                    })()}
                                 </td>
                                 {/* Botones de la tabla */}
                                 <td className="text-center">
@@ -260,13 +261,15 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                                     </button>
                                     <button
                                         type='button'
-                                        className='btn rounded-circle mx-1'
+                                        className='btn rounded-circle mx-1 border-0'
+                                        disabled={item.estado === 'Cancelado'}
                                         onClick={() => handleShowDelete(item)}>
                                         <FaRegTrashAlt />
                                     </button>
                                     <button
                                         type='button'
-                                        className='btn rounded-circle mx-1'
+                                        className='btn rounded-circle mx-1 border-0'
+                                        disabled={item.estado === 'Cancelado'}
                                         onClick={() => irADetCuenta(item)}>
                                         <FiFileText />
                                     </button>
@@ -290,7 +293,7 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                     <button
                         key={i + 1}
                         type='button'
-                        className={`px-3 py-1 border rounded ${page === i + 1 ? 'bg-secondary' : ''}`}
+                        className={`px-3 py-1 mx-1 border rounded ${page === i + 1 ? 'bg-secondary' : ''}`}
                         onClick={() => setPage(i + 1)}
                     >
                         {i + 1}

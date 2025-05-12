@@ -161,7 +161,6 @@ model Timbrado {
   fecha_fin                DateTime
   codigo_sucursal          Int
   codigo_punto_facturacion Int
-  numero_secuencial        Int
   activo                   Boolean   @default(true)
   ultimo_numero            Int?      @default(0)
   facturas                 Factura[]
