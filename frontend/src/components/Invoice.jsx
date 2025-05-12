@@ -43,6 +43,7 @@ const Invoice = () => {
     timbrado
   } = factura;
 
+  const titular = cuenta?.ingreso?.huesped;
   const ingreso = cuenta?.ingreso;
   const habitacion = ingreso?.habitacion;
   const tarifa = ingreso?.tarifa;
@@ -109,26 +110,26 @@ const Invoice = () => {
         <div className="hotel-name">Hotel Jazel</div>
         <div className="invoice-title">Factura Electrónica</div>
         <div className="commercial-info">
-          Actividad Comercial<br />
-          Dirección del Hotel
+          Servicios de hospedaje y alojamiento<br />
+          Av. Dr. Francia, Encarnación, Paraguay
         </div>
         <div className="invoice-meta text-start">
-          <div><span>RUC:</span> {usuario?.documento || 'Sin RUC'}</div>
-          <div><span>Timbrado N°:</span> {timbrado?.numero || '---'}</div>
+          <div><span>RUC:</span> {titular?.ruc || '-------'}</div>
+          <div><span>Timbrado N°:</span> {id_factura}</div>
           <div><span>Inicio Vigencia:</span> {timbrado?.fecha_inicio || '---'}</div>
           <div>
-            <span>Factura Electrónica<br />N°:</span> {id_factura}
+            <span>Factura Electrónica<br />N°:</span> {factura?.numero_factura || '---------------'}
           </div>
         </div>
       </div>
 
-      {/* Cliente */}
+      {/* Huésped */}
       <div className="customer-section">
         <div className="customer-info text-start">
-          <div><span>Nombre o Razón Social:</span> {usuario?.nombre} {usuario?.apellido}</div>
-          <div><span>RUC / Documento de Identidad:</span> {usuario?.documento || '---'}</div>
-          <div><span>Correo Electrónico:</span> {usuario?.correo || '---'}</div>
-          <div><span>Teléfono:</span> {usuario?.telefono || '---'}</div>
+          <div><span>Nombre o Razón Social:</span> {titular?.nombre} {titular?.apellido}</div>
+          <div><span>RUC / Documento de Identidad:</span> {titular?.ruc || titular?.numero_documento || '---------'}</div>
+          <div><span>Correo Electrónico:</span> {titular?.email || '-----------------'}</div>
+          <div><span>Teléfono:</span> {titular?.telefono || '----------'}</div>
         </div>
         <div className="invoice-details text-start">
           <div><span>Fecha y hora de emisión:</span> {new Date(fecha_emision).toLocaleString()}</div>
@@ -141,6 +142,7 @@ const Invoice = () => {
       <table className="items-table">
         <thead>
           <tr className="table-header table-bordered">
+            <th>Código</th>
             <th>Descripción</th>
             <th>Cantidad</th>
             <th>Precio Unitario</th>
@@ -152,13 +154,14 @@ const Invoice = () => {
         <tbody>
           {detalles.map((detalle, index) => (
             <tr className="table-row" key={index}>
+              <td>{detalle.id_detalle_factura}</td>
               <td>{detalle.descripcion}</td>
               <td>{detalle.cantidad}</td>
               <td>{detalle.precio_unitario}</td>
               <td>{detalle.descuento}</td>
               <td>{detalle.porcentaje_iva}</td>
               <td>
-                {(detalle.cantidad * detalle.precio_unitario - detalle.descuento).toLocaleString()} Gs.
+                {(detalle.cantidad * detalle.precio_unitario - detalle.descuento).toLocaleString()}
               </td>
             </tr>
           ))}

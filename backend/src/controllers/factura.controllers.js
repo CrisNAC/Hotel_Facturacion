@@ -104,7 +104,9 @@ export const getFacturaById = async (req, res) => {
 		const factura = await prisma.factura.findUnique({
 			where: { id_factura: parseInt(id) },
 			include: {
-				detalles: true,
+				detalles: {
+					select: { id_detalle_factura: true, descripcion: true, cantidad: true, precio_unitario: true, descuento: true, porcentaje_iva: true }
+				},
 				timbrado: true,
 				usuario: {
 					select: { nombre: true, apellido: true }
@@ -114,7 +116,7 @@ export const getFacturaById = async (req, res) => {
 						ingreso: {
 							include: {
 								huesped: {
-									select: { nombre: true, apellido: true }
+									select: { nombre: true, apellido: true, numero_documento: true, ruc: true, telefono: true, email: true }
 								},
 								habitacion: {
 									include: {
