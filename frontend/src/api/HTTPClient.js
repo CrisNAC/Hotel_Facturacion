@@ -48,11 +48,20 @@ class HTTPClient {
         return this.instance.get(`/ingresos/${huespedId}`)
     };
 
-
     /****        HUESPEDES HABITACION       ****/
     getDetalleHabitacion(id) {
         return this.instance.get(`/huespedHabitacion/${id}`);
     };
+
+    /****        FACTURAS       ****/
+    getFacturas() {
+        return this.instance.get("/facturas");
+    }
+    
+    getFacturaById(id) {
+        return this.instance.get(`/facturas/${id}`);
+    }
+
 };
 
 export default HTTPClient;

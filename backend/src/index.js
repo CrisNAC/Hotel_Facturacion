@@ -14,7 +14,9 @@ import ingresoRoutes from "./routes/ingreso.routes.js";
 import huespedHabitacionRoutes from "./routes/huespedhabitacion.routes.js";
 import cuentaRoutes from "./routes/cuenta.routes.js";
 import consumoRoutes from "./routes/consumo.routes.js";
+import timbradoRoutes from "./routes/timbrado.routes.js";
 import facturaRoutes from "./routes/factura.routes.js";
+import detallefacturaRoutes from "./routes/detallefactura.routes.js";
 
 dotenv.config();
 const app = express();
@@ -27,25 +29,26 @@ app.use(cookieParser());
 app.use(cors({
 	origin: [
 		process.env.LOCAL_HOST,
-		process.env.DEV,
 		process.env.PRODUCCION,
 	],
 	methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 	credentials: true // si usas cookies
 }));
 
-app.use('/api/usuario', usuarioRoutes);					//Kisser
-app.use('/api/session', sessionRoutes);					//Kisser
-app.use('/api/huesped', huespedRoutes);					//Cristian - Kisser (modified)
-app.use('/api/tipohabitacion', tipoHabitacionRoutes); 	//Kisser
-app.use('/api/tarifa', tarifaRoutes)					//Kisser
-app.use('/api/habitacion', habitacionesRoutes);			//Kisser
-app.use('/api/reserva', reservaRoutes);					//Jazmín
-app.use('/api/ingresos', ingresoRoutes);				//Cristian - Kisser (Modified)
-app.use('/api/huespedhabitacion', huespedHabitacionRoutes); //Jazmín
-app.use('/api/cuenta', cuentaRoutes);					//Cristian
-app.use('/api/consumo', consumoRoutes);					//Cristian
-app.use('/api/facturas', facturaRoutes);				//Cristian
+app.use('/api/usuario', usuarioRoutes);							//Kisser
+app.use('/api/session', sessionRoutes);							//Kisser
+app.use('/api/huesped', huespedRoutes);							//Cristian - Kisser (modified)
+app.use('/api/tipohabitacion', tipoHabitacionRoutes); 			//Kisser
+app.use('/api/tarifa', tarifaRoutes)							//Kisser
+app.use('/api/habitacion', habitacionesRoutes);					//Kisser
+app.use('/api/reserva', reservaRoutes);							//Jazmín
+app.use('/api/ingresos', ingresoRoutes);						//Cristian - Kisser (Modified)
+app.use('/api/huespedhabitacion', huespedHabitacionRoutes); 	//Jazmín
+app.use('/api/cuenta', cuentaRoutes);							//Cristian
+app.use('/api/consumo', consumoRoutes);							//Cristian
+app.use('/api/timbrado', timbradoRoutes);					    //Jazmín
+app.use('/api/facturas', facturaRoutes);						//Jazmín
+app.use('/api/detallefactura', detallefacturaRoutes);           //Jazmín
 
 app.listen(PORT, () => {
 	console.log(`Servidor corriendo en http://localhost:${PORT}`);
