@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import html2pdf from "html2pdf.js"; // para descargar PDF
-import { useRef } from "react"; // para descargar PDF
+import { Skeleton, Container } from "@mui/material";
+import html2pdf from "html2pdf.js";
+import NavBar from "../components/navbar.jsx";
+import NavBarSkeleton from '../skeleton/navbar.skeleton.jsx';
 import "../styles/Invoice.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -9,17 +11,22 @@ const Invoice = () => {
   const { id } = useParams();
   const [factura, setFactura] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const invoiceRef = useRef(); // para descargar PDF
+  const invoiceRef = useRef();
 
   useEffect(() => {
     const fetchFactura = async () => {
       try {
         const res = await fetch(`http://localhost:4000/api/facturas/${id}`);
+        if (!res.ok) {
+          throw new Error("Error al obtener la factura");
+        }
         const data = await res.json();
         setFactura(data);
-      } catch (error) {
-        console.error("Error al obtener la factura:", error);
+      } catch (err) {
+        setError(err.message);
+        console.error("Error al obtener la factura:", err);
       } finally {
         setLoading(false);
       }
@@ -28,45 +35,33 @@ const Invoice = () => {
     fetchFactura();
   }, [id]);
 
-  if (!factura) {
-    return <div>Cargando...</div>;
-  }
-
-  const {
-    id_factura,
-    fecha_emision,
-    total,
-    condicion_venta,
-    usuario,
-    detalles,
-    cuenta,
-    timbrado
-  } = factura;
-
-  const titular = cuenta?.ingreso?.huesped;
-  const ingreso = cuenta?.ingreso;
-  const habitacion = ingreso?.habitacion;
-  const tarifa = ingreso?.tarifa;
-
-  const handleBack = () => {
-    navigate("/FacturasEmitidas");
+  /**
+ * Para cambiar el formato de la fecha a Dia/Mes/Año
+ * @param {*} dateString Se le pasa el una fecha
+ * @returns Retorna la fecha modifica en caso de exito o si no en caso de fracaso -
+ */
+  const formatDMY = (dateString) => {
+    if (!dateString) return '—';
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
+    } catch {
+      return '—';
+    }
   };
 
-  // Función para descargar la factura como PDF
+  const handleBack = () => navigate("/FacturasEmitidas");
+
   const handleDownload = () => {
     const element = document.querySelector(".invoice");
     const buttons = document.querySelector(".no-print");
-
-    // Ocultar los botones
-    if (buttons) {
-      buttons.style.visibility = "hidden";
-    }
+    if (buttons) buttons.style.visibility = "hidden";
 
     import("html2pdf.js").then((html2pdf) => {
       html2pdf.default()
         .set({
           margin: 0,
-          filename: `factura-${id_factura}.pdf`,
+          filename: `factura-${factura?.id_factura}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
           html2canvas: { scale: 2 },
           jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
@@ -74,137 +69,174 @@ const Invoice = () => {
         .from(element)
         .save()
         .then(() => {
-          // Restaurar visibilidad después de exportar
-          if (buttons) {
-            buttons.style.visibility = "visible";
-          }
+          if (buttons) buttons.style.visibility = "visible";
         });
     });
   };
 
-  // Función para imprimir una factura
   const handlePrint = () => {
     const buttons = document.querySelector(".no-print");
-
-    // Ocultar botones antes de imprimir
-    if (buttons) {
-      buttons.style.visibility = "hidden";
-    }
+    if (buttons) buttons.style.visibility = "hidden";
 
     setTimeout(() => {
       window.print();
-
-      // Restaurar visibilidad después de imprimir
       setTimeout(() => {
-        if (buttons) {
-          buttons.style.visibility = "visible";
-        }
+        if (buttons) buttons.style.visibility = "visible";
       }, 1000);
-    }, 100); // Breve espera para que se oculte antes del print
+    }, 100);
   };
 
+  // Skeleton loading UI
+  if (loading) {
+    return (
+      <>
+        <NavBarSkeleton />
+        <Container className="mt-5">
+          <div className="d-flex justify-content-center mt-3">
+            <Skeleton variant="rectangular" animation="wave" width={701} height={480} />
+          </div>
+          <div className="d-flex justify-content-center mt-3" style={{ gap: "30px" }}>
+            <Skeleton variant="rectangular" animation="wave" width={150} height={40} />
+            <Skeleton variant="rectangular" animation="wave" width={150} height={40} />
+            <Skeleton variant="rectangular" animation="wave" width={150} height={40} />
+          </div>
+        </Container>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <NavBar />
+        <Container className="mt-5">
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        </Container>
+      </>
+    );
+  }
+
+  if (!factura) return null; // Precaución extra
+
+  const {
+    id_factura,
+    fecha_emision,
+    total,
+    condicion_venta,
+    usuario,
+    detalles = [],
+    cuenta,
+    timbrado
+  } = factura;
+
+  const titular = cuenta?.ingreso?.huesped;
+  const ingreso = cuenta?.ingreso;
+
   return (
-    <div className="invoice" ref={invoiceRef}>
-      {/* Encabezado */}
-      <div className="invoice-header">
-        <div className="hotel-name">Hotel Jazel</div>
-        <div className="invoice-title">Factura Electrónica</div>
-        <div className="commercial-info">
-          Servicios de hospedaje y alojamiento<br />
-          Av. Dr. Francia, Encarnación, Paraguay
-        </div>
-        <div className="invoice-meta text-start">
-          <div><span>RUC:</span> {titular?.ruc || '-------'}</div>
-          <div><span>Timbrado N°:</span> {id_factura}</div>
-          <div><span>Inicio Vigencia:</span> {timbrado?.fecha_inicio || '---'}</div>
-          <div>
-            <span>Factura Electrónica<br />N°:</span> {factura?.numero_factura || '---------------'}
+    <>
+      <NavBar />
+      <div className="invoice" ref={invoiceRef}>
+        {/* Encabezado */}
+        <div className="invoice-header">
+          <div className="hotel-name">Hotel Jazel</div>
+          <div className="invoice-title">Factura Electrónica</div>
+          <div className="commercial-info">
+            Servicios de hospedaje y alojamiento<br />
+            Av. Dr. Francia, Encarnación, Paraguay
+          </div>
+          <div className="invoice-meta text-start">
+            <div><span>RUC:</span> {titular?.ruc || '-------'}</div>
+            <div><span>Timbrado N°:</span> {id_factura}</div>
+            <div><span>Inicio Vigencia:</span> {formatDMY(timbrado?.fecha_inicio) || '---'}</div>
+            <div>
+              <span>Factura Electrónica<br />N°:</span> {factura?.numero_factura || '---------------'}
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Huésped */}
-      <div className="customer-section">
-        <div className="customer-info text-start">
-          <div><span>Nombre o Razón Social:</span> {titular?.nombre} {titular?.apellido}</div>
-          <div><span>RUC / Documento de Identidad:</span> {titular?.ruc || titular?.numero_documento || '---------'}</div>
-          <div><span>Correo Electrónico:</span> {titular?.email || '-----------------'}</div>
-          <div><span>Teléfono:</span> {titular?.telefono || '----------'}</div>
+        <br />
+        {/* Información del huésped */}
+        <div className="customer-section">
+          <div className="customer-info text-start">
+            <div><span>Nombre o Razón Social:</span> {titular?.nombre} {titular?.apellido}</div>
+            <div><span>RUC / Documento de Identidad:</span> {titular?.ruc || titular?.numero_documento || '---------'}</div>
+            <div><span>Correo Electrónico:</span> {titular?.email || '-----------------'}</div>
+            <div><span>Teléfono:</span> {titular?.telefono || '----------'}</div>
+          </div>
+          <div className="invoice-details text-start">
+            <div><span>Fecha y hora de emisión:</span> {new Date(fecha_emision).toLocaleString()}</div>
+            <div><span>Cond. Venta:</span> {condicion_venta}</div>
+            <div><span>Moneda:</span> Guaraní</div>
+          </div>
         </div>
-        <div className="invoice-details text-start">
-          <div><span>Fecha y hora de emisión:</span> {new Date(fecha_emision).toLocaleString()}</div>
-          <div><span>Cond. Venta:</span> {condicion_venta}</div>
-          <div><span>Moneda:</span> Guaraní</div>
-        </div>
-      </div>
-
-      {/* Tabla */}
-      <table className="items-table">
-        <thead>
-          <tr className="table-header table-bordered">
-            <th>Código</th>
-            <th>Descripción</th>
-            <th>Cantidad</th>
-            <th>Precio Unitario</th>
-            <th>Descuento</th>
-            <th>IVA (%)</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {detalles.map((detalle, index) => (
-            <tr className="table-row" key={index}>
-              <td>{detalle.id_detalle_factura}</td>
-              <td>{detalle.descripcion}</td>
-              <td>{detalle.cantidad}</td>
-              <td>{detalle.precio_unitario}</td>
-              <td>{detalle.descuento}</td>
-              <td>{detalle.porcentaje_iva}</td>
-              <td>
-                {(detalle.cantidad * detalle.precio_unitario - detalle.descuento).toLocaleString()}
-              </td>
+        <br />
+        <table className="items-table">
+          <thead>
+            <tr className="table-header table-bordered">
+              <th>Código</th>
+              <th>Descripción</th>
+              <th>Unidad</th>
+              <th>Cantidad</th>
+              <th>Precio Unitario</th>
+              <th>Descuento</th>
+              <th>Exenta</th>
+              <th>5 (%)</th>
+              <th>10 (%)</th>
+              <th>Total</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Totales */}
-      <div className="totals-section">
-        <div className="total-row">
-          <div className="total-label">TOTAL:</div>
-          <div>{total.toLocaleString()} Gs.</div>
+          </thead>
+          <tbody>
+            {Array.isArray(detalles) && detalles.map((detalle, index) => (
+              <tr className="table-row" key={index}>
+                <td>{detalle.id_detalle_factura}</td>
+                <td>{detalle.descripcion}</td>
+                <td>{detalle.cantidad}</td>
+                <td>{detalle.precio_unitario}</td>
+                <td>{detalle.descuento}</td>
+                <td>{detalle.porcentaje_iva}</td>
+                <td>{(detalle.cantidad * detalle.precio_unitario - detalle.descuento).toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {/* Totales */}
+        <div className="totals-section">
+          <div className="total-row">
+            <div className="total-label">TOTAL:</div>
+            <div>{total.toLocaleString()} Gs.</div>
+          </div>
+          {/* Puedes calcular o mostrar IVA aquí si está en los datos */}
         </div>
-        {/* Puedes calcular o mostrar IVA aquí si está en los datos */}
+        {/* Botón */}
+        <div
+          className="d-flex justify-content-center align-items-center mt-4 no-print"
+          style={{ gap: "30px" }}
+        >
+          <button
+            className="btn btn-secondary fw-bold"
+            onClick={handleBack}
+            style={{ width: "150px", height: "40px" }}
+          >
+            Atrás
+          </button>
+          <button
+            className="btn btn-success fw-bold"
+            onClick={handleDownload}
+            style={{ width: "150px", height: "40px" }}
+          >
+            Descargar PDF
+          </button>
+          <button
+            className="btn btn-primary fw-bold"
+            onClick={handlePrint}
+            style={{ width: "150px", height: "40px" }}
+          >
+            Imprimir
+          </button>
+        </div>
       </div>
-
-      {/* Botón */}
-      <div
-        className="d-flex justify-content-center align-items-center mt-4 no-print"
-        style={{ gap: "30px" }}
-      >
-        <button
-          className="btn btn-secondary fw-bold"
-          onClick={handleBack}
-          style={{ width: "150px", height: "40px" }}
-        >
-          Atrás
-        </button>
-        <button
-          className="btn btn-success fw-bold"
-          onClick={handleDownload}
-          style={{ width: "150px", height: "40px" }}
-        >
-          Descargar PDF
-        </button>
-        <button
-          className="btn btn-primary fw-bold"
-          onClick={handlePrint}
-          style={{ width: "150px", height: "40px" }}
-        >
-          Imprimir
-        </button>
-      </div>
-    </div>
+    </>
   );
 };
 

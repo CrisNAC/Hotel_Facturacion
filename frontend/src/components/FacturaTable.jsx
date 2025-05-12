@@ -121,7 +121,7 @@ const FacturaTable = ({
                         <th style={{ backgroundColor: "#E6E6E6", color: "2E2E2E" }}>Fecha de emisión</th>
                         <th style={{ backgroundColor: "#E6E6E6", color: "2E2E2E" }}>Monto total</th>
                         <th style={{ backgroundColor: "#E6E6E6", color: "2E2E2E" }}>Condición venta</th>
-                        <th style={{ backgroundColor: "#E6E6E6", color: "2E2E2E" }}>Acciones</th>
+                        <th style={{ backgroundColor: "#E6E6E6", color: "2E2E2E" }}>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -148,14 +148,8 @@ const FacturaTable = ({
                                 </td>
                                 <td>{factura.condicion_venta}</td>
                                 <td>
-                                    <button className="btn btn-sm color-accion" title="Ver" onClick={() => navigate(`/Invoice/${factura.id_factura}`)}>
+                                    <button className="btn btn-sm color-accion" title="Ver factura" fontSize="100px" onClick={() => navigate(`/Invoice/${factura.id_factura}`)}>
                                         <i className="bi bi-eye text-black"></i>
-                                    </button>
-                                    <button className="btn btn-sm color-accion" title="Descargar">
-                                        <i className="bi bi-download text-black"></i>
-                                    </button>
-                                    <button className="btn btn-sm color-accion" title="Imprimir">
-                                        <i className="bi bi-printer text-black"></i>
                                     </button>
                                 </td>
                             </tr>

@@ -43,12 +43,17 @@ function App() {
             <Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
 
             <Route path="/FacturasEmitidas" element={
-              <div style={{ marginTop: "6rem" }}>
+              <div style={{ marginTop: "5rem" }}>
                 <FacturaPage />
               </div>
             }
             ></Route>
-            <Route path="/Invoice/:id" element={<Invoice />} />
+            <Route path="/Invoice/:id" element={
+              <div style={{ marginTop: "5rem" }}>
+                <Invoice />
+              </div>
+            }
+            ></Route>
           </Routes>
         </Router>
       </QueryClientProvider>
