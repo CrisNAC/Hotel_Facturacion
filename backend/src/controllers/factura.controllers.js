@@ -95,3 +95,47 @@ export const createFactura = async (req, res) => {
 		res.status(500).json({ error: "Error al crear la factura" });
 	}
 };
+
+// Obtener una factura por su ID
+export const getFacturaById = async (req, res) => {
+	const { id } = req.params;
+
+	try {
+		const factura = await prisma.factura.findUnique({
+			where: { id_factura: parseInt(id) },
+			include: {
+				detalles: true,
+				timbrado: true,
+				usuario: {
+					select: { nombre: true, apellido: true }
+				},
+				cuenta: {
+					include: {
+						ingreso: {
+							include: {
+								huesped: {
+									select: { nombre: true, apellido: true }
+								},
+								habitacion: {
+									include: {
+										tipoHabitacion: true
+									}
+								},
+								tarifa: true
+							}
+						}
+					}
+				}
+			}
+		});
+
+		if (!factura) {
+			return res.status(404).json({ error: 'Factura no encontrada' });
+		}
+
+		res.status(200).json(factura);
+	} catch (error) {
+		console.error('Error al obtener la factura:', error);
+		res.status(500).json({ error: 'Error al obtener la factura' });
+	}
+};

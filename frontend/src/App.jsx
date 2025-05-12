@@ -12,9 +12,9 @@ import DetallesCuentas from "./components/DetallesCuenta"
 import InvoiceComponentEli from "./components/InvoiceComponentEli"
 
 import Login from './components/Login'
-import FacturaTable from "./components/FacturaTable"
+import FacturaTable from "./components/FacturaTable.jsx"
 
-import Invoice from "./components/Invoice"
+import Invoice from "./components/Invoice.jsx"
 
 import CheckIn from './components/CheckIn'
 import ConfirmarReserva from './components/ConfirmarReserva'
@@ -48,7 +48,7 @@ function App() {
               </div>
             }
             ></Route>
-            <Route path="/invoice/:numeroFactura" element={<Invoice />} />
+            <Route path="/Invoice/:id" element={<Invoice />} />
           </Routes>
         </Router>
       </QueryClientProvider>

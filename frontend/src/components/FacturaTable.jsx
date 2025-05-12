@@ -148,7 +148,7 @@ const FacturaTable = ({
                                 </td>
                                 <td>{factura.condicion_venta}</td>
                                 <td>
-                                    <button className="btn btn-sm color-accion" title="Ver" onClick={() => navigate(`/invoice/${factura.numero_factura}`)}>
+                                    <button className="btn btn-sm color-accion" title="Ver" onClick={() => navigate(`/Invoice/${factura.id_factura}`)}>
                                         <i className="bi bi-eye text-black"></i>
                                     </button>
                                     <button className="btn btn-sm color-accion" title="Descargar">

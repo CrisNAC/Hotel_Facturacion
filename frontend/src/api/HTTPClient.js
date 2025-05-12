@@ -57,7 +57,7 @@ class HTTPClient {
     getFacturas() {
         return this.instance.get("/facturas");
     }
-    
+
     getFacturaById(id) {
         return this.instance.get(`/facturas/${id}`);
     }
