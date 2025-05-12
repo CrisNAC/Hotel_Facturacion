@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import html2pdf from "html2pdf.js"; // para descargar PDF
 import { useRef } from "react"; // para descargar PDF
-import "./Invoice.css";
+import "../styles/Invoice.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Invoice = () => {

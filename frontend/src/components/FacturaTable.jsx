@@ -1,6 +1,6 @@
 import React from "react";
 import ReactPaginate from "react-paginate";
-import "./FacturaTable.css";
+import "../styles/FacturaTable.css";
 
 const FacturaTable = ({
     filters,
@@ -42,10 +42,10 @@ const FacturaTable = ({
 
     return (
         <div className="factura-wrapper container-fluid px-4 mt-4">
-            <h2 className="text-center mb-4">Facturas emitidas</h2>
-
+            <h2 className="text-center" style={{ paddingBottom: "20px" }}>Facturas emitidas</h2>
+            {/* Filtros */}
             <div className="bg-light p-3 rounded mb-3">
-                <div className="row align-items-center filter-row px-3">
+                <div className="row align-items-center filter-row" style={{ paddingLeft: "32px" }}>
                     <div className="col-12 col-md-auto">
                         <label className="form-label">Desde:</label>
                         <div className="position-relative d-flex align-items-center calendar-wrapper">
@@ -112,8 +112,8 @@ const FacturaTable = ({
                 </div>
             </div>
 
-            {/* Tabla */}
-            <table className="table table-bordered table-hover text-center">
+            {/* Tabla de resultados */}
+            <table id="tablaFacturas" className="table table-bordered table-hover w-100 text-center">
                 <thead>
                     <tr>
                         <th style={{ backgroundColor: "#E6E6E6", color: "2E2E2E" }}>Huésped</th>
