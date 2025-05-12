@@ -12,9 +12,9 @@ import DetallesCuentas from "./components/DetallesCuenta"
 import InvoiceComponentEli from "./components/InvoiceComponentEli"
 
 import Login from './components/Login'
-import FacturaTable from "./components/FacturaTable"
+import FacturaTable from "./components/FacturaTable.jsx"
 
-import Invoice from "./components/Invoice"
+import Invoice from "./components/Invoice.jsx"
 
 import CheckIn from './components/CheckIn'
 import ConfirmarReserva from './components/ConfirmarReserva'
@@ -22,6 +22,7 @@ import AgregarHuesped from './pages/AgregarHuesped.jsx';
 import SeleccionHabitacion from './components/SeleccionHabitacion'
 
 import ReservaLayout from './components/ReservaLayout.jsx';
+import FacturaPage from './pages/FacturaPage.jsx';
 
 function App() {
   return (
@@ -43,11 +44,11 @@ function App() {
 
             <Route path="/FacturasEmitidas" element={
               <div style={{ marginTop: "6rem" }}>
-                <FacturaTable />
+                <FacturaPage />
               </div>
             }
             ></Route>
-            <Route path="/invoice/:numeroFactura" element={<Invoice />} />
+            <Route path="/Invoice/:id" element={<Invoice />} />
           </Routes>
         </Router>
       </QueryClientProvider>
