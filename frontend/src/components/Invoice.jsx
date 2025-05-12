@@ -56,8 +56,10 @@ const Invoice = () => {
     const element = document.querySelector(".invoice");
     const buttons = document.querySelector(".no-print");
 
-    // Ocultar botones antes de exportar
-    if (buttons) buttons.style.display = "none";
+    // Ocultar los botones
+    if (buttons) {
+      buttons.style.visibility = "hidden";
+    }
 
     import("html2pdf.js").then((html2pdf) => {
       html2pdf.default()
@@ -71,10 +73,33 @@ const Invoice = () => {
         .from(element)
         .save()
         .then(() => {
-          // Restaurar botones después de guardar
-          if (buttons) buttons.style.display = "flex";
+          // Restaurar visibilidad después de exportar
+          if (buttons) {
+            buttons.style.visibility = "visible";
+          }
         });
     });
+  };
+
+  // Función para imprimir una factura
+  const handlePrint = () => {
+    const buttons = document.querySelector(".no-print");
+
+    // Ocultar botones antes de imprimir
+    if (buttons) {
+      buttons.style.visibility = "hidden";
+    }
+
+    setTimeout(() => {
+      window.print();
+
+      // Restaurar visibilidad después de imprimir
+      setTimeout(() => {
+        if (buttons) {
+          buttons.style.visibility = "visible";
+        }
+      }, 1000);
+    }, 100); // Breve espera para que se oculte antes del print
   };
 
   return (
@@ -166,7 +191,14 @@ const Invoice = () => {
           onClick={handleDownload}
           style={{ width: "150px", height: "40px" }}
         >
-          Descargar
+          Descargar PDF
+        </button>
+        <button
+          className="btn btn-primary fw-bold"
+          onClick={handlePrint}
+          style={{ width: "150px", height: "40px" }}
+        >
+          Imprimir
         </button>
       </div>
     </div>
