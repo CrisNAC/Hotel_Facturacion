@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import html2pdf from "html2pdf.js"; // para descargar PDF
+import { useRef } from "react"; // para descargar PDF
 import "./Invoice.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -8,10 +10,7 @@ const Invoice = () => {
   const [factura, setFactura] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  const handleBack = () => {
-    navigate("/FacturasEmitidas");
-  };
+  const invoiceRef = useRef(); // para descargar PDF
 
   useEffect(() => {
     const fetchFactura = async () => {
@@ -48,8 +47,38 @@ const Invoice = () => {
   const habitacion = ingreso?.habitacion;
   const tarifa = ingreso?.tarifa;
 
+  const handleBack = () => {
+    navigate("/FacturasEmitidas");
+  };
+
+  // Función para descargar la factura como PDF
+  const handleDownload = () => {
+    const element = document.querySelector(".invoice");
+    const buttons = document.querySelector(".no-print");
+
+    // Ocultar botones antes de exportar
+    if (buttons) buttons.style.display = "none";
+
+    import("html2pdf.js").then((html2pdf) => {
+      html2pdf.default()
+        .set({
+          margin: 0,
+          filename: `factura-${id_factura}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+        })
+        .from(element)
+        .save()
+        .then(() => {
+          // Restaurar botones después de guardar
+          if (buttons) buttons.style.display = "flex";
+        });
+    });
+  };
+
   return (
-    <div className="invoice">
+    <div className="invoice" ref={invoiceRef}>
       {/* Encabezado */}
       <div className="invoice-header">
         <div className="hotel-name">Hotel Jazel</div>
@@ -114,20 +143,30 @@ const Invoice = () => {
       {/* Totales */}
       <div className="totals-section">
         <div className="total-row">
-          <div className="total-label">TOTAL DE LA OPERACIÓN:</div>
+          <div className="total-label">TOTAL:</div>
           <div>{total.toLocaleString()} Gs.</div>
         </div>
         {/* Puedes calcular o mostrar IVA aquí si está en los datos */}
       </div>
 
       {/* Botón */}
-      <div className="d-flex justify-content-center align-items-center  mt-4" style={{ gap: "30px" }}>
+      <div
+        className="d-flex justify-content-center align-items-center mt-4 no-print"
+        style={{ gap: "30px" }}
+      >
         <button
           className="btn btn-secondary fw-bold"
           onClick={handleBack}
           style={{ width: "150px", height: "40px" }}
         >
           Atrás
+        </button>
+        <button
+          className="btn btn-success fw-bold"
+          onClick={handleDownload}
+          style={{ width: "150px", height: "40px" }}
+        >
+          Descargar
         </button>
       </div>
     </div>
