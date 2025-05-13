@@ -26,8 +26,8 @@ class HTTPClient {
         return this.instance.post("/login", {
             email,
             password
-        })
-    }*/
+            })
+            }*/
 
     /****       LISTADO DE INGRESOS        ****/
 
@@ -39,14 +39,22 @@ class HTTPClient {
         return this.instance.patch(`/ingresos/${id}`);
     }
 
-    /****        HUESPEDES        ****/
-    /*getHuespedes() {
-        return this.instance.get("/huespedes");
-        }*/
-
     getHuespedById(huespedId) {
         return this.instance.get(`/ingresos/${huespedId}`)
     };
+
+    /****        HUESPEDES        ****/
+    getHuespedes() {
+        return this.instance.get("/huesped");
+    }
+
+    getAHuespedById(id) {
+        return this.instance.get(`/huesped/${id}`);
+    }
+
+    deleteAHuespedById(id) {
+        return this.instance.delete(`/huesped/${id}`);
+    }
 
     /****        HUESPEDES HABITACION       ****/
     getDetalleHabitacion(id) {

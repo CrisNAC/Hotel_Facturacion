@@ -37,10 +37,10 @@ function App() {
             <Route element={<ReservaLayout></ReservaLayout>}>
               <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
               <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
+              <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
+              <Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
             </Route>
 
-            <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
-            <Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
 
             <Route path="/FacturasEmitidas" element={
               <div style={{ marginTop: "5rem" }}>
