@@ -1,13 +1,14 @@
-import React from "react";
 import { useNavigate } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaChevronDown } from "react-icons/fa";
 import { FaSlack } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
-import axios from "axios";
+import HTTPClient from "../api/HTTPClient.js";
+import { Dropdown } from 'react-bootstrap';
+import { Avatar } from '@mui/material';
 
 export const NavBar = () => {
-
+  const client = new HTTPClient();
   const navigate = useNavigate();
 
   const irAInicio = () => {
@@ -30,16 +31,45 @@ export const NavBar = () => {
     navigate('/');
   };
 
-	const handleLogout = async () => {
-		try {
-			const response = await axios.delete('/api/session/', { withCredentials: true});
-			console.log(response.data);
-			irALogin();
-		}
-		catch(error){
-			console.log('Error al intentar hacer logout:', error);
-		}
-	}
+  const handleLogout = async () => {
+    try {
+      await client.cerrarSesion();
+      irALogin();
+    }
+    catch (error) {
+      console.log('Error al intentar hacer logout:', error);
+    }
+  }
+
+  function stringToColor(string) {
+    let hash = 0;
+    let i;
+
+    /* eslint-disable no-bitwise */
+    for (i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    let color = '#';
+
+    for (i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+    /* eslint-enable no-bitwise */
+
+    return color;
+  }
+
+  function stringAvatar(name) {
+
+    return {
+      sx: {
+        bgcolor: stringToColor(name),
+      },
+      children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+    };
+  }
 
   return (
     <>
@@ -60,15 +90,19 @@ export const NavBar = () => {
           <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAIngresoHuesped}>Ingreso de huésped</button>
           <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAFacturasEmitidas}>Facturas emitidas</button>
           <button className="btn btn-link text-white fw-normal text-decoration-none">Reportes</button>
-					<button className="btn btn-link text-white fw-normal text-decoration-none" onClick={handleLogout}>Logout</button>
         </div >
 
         {/* Auth section */}
+        <Dropdown className='mx-2' align="end">
+          <Dropdown.Toggle variant="link" className="text-white d-flex align-items-center p-0 border-0">
+            <Avatar {...stringAvatar('Sebatian Kisser')} /> {/* Siempre debe de recibir un NOMBRE y APELLIDO */}
+            {/* <FaUser className="me-1" /> */}
+          </Dropdown.Toggle>
 
-        <div className="d-flex align-items-center" onClick={irALogin}>
-          <FaUser className="text-white ms-2"></FaUser>
-          <FaChevronDown className="text-white ms-2" />
-        </div >
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       </div >
 
       {/* Contenido debajo del NavBar */}
