@@ -2,10 +2,6 @@ import axios from "axios";
 
 class HTTPClient {
     constructor() {
-        this.instance = axios.create({
-            baseURL: "http://localhost:4000/api"
-        })
-        /*
         let baseURL;
 
         if (import.meta.env.MODE === 'development') {
@@ -18,10 +14,14 @@ class HTTPClient {
 
         this.instance = axios.create({
             baseURL
-        });*/
+        });
     }
 
     /****               LOGIN                ***/
+    cerrarSesion() {
+        return this.instance.delete('/session', { withCredentials: true });
+    };
+
     /* login(email, password){
         return this.instance.post("/login", {
             email,
@@ -61,7 +61,6 @@ class HTTPClient {
     getFacturaById(id) {
         return this.instance.get(`/facturas/${id}`);
     }
-
 };
 
 export default HTTPClient;
