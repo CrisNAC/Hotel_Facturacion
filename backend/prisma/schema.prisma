@@ -78,7 +78,7 @@ model Habitacion {
   created_at         DateTime       @default(now())
   updated_at         DateTime       @updatedAt
   tipoHabitacion     TipoHabitacion @relation(fields: [fk_tipo_habitacion], references: [id_tipo_habitacion])
-  ingresos           Ingreso[]
+  ingresos           Ingreso?
 }
 
 model Reserva {
@@ -101,16 +101,16 @@ model Reserva {
 model Ingreso {
   id_ingreso            Int                 @id @default(autoincrement())
   fk_reserva            Int?
-  fk_habitacion         Int
+  fk_habitacion         Int                 @unique
   fk_huesped            Int
   fk_tarifa             Int
-  checkIn               DateTime            @db.Timestamptz(6)
   estado                EstadoIngreso       @default(Activo)
   fk_usuario            Int
   activo                Boolean             @default(true)
   created_at            DateTime            @default(now())
   updated_at            DateTime            @updatedAt
   checkOut              DateTime?           @db.Timestamptz(6)
+  checkIn               DateTime            @default(now()) @db.Timestamptz(6)
   cuenta                Cuenta[]
   huespedesHabitaciones HuespedHabitacion[]
   habitacion            Habitacion          @relation(fields: [fk_habitacion], references: [id_habitacion])

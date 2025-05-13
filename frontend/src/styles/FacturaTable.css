@@ -5,13 +5,7 @@ body {
     align-items: stretch !important;
 }
 
-.color-primario {
-    background-color: #DDE7EA;
-    color: white;
-    border: none;
-}
-.color-primario:hover {
-    background-color: #005599;
+.color-accion:hover {
     cursor: pointer;
 }
 
@@ -20,7 +14,6 @@ body {
     flex-wrap: wrap;
     gap: 1rem;
 }
-
 
 .factura-wrapper {
     max-width: 1100px;
@@ -61,6 +54,7 @@ body {
 #tablaFacturas tr {
     border-bottom: 1px solid #dee2e6;
 }
+
 #tablaFacturas thead th {
     text-align: center !important;
     vertical-align: middle !important;
