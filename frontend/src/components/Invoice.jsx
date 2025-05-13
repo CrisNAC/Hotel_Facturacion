@@ -56,36 +56,45 @@ const Invoice = () => {
 
   const handleBack = () => navigate("/FacturasEmitidas");
 
-const handleDownload = () => {
-  const element = document.querySelector(".invoice");
+  const handleDownload = () => {
+    const element = document.querySelector(".invoice");
 
-  // Ocultar todos los elementos con clase no-print
-  const noPrintElements = document.querySelectorAll(".no-print");
-  noPrintElements.forEach(el => el.style.visibility = "hidden");
+    // Ocultar todos los elementos con clase no-print
+    const noPrintElements = document.querySelectorAll(".no-print");
+    noPrintElements.forEach(el => el.style.visibility = "hidden");
 
-  import("html2pdf.js").then((html2pdf) => {
-    html2pdf.default()
-      .set({
-        margin: 0,
-        filename: `factura-${factura?.id_factura}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
-      })
-      .from(element)
-      .save()
-      .then(() => {
-        // Restaurar visibilidad
-        noPrintElements.forEach(el => el.style.visibility = "visible");
-      });
-  });
-};
+    import("html2pdf.js").then((html2pdf) => {
+      html2pdf.default()
+        .set({
+          margin: 0,
+          filename: `factura-${factura?.id_factura}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+        })
+        .from(element)
+        .save()
+        .then(() => {
+          // Restaurar visibilidad
+          noPrintElements.forEach(el => el.style.visibility = "visible");
+        });
+    });
+  };
 
+  const handlePrint = () => {
+    const navbar = document.querySelector(".no-print");
+    if (navbar) navbar.style.display = "none";
+    const buttons = document.querySelector(".no-print");
+    if (buttons) buttons.style.visibility = "hidden";
 
-const handlePrint = () => {
-  window.print();
-};
-
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => {
+        if (navbar) navbar.style.display = "block";
+        if (buttons) buttons.style.visibility = "visible";
+      }, 1000);
+    }, 100);
+  };
 
   // Skeleton loading UI
   if (loading) {
