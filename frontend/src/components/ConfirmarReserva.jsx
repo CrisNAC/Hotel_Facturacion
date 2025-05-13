@@ -83,7 +83,7 @@ const ConfirmarReserva = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{listaHuespedes ? (<tr><td colSpan={7}>Sin huespedes</td></tr>)
+						{(listaHuespedes.length === 0) ? (<tr><td colSpan={7}>Sin huespedes</td></tr>)
 							: (listaHuespedes.map((huesped, index) => (
 								<tr key={huesped.id_huesped}>
 									<td>{index + 1}</td>

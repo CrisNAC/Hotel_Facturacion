@@ -23,6 +23,7 @@ import SeleccionHabitacion from './components/SeleccionHabitacion'
 
 import ReservaLayout from './components/ReservaLayout.jsx';
 import FacturaPage from './pages/FacturaPage.jsx';
+import ErrorComponent from './components/ErrorComponent.jsx';
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
             }
             ></Route>
             <Route path="/Invoice/:id" element={<Invoice />}></Route>
+            <Route path='*' element={<ErrorComponent code={404} message='Pagina no encontrada'></ErrorComponent>}></Route>
           </Routes>
         </Router>
       </QueryClientProvider>
