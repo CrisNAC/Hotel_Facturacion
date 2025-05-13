@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+//import React, { useState, useEffect } from 'react';
 import { FaRegTrashAlt, FaEye } from "react-icons/fa";
 import { FiFileText } from "react-icons/fi";
 import HTTPClient from '../api/HTTPClient.js';
@@ -6,14 +6,14 @@ import NavBar from '../components/navbar.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, Container, Row, Col, Table } from 'react-bootstrap';
 
-const cards = [
-  { color: '#B3F2B4', value: 15, label: 'Habitaciones Libres' },    // Verde pastel
-  { color: '#D0EFFF', value: 10, label: 'Habitaciones Reservadas' }, // Celeste pastel
-  { color: '#FFF9C4', value: 17, label: 'Habitaciones Libres' },    // Amarillo pastel
-  { color: '#FFCCBC', value: 100, label: 'Huéspedes Activos' }       // Naranja pastel
-];
 
 const Inicio = () => {
+  const cards = [
+    { color: '#B3F2B4', value: 15, label: 'Habitaciones Libres' },    // Verde pastel
+    { color: '#D0EFFF', value: 10, label: 'Habitaciones Reservadas' }, // Celeste pastel
+    { color: '#FFF9C4', value: 17, label: 'Habitaciones Libres' },    // Amarillo pastel
+    { color: '#FFCCBC', value: 100, label: 'Huéspedes Activos' }       // Naranja pastel
+  ];
   return (
     <>
       <NavBar />

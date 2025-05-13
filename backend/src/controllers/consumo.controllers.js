@@ -5,6 +5,7 @@ export const getAllConsumos = async (req, res) => {
     try {
         const result = await prisma.consumo.findMany({
             where: {
+                id_cuenta: cuentaId,
                 activo: true
             }
         });
