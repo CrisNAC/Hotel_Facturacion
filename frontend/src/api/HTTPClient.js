@@ -55,11 +55,11 @@ class HTTPClient {
 
     /****        FACTURAS       ****/
     getFacturas() {
-        return this.instance.get("/api/facturas");
+        return this.instance.get("/facturas");
     }
 
     getFacturaById(id) {
-        return this.instance.get(`/api/facturas/${id}`);
+        return this.instance.get(`/facturas/${id}`);
     }
 };
 

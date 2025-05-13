@@ -48,7 +48,7 @@ function HuespedesActivosPage() {
 
     const skeletonPage = () => (
         <>
-            <NavBarSkeleton />
+            <NavBar />
             <HuespedesActivosSkeleton></HuespedesActivosSkeleton>
         </>
     );

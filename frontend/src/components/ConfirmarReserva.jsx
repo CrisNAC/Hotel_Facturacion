@@ -48,7 +48,7 @@ const ConfirmarReserva = () => {
 						}}
 						onClick={() => navigate('/AgregarHuesped', { state: { huespedes: listaHuespedes } })}
 					>
-						<FaUserPlus className="me-2" /> Agregar
+						<FaUserPlus className="me-2" style={{ fontSize: '1rem', paddingBottom: '2px' }} />Agregar<span></span>
 					</button>
 				</div>
 
@@ -178,7 +178,7 @@ const ConfirmarReserva = () => {
 
 				{/* Button */}
 				<div className="d-flex justify-content-center mt-4">
-					<button type="button" className="btn btn-success" style={{ width: '150px', height: '40px' }} onClick={() => navigate('/')}>
+					<button type="button" className="btn btn-success" onClick={() => navigate('/')}>
 						Confirmar Reserva
 					</button>
 				</div>

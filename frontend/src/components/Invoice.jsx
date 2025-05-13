@@ -276,21 +276,18 @@ const Invoice = () => {
           <button
             className="btn btn-secondary fw-bold"
             onClick={handleBack}
-            style={{ width: "150px", height: "40px" }}
           >
             Atrás
           </button>
           <button
             className="btn btn-success fw-bold"
             onClick={handleDownload}
-            style={{ width: "150px", height: "40px" }}
           >
             Descargar PDF
           </button>
           <button
             className="btn btn-primary fw-bold"
             onClick={handlePrint}
-            style={{ width: "150px", height: "40px" }}
           >
             Imprimir
           </button>
