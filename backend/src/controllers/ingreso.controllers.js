@@ -1,6 +1,11 @@
 import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
+/* [
+	{ checkIn: 'asc' },
+	{ estado: 'asc' }
+] */
+
 export const getAllIngresos = async (req, res) => {
 	try {
 		const ingresos = await prisma.ingreso.findMany({

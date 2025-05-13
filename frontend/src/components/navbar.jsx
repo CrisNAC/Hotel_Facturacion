@@ -93,9 +93,9 @@ export const NavBar = () => {
         </div >
 
         {/* Auth section */}
-        <Dropdown align="end">
+        <Dropdown className='mx-2' align="end">
           <Dropdown.Toggle variant="link" className="text-white d-flex align-items-center p-0 border-0">
-            <Avatar {...stringAvatar('Seba Kisser')} /> {/* Siempre debe de recibir un NOMBRE y APELLIDO */}
+            <Avatar {...stringAvatar('Sebatian Kisser')} /> {/* Siempre debe de recibir un NOMBRE y APELLIDO */}
             {/* <FaUser className="me-1" /> */}
           </Dropdown.Toggle>
 

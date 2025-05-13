@@ -241,7 +241,7 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                                 </td>
                                 <td className="text-center">
                                     {(() => {
-                                        const noches = calcularNoches(item.reserva?.check_in, item.reserva?.check_out);
+                                        const noches = calcularNoches(item.checkIn, item.checkOut);
                                         const costoHabitacion = noches * (item.tarifa?.precio || 0);
                                         const totalConsumos = item.cuenta?.[0]?.consumos
                                             ?.filter(consumo => consumo.activo)
@@ -269,7 +269,7 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                                     <button
                                         type='button'
                                         className='btn rounded-circle mx-1 border-0'
-                                        disabled={item.estado === 'Cancelado'}
+                                        disabled={item.estado === 'Cancelado' || item.estado === 'Pendiente'}
                                         onClick={() => irADetCuenta(item)}>
                                         <FiFileText />
                                     </button>

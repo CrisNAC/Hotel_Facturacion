@@ -41,7 +41,7 @@ function ErrorComponent({
             {showButton && (
                 <Button
                     variant="contained"
-                    onClick={accion()}
+                    onClick={accion}
                     color="primary"
                 >
                     {buttonText}
