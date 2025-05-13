@@ -18,16 +18,25 @@ function HuespedesActivosPage() {
     const [ingresosOriginales, setIngresosOriginales] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    //const [status, setStatus] = useState(null);
-    
+    const [status, setStatus] = useState(null);
+
     const fetchIngresos = async () => {
         try {
             setLoading(true);
             const response = await client.getIngresos();
             setIngresosOriginales(response.data);
         } catch (err) {
-            setError(err.message);
-            console.error('Error al obtener ingresos:', err);
+            // Si hay respuesta del servidor
+            if (err.response) {
+                setError(err.response.data?.error || err.message);
+                setStatus(err.response.status);
+                console.error('Error al obtener ingresos:', err.response.status, err.response.data);
+            } else {
+                // Errores de red u otros
+                setError(err.message);
+                setStatus(500);
+                console.error('Error de red o sin respuesta:', err.message);
+            }
         } finally {
             setLoading(false);
         }
@@ -46,7 +55,7 @@ function HuespedesActivosPage() {
 
     const errorPage = () => (
         <>
-            <ErrorComponent message={error}></ErrorComponent>
+            <ErrorComponent code={status} message={error}></ErrorComponent>
         </>
     );
 
@@ -56,21 +65,25 @@ function HuespedesActivosPage() {
                 <HuespedesActivosContext.Consumer>
                     {({ mainPage, vistaFactura }) => (
                         <>
-                            <NavBar />
                             {mainPage ? (
                                 <Container>
                                     {loading ? skeletonPage() :
                                         error ? errorPage() : (
-                                            <HuespedesActivos ingresosOriginales={ingresosOriginales} refresh={fetchIngresos}/>)
-                                    }
+                                            <>
+                                                <NavBar />
+                                                <HuespedesActivos ingresosOriginales={ingresosOriginales} refresh={fetchIngresos} />
+                                            </>
+                                    )}
                                 </Container>
                             ) : vistaFactura ? (
                                 <Container>
+                                    <NavBar />
                                     <Invoice></Invoice>
                                 </Container>
                             ) : (
                                 <Container>
-                                    <DetallesCuenta refresh={fetchIngresos}/>
+                                    <NavBar />
+                                    <DetallesCuenta refresh={fetchIngresos} />
                                 </Container>
                             )}
                         </>
