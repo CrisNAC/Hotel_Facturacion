@@ -1,219 +1,176 @@
-import { useNavigate } from "react-router-dom";
-import React from "react";
-import "./Invoice.css";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useEffect, useState, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Skeleton, Container } from "@mui/material";
+import html2pdf from "html2pdf.js";
 import NavBar from "../components/navbar.jsx";
+import NavBarSkeleton from '../skeleton/navbar.skeleton.jsx';
+import "../styles/Invoice.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Invoice = () => {
-
+  const { id } = useParams();
+  const [factura, setFactura] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const invoiceRef = useRef();
 
-  const handleBack = () => {
-    navigate("/FacturasEmitidas");
-  };
-
-  // Datos de la factura
-  const invoiceData = {
-    hotelName: "Hotel Jazel",
-    activity: "Actividad Comercial",
-    address: "Dirección",
-    ruc: "1234567",
-    timbrado: "12557904",
-    vigencia: "12/01/2025",
-    invoiceNumber: "001-001-8000915",
-    customer: {
-      name: "María López",
-      document: "3458237",
-      email: "marialopez@gmail.com",
-      phone: "595981654234"
-    },
-    invoiceDetails: {
-      date: "22/03/2025 15:33:15",
-      condition: "Contado",
-      currency: "Guarani"
-    },
-    items: [
-      {
-        code: "001",
-        description: "Habitación Ejecutiva",
-        unit: "UNI",
-        quantity: 3,
-        unitPrice: "150.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "450.000"
-      },
-      {
-        code: "002",
-        description: "Habitación Suite",
-        unit: "UNI",
-        quantity: 2,
-        unitPrice: "250.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "500.000"
-      },
-      {
-        code: "101",
-        description: "Servicio de Spa Completo",
-        unit: "UNI",
-        quantity: 1,
-        unitPrice: "120.000",
-        discount: "10.000",
-        exempt: "-",
-        tax5: "-",
-        tax10: "110.000"
-      },
-      {
-        code: "102",
-        description: "Almuerzo Ejecutivo",
-        unit: "UNI",
-        quantity: 4,
-        unitPrice: "45.000",
-        discount: "-",
-        exempt: "SI",
-        tax5: "-",
-        tax10: "-"
-      },
-      {
-        code: "103",
-        description: "Transporte Aeropuerto",
-        unit: "VIAJE",
-        quantity: 2,
-        unitPrice: "80.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "8.000",
-        tax10: "-"
-      },
-      {
-        code: "201",
-        description: "Lavandería Express",
-        unit: "KG",
-        quantity: 5,
-        unitPrice: "12.000",
-        discount: "2.000",
-        exempt: "-",
-        tax5: "-",
-        tax10: "50.000"
-      },
-      {
-        code: "202",
-        description: "Minibar Premium",
-        unit: "DÍA",
-        quantity: 3,
-        unitPrice: "35.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "105.000"
-      },
-      {
-        code: "401",
-        description: "Paquete Romántico",
-        unit: "UNI",
-        quantity: 1,
-        unitPrice: "180.000",
-        discount: "15.000",
-        exempt: "-",
-        tax5: "-",
-        tax10: "165.000"
-      },
-      {
-        code: "402",
-        description: "Paquete Familiar",
-        unit: "UNI",
-        quantity: 1,
-        unitPrice: "320.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "320.000"
-      },
-      {
-        code: "404",
-        description: "Tour Ciudad",
-        unit: "PERS",
-        quantity: 2,
-        unitPrice: "75.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "150.000"
-      },
-      {
-        code: "405",
-        description: "Late Check-out",
-        unit: "HORA",
-        quantity: 4,
-        unitPrice: "25.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "100.000"
-      },
-      {
-        code: "303",
-        description: "Servicio a la Habitación",
-        unit: "PEDIDO",
-        quantity: 6,
-        unitPrice: "18.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "108.000"
+  useEffect(() => {
+    const fetchFactura = async () => {
+      try {
+        const res = await fetch(`http://localhost:4000/api/facturas/${id}`);
+        if (!res.ok) {
+          throw new Error("Error al obtener la factura");
+        }
+        const data = await res.json();
+        setFactura(data);
+      } catch (err) {
+        setError(err.message);
+        console.error("Error al obtener la factura:", err);
+      } finally {
+        setLoading(false);
       }
-    ],
+    };
 
-    totals: {
-      subtotal: "0  0  2.558.000",
-      totalOperation: "2.558.000",
-      totalGuaranies: "2.558.000",
-      taxLiquidation: "5%     8.000      10%     230.500   TOTAL IVA 238.500"
+    fetchFactura();
+  }, [id]);
+
+  /**
+ * Para cambiar el formato de la fecha a Dia/Mes/Año
+ * @param {*} dateString Se le pasa el una fecha
+ * @returns Retorna la fecha modifica en caso de exito o si no en caso de fracaso -
+ */
+  const formatDMY = (dateString) => {
+    if (!dateString) return '—';
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
+    } catch {
+      return '—';
     }
   };
+
+  const handleBack = () => navigate("/FacturasEmitidas");
+
+  const handleDownload = () => {
+    const element = document.querySelector(".invoice");
+    const buttons = document.querySelector(".no-print");
+    if (buttons) buttons.style.visibility = "hidden";
+
+    import("html2pdf.js").then((html2pdf) => {
+      html2pdf.default()
+        .set({
+          margin: 0,
+          filename: `factura-${factura?.id_factura}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+        })
+        .from(element)
+        .save()
+        .then(() => {
+          if (buttons) buttons.style.visibility = "visible";
+        });
+    });
+  };
+
+  const handlePrint = () => {
+    const buttons = document.querySelector(".no-print");
+    if (buttons) buttons.style.visibility = "hidden";
+
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => {
+        if (buttons) buttons.style.visibility = "visible";
+      }, 1000);
+    }, 100);
+  };
+
+  // Skeleton loading UI
+  if (loading) {
+    return (
+      <>
+        <NavBarSkeleton />
+        <Container className="mt-5">
+          <div className="d-flex justify-content-center mt-3">
+            <Skeleton variant="rectangular" animation="wave" width={701} height={480} />
+          </div>
+          <div className="d-flex justify-content-center mt-3" style={{ gap: "30px" }}>
+            <Skeleton variant="rectangular" animation="wave" width={150} height={40} />
+            <Skeleton variant="rectangular" animation="wave" width={150} height={40} />
+            <Skeleton variant="rectangular" animation="wave" width={150} height={40} />
+          </div>
+        </Container>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <NavBar />
+        <Container className="mt-5">
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        </Container>
+      </>
+    );
+  }
+
+  if (!factura) return null; // Precaución extra
+
+  const {
+    id_factura,
+    fecha_emision,
+    total,
+    condicion_venta,
+    usuario,
+    detalles = [],
+    cuenta,
+    timbrado
+  } = factura;
+
+  const titular = cuenta?.ingreso?.huesped;
+  const ingreso = cuenta?.ingreso;
 
   return (
     <>
       <NavBar />
-      <div className="invoice">
+      <div className="invoice" ref={invoiceRef}>
         {/* Encabezado */}
         <div className="invoice-header">
-          <div className="hotel-name">{invoiceData.hotelName}</div>
+          <div className="hotel-name">Hotel Jazel</div>
           <div className="invoice-title">Factura Electrónica</div>
           <div className="commercial-info">
-            {invoiceData.activity}
-            <br />
-            {invoiceData.address}
+            Servicios de hospedaje y alojamiento<br />
+            Av. Dr. Francia, Encarnación, Paraguay
           </div>
           <div className="invoice-meta text-start">
-            <div><span>RUC:</span> {invoiceData.ruc}</div>
-            <div><span>Timbrado N°:</span> {invoiceData.timbrado}</div>
-            <div><span>Inicio Vigencia:</span> {invoiceData.vigencia}</div>
+            <div><span>RUC:</span> {titular?.ruc || '-------'}</div>
+            <div><span>Timbrado N°:</span> {id_factura}</div>
+            <div><span>Inicio Vigencia:</span> {formatDMY(timbrado?.fecha_inicio) || '---'}</div>
             <div>
-              <span>Factura Electrónica<br />N°:</span> {invoiceData.invoiceNumber}
+              <span>Factura Electrónica<br />N°:</span> {factura?.numero_factura || '---------------'}
             </div>
           </div>
         </div>
-        <br></br>
-        {/* Información del cliente */}
+        <br />
+        {/* Información del huésped */}
         <div className="customer-section">
           <div className="customer-info text-start">
-            <div><span>Nombre o Razón Social: </span>{invoiceData.customer.name}</div>
-            <div><span>RUC / Documento de Identidad: </span>{invoiceData.customer.document}</div>
-            <div><span>Correo Electrónico: </span>{invoiceData.customer.email}</div>
-            <div><span>Teléfono: </span>{invoiceData.customer.phone}</div>
+            <div><span>Nombre o Razón Social:</span> {titular?.nombre} {titular?.apellido}</div>
+            <div><span>RUC / Documento de Identidad:</span> {titular?.ruc || titular?.numero_documento || '---------'}</div>
+            <div><span>Correo Electrónico:</span> {titular?.email || '-----------------'}</div>
+            <div><span>Teléfono:</span> {titular?.telefono || '----------'}</div>
           </div>
           <div className="invoice-details text-start">
-            <div><span>Fecha y hora de emisión: </span>{invoiceData.invoiceDetails.date}</div>
-            <div><span>Cond. Venta: </span>{invoiceData.invoiceDetails.condition}</div>
-            <div><span>Moneda: </span>{invoiceData.invoiceDetails.currency}</div>
+            <div><span>Fecha y hora de emisión:</span> {new Date(fecha_emision).toLocaleString()}</div>
+            <div><span>Cond. Venta:</span> {condicion_venta}</div>
+            <div><span>Moneda:</span> Guaraní</div>
           </div>
         </div>
-        <br></br>
-        {/* Tabla de items */}
+        <br />
         <table className="items-table">
           <thead>
             <tr className="table-header table-bordered">
@@ -222,56 +179,60 @@ const Invoice = () => {
               <th>Unidad</th>
               <th>Cantidad</th>
               <th>Precio Unitario</th>
-              <th>Descuentos</th>
-              <th>Exentas</th>
-              <th>5%</th>
-              <th>10%</th>
+              <th>Descuento</th>
+              <th>Exenta</th>
+              <th>5 (%)</th>
+              <th>10 (%)</th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
-            {invoiceData.items.map((item, index) => (
+            {Array.isArray(detalles) && detalles.map((detalle, index) => (
               <tr className="table-row" key={index}>
-                <td>{item.code}</td>
-                <td>{item.description}</td>
-                <td>{item.unit}</td>
-                <td>{item.quantity}</td>
-                <td>{item.unitPrice}</td>
-                <td>{item.discount}</td>
-                <td>{item.exempt}</td>
-                <td>{item.tax5}</td>
-                <td>{item.tax10}</td>
+                <td>{detalle.id_detalle_factura}</td>
+                <td>{detalle.descripcion}</td>
+                <td>{detalle.cantidad}</td>
+                <td>{detalle.precio_unitario}</td>
+                <td>{detalle.descuento}</td>
+                <td>{detalle.porcentaje_iva}</td>
+                <td>{(detalle.cantidad * detalle.precio_unitario - detalle.descuento).toLocaleString()}</td>
               </tr>
             ))}
-
           </tbody>
         </table>
-        <br></br>
         {/* Totales */}
         <div className="totals-section">
           <div className="total-row">
-            <div className="total-label">SUBTOTAL:</div>
-            <div>{invoiceData.totals.subtotal}</div>
+            <div className="total-label">TOTAL:</div>
+            <div>{total.toLocaleString()} Gs.</div>
           </div>
-          <div className="total-row">
-            <div className="total-label">TOTAL DE LA OPERACIÓN:</div>
-            <div>{invoiceData.totals.totalOperation}</div>
-          </div>
-          <div className="total-row">
-            <div className="total-label">TOTAL EN GUARANÍES:</div>
-            <div>{invoiceData.totals.totalGuaranies}</div>
-          </div>
-          <div className="total-row">
-            <div className="total-label">LIQUIDACIÓN IVA:</div>
-            <div>{invoiceData.totals.taxLiquidation}</div>
-          </div>
+          {/* Puedes calcular o mostrar IVA aquí si está en los datos */}
         </div>
-        <div className="d-flex justify-content-center align-items-center  mt-4" style={{ gap: "30px" }}>
+        {/* Botón */}
+        <div
+          className="d-flex justify-content-center align-items-center mt-4 no-print"
+          style={{ gap: "30px" }}
+        >
           <button
             className="btn btn-secondary fw-bold"
             onClick={handleBack}
             style={{ width: "150px", height: "40px" }}
           >
             Atrás
+          </button>
+          <button
+            className="btn btn-success fw-bold"
+            onClick={handleDownload}
+            style={{ width: "150px", height: "40px" }}
+          >
+            Descargar PDF
+          </button>
+          <button
+            className="btn btn-primary fw-bold"
+            onClick={handlePrint}
+            style={{ width: "150px", height: "40px" }}
+          >
+            Imprimir
           </button>
         </div>
       </div>

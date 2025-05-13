@@ -19,7 +19,7 @@ export default defineConfig({
 						if (proxyRes.statusCode === 401) {
 							console.log('Redirigiendo...');
 							res.writeHead(401, {
-								'Location': '/Login'
+								'Location': '/'
 							});
 							res.end();
 							return;

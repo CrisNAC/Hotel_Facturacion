@@ -5,9 +5,11 @@ import { Container } from 'react-bootstrap';
 import HTTPClient from '../api/HTTPClient';
 import NavBar from '../components/navbar';
 import HuespedesActivos from '../components/HuespedesActivos.jsx';
-import DetallesFactura from '../components/DetallesCuenta.jsx';
+import DetallesCuenta from '../components/DetallesCuenta.jsx';
 import Invoice from "../components/InvoiceComponentEli.jsx";
+import ErrorComponent from "../components/ErrorComponent.jsx";
 import NavBarSkeleton from '../skeleton/navbar.skeleton.jsx';
+import HuespedesActivosSkeleton from '../skeleton/HuespedesActivos.skeleton.jsx';
 
 import { HuespedesActivosContext, HuespedesActivosProvider } from '../context/HuespedesActivosContexto.jsx';
 
@@ -16,6 +18,29 @@ function HuespedesActivosPage() {
     const [ingresosOriginales, setIngresosOriginales] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [status, setStatus] = useState(null);
+
+    const fetchIngresos = async () => {
+        try {
+            setLoading(true);
+            const response = await client.getIngresos();
+            setIngresosOriginales(response.data);
+        } catch (err) {
+            // Si hay respuesta del servidor
+            if (err.response) {
+                setError(err.response.data?.error || err.message);
+                setStatus(err.response.status);
+                console.error('Error al obtener ingresos:', err.response.status, err.response.data);
+            } else {
+                // Errores de red u otros
+                setError(err.message);
+                setStatus(500);
+                console.error('Error de red o sin respuesta:', err.message);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchIngresos = async () => {
         try {
@@ -36,25 +61,14 @@ function HuespedesActivosPage() {
     const skeletonPage = () => (
         <>
             <NavBarSkeleton />
-            <Container>
-                <div className='d-flex justify-content-center' style={{ marginTop: "50px" }}><Skeleton variant='text' animation='wave' width={180} height={60}></Skeleton></div>
-                <div className='d-flex justify-content-center mb-3'><Skeleton variant='rectangular' animation='wave' width={1200} height={100}></Skeleton></div>
-                <div className='d-flex justify-content-center'><Skeleton variant='rectangular' animation='wave' width={1200} height={350}></Skeleton></div>
-                <div className='d-flex justify-content-center mt-2'>
-                    <div className='d-flex'>
-                        <Skeleton variant='rectangular' animation='wave' width={100} height={30} style={{ margin: "0 0.2rem 0 0.2rem" }}></Skeleton>
-                        <Skeleton variant='rectangular' animation='wave' width={30} height={30} style={{ margin: "0 0.2rem 0 0.2rem" }}></Skeleton>
-                        <Skeleton variant='rectangular' animation='wave' width={30} height={30} style={{ margin: "0 0.2rem 0 0.2rem" }}></Skeleton>
-                        <Skeleton variant='rectangular' animation='wave' width={30} height={30} style={{ margin: "0 0.2rem 0 0.2rem" }}></Skeleton>
-                        <Skeleton variant='rectangular' animation='wave' width={100} height={30} style={{ margin: "0 0.2rem 0 0.2rem" }}></Skeleton>
-                    </div>
-                </div>
-            </Container>
+            <HuespedesActivosSkeleton></HuespedesActivosSkeleton>
         </>
     );
 
     const errorPage = () => (
-        <div className="text-center py-5 text-danger">Error: {error}</div>
+        <>
+            <ErrorComponent code={status} message={error}></ErrorComponent>
+        </>
     );
 
     return (
@@ -63,21 +77,25 @@ function HuespedesActivosPage() {
                 <HuespedesActivosContext.Consumer>
                     {({ mainPage, vistaFactura }) => (
                         <>
-                            <NavBar />
                             {mainPage ? (
                                 <Container>
                                     {loading ? skeletonPage() :
                                         error ? errorPage() : (
-                                            <HuespedesActivos ingresosOriginales={ingresosOriginales} />)
-                                    }
+                                            <>
+                                                <NavBar />
+                                                <HuespedesActivos ingresosOriginales={ingresosOriginales} refresh={fetchIngresos} />
+                                            </>
+                                    )}
                                 </Container>
                             ) : vistaFactura ? (
                                 <Container>
+                                    <NavBar />
                                     <Invoice></Invoice>
                                 </Container>
                             ) : (
                                 <Container>
-                                    <DetallesFactura />
+                                    <NavBar />
+                                    <DetallesCuenta refresh={fetchIngresos} />
                                 </Container>
                             )}
                         </>

@@ -1,35 +1,26 @@
 import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
-/*const getAllIngresos = async (req, res) => {
-	try {
-		const result = await prisma.ingreso.findMany({
-			where: {
-				activo: true
-			}
-		});
-		if (!result) return res.status(404).json({ error: 'Ingresos no enontrados' });
-		res.status(200).json(result);
-	} catch (error) {
-		res.status(500).json({ error: 'Error al obtener Ingresos' });
-	}
-};*/
+/* [
+	{ checkIn: 'asc' },
+	{ estado: 'asc' }
+] */
 
 export const getAllIngresos = async (req, res) => {
 	try {
 		const ingresos = await prisma.ingreso.findMany({
 			where: { activo: true },
 			orderBy: {
-				reserva: {
-					check_in: 'asc'
-				}
+				checkIn: 'asc'
 			},
 			select: {
 				id_ingreso: true,
 				estado: true,
-
+				checkIn: true,
+				checkOut: true,
 				reserva: {
 					select: {
+						id_reserva: true,
 						check_in: true,
 						check_out: true
 					}
@@ -64,7 +55,7 @@ export const getAllIngresos = async (req, res) => {
 						consumos: {
 							select: {
 								id_consumo: true,
-								descripcion:true,
+								descripcion: true,
 								cantidad: true,
 								monto: true,
 								activo: true
@@ -82,7 +73,6 @@ export const getAllIngresos = async (req, res) => {
 		});
 		res.status(200).json(ingresos);
 	} catch (error) {
-		console.error(error);
 		res.status(500).json({ error: "Internal Server Error: Error al listar ingresos" });
 	}
 }
@@ -163,10 +153,10 @@ export const cancelarIngreso = async (req, res) => {
 		res.status(200).end();
 	} catch (error) {
 		if (error.code === 'P2025') {
-            res.status(404).json({ error: "Ingreso no encontrado" });
-        } else {
-            console.error(error);
-            res.status(500).json({ error: "Error al cancelar el ingreso" });
-        }
+			res.status(404).json({ error: "Ingreso no encontrado" });
+		} else {
+			console.error(error);
+			res.status(500).json({ error: "Error al cancelar el ingreso" });
+		}
 	}
 };
