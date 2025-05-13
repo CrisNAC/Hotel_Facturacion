@@ -6,7 +6,7 @@ import { FaSlack } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
 import axios from "axios";
 
-export const NavBar = () => {
+export const NavBar = ({ className = "" }) => {
 
   const navigate = useNavigate();
 
@@ -30,22 +30,22 @@ export const NavBar = () => {
     navigate('/');
   };
 
-	const handleLogout = async () => {
-		try {
-			const response = await axios.delete('/api/session/', { withCredentials: true});
-			console.log(response.data);
-			irALogin();
-		}
-		catch(error){
-			console.log('Error al intentar hacer logout:', error);
-		}
-	}
+  const handleLogout = async () => {
+    try {
+      const response = await axios.delete('/api/session/', { withCredentials: true });
+      console.log(response.data);
+      irALogin();
+    }
+    catch (error) {
+      console.log('Error al intentar hacer logout:', error);
+    }
+  }
 
   return (
     <>
       {/* NavBar */}
       <div
-        className="nav-bar fixed-top w-100 d-flex align-items-center py-2 px-4 mb-1"
+        className={`nav-bar fixed-top w-100 d-flex align-items-center py-2 px-4 mb-1 ${className}`}
         style={{ backgroundColor: "#83A3A8", height: "50px" }}
       >
         {/* Logo */}
@@ -60,7 +60,7 @@ export const NavBar = () => {
           <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAIngresoHuesped}>Ingreso de huésped</button>
           <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAFacturasEmitidas}>Facturas emitidas</button>
           <button className="btn btn-link text-white fw-normal text-decoration-none">Reportes</button>
-					<button className="btn btn-link text-white fw-normal text-decoration-none" onClick={handleLogout}>Logout</button>
+          <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={handleLogout}>Logout</button>
         </div >
 
         {/* Auth section */}

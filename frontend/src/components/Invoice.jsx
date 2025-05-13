@@ -43,7 +43,12 @@ const Invoice = () => {
     if (!dateString) return '—';
     try {
       const date = new Date(dateString);
-      return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
+      return new Intl.DateTimeFormat('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        timeZone: 'UTC'
+      }).format(date);
     } catch {
       return '—';
     }
@@ -51,48 +56,45 @@ const Invoice = () => {
 
   const handleBack = () => navigate("/FacturasEmitidas");
 
-  const handleDownload = () => {
-    const element = document.querySelector(".invoice");
-    const buttons = document.querySelector(".no-print");
-    if (buttons) buttons.style.visibility = "hidden";
+const handleDownload = () => {
+  const element = document.querySelector(".invoice");
 
-    import("html2pdf.js").then((html2pdf) => {
-      html2pdf.default()
-        .set({
-          margin: 0,
-          filename: `factura-${factura?.id_factura}.pdf`,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
-        })
-        .from(element)
-        .save()
-        .then(() => {
-          if (buttons) buttons.style.visibility = "visible";
-        });
-    });
-  };
+  // Ocultar todos los elementos con clase no-print
+  const noPrintElements = document.querySelectorAll(".no-print");
+  noPrintElements.forEach(el => el.style.visibility = "hidden");
 
-  const handlePrint = () => {
-    const buttons = document.querySelector(".no-print");
-    if (buttons) buttons.style.visibility = "hidden";
+  import("html2pdf.js").then((html2pdf) => {
+    html2pdf.default()
+      .set({
+        margin: 0,
+        filename: `factura-${factura?.id_factura}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+      })
+      .from(element)
+      .save()
+      .then(() => {
+        // Restaurar visibilidad
+        noPrintElements.forEach(el => el.style.visibility = "visible");
+      });
+  });
+};
 
-    setTimeout(() => {
-      window.print();
-      setTimeout(() => {
-        if (buttons) buttons.style.visibility = "visible";
-      }, 1000);
-    }, 100);
-  };
+
+const handlePrint = () => {
+  window.print();
+};
+
 
   // Skeleton loading UI
   if (loading) {
     return (
       <>
-        <NavBar />
+        <NavBar className="no-print" />
         <Container className="mt-5">
           <div className="d-flex justify-content-center mt-3">
-            <Skeleton variant="rectangular" animation="wave" width={701} height={480} />
+            <Skeleton variant="rectangular" animation="wave" width={701} height={480} sx={{ marginTop: "5px" }} />
           </div>
           <div className="d-flex justify-content-center mt-3" style={{ gap: "30px" }}>
             <Skeleton variant="rectangular" animation="wave" width={150} height={40} />
@@ -107,7 +109,7 @@ const Invoice = () => {
   if (error) {
     return (
       <>
-        <NavBar />
+        <NavBar className="no-print" />
         <Container className="mt-5">
           <div className="alert alert-danger" role="alert">
             {error}
@@ -133,9 +135,30 @@ const Invoice = () => {
   const titular = cuenta?.ingreso?.huesped;
   const ingreso = cuenta?.ingreso;
 
+  let subtotalGeneral = 0;
+  let iva5Total = 0;
+  let iva10Total = 0;
+
+  detalles.forEach(detalle => {
+    const subtotal = detalle.cantidad * detalle.precio_unitario;
+    const descuento = detalle.descuento || 0;
+    const base = subtotal - descuento;
+
+    if (detalle.porcentaje_iva === 5) {
+      iva5Total += base * 0.05;
+    } else if (detalle.porcentaje_iva === 10) {
+      iva10Total += base * 0.10;
+    }
+
+    subtotalGeneral += base;
+  });
+
+  const ivaTotal = iva5Total + iva10Total;
+  const totalOperacion = subtotalGeneral + ivaTotal;
+
   return (
     <>
-      <NavBar />
+      <NavBar className="no-print" />
       <div className="invoice" ref={invoiceRef}>
         {/* Encabezado */}
         <div className="invoice-header">
@@ -148,7 +171,7 @@ const Invoice = () => {
           <div className="invoice-meta text-start">
             <div><span>RUC:</span> 80000519-8</div>
             <div><span>Timbrado N°:</span> 12557904</div>
-            <div><span>Inicio Vigencia:</span> {formatDMY(timbrado?.fecha_inicio) || '---'}</div>
+            <div><span>Inicio Vigencia:</span> {formatDMY(timbrado?.fecha_inicio) || '--------'}</div>
             <div>
               <span>Factura Electrónica<br />N°:</span> {factura?.numero_factura || '---------------'}
             </div>
@@ -164,7 +187,7 @@ const Invoice = () => {
             <div><span>Teléfono:</span> {titular?.telefono || '----------'}</div>
           </div>
           <div className="invoice-details text-start">
-            <div><span>Fecha y hora de emisión:</span> {new Date(fecha_emision).toLocaleString()}</div>
+            <div><span>Fecha y hora de emisión:</span> {new Date().toLocaleString()}</div>
             <div><span>Cond. Venta:</span> {condicion_venta}</div>
             <div><span>Moneda:</span> Guaraní</div>
           </div>
@@ -186,31 +209,57 @@ const Invoice = () => {
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(detalles) && detalles.map((detalle, index) => (
-              <tr className="table-row" key={index}>
-                <td>{detalle.id_detalle_factura}</td>
-                <td>{detalle.descripcion}</td>
-                <td>UNI</td>
-                <td>{detalle.cantidad}</td>
-                <td>{detalle.precio_unitario}</td>
-                <td>{detalle.descuento}</td>
-                <td>-</td>
-                <td>-</td>
-                <td>{detalle.porcentaje_iva}</td>
-                <td>{(detalle.cantidad * detalle.precio_unitario - detalle.descuento).toLocaleString()}</td>
-              </tr>
-            ))}
+            {Array.isArray(detalles) && detalles.map((detalle, index) => {
+              const subtotal = detalle.cantidad * detalle.precio_unitario;
+              const descuento = detalle.descuento || 0;
+              const base = subtotal - descuento;
+              const iva5 = detalle.porcentaje_iva === 5 ? base * 0.05 : 0;
+              const iva10 = detalle.porcentaje_iva === 10 ? base * 0.10 : 0;
+              const totalConIva = base + iva5 + iva10;
+
+              return (
+                <tr className="table-row" key={index}>
+                  <td>{detalle.id_detalle_factura}</td>
+                  <td>{detalle.descripcion}</td>
+                  <td>UNI</td>
+                  <td>{detalle.cantidad}</td>
+                  <td>{detalle.precio_unitario}</td>
+                  <td>{detalle.descuento}</td>
+                  <td>0</td>
+                  <td>{iva5 ? iva5.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
+                  <td>{iva10 ? iva10.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
+                  <td>{totalConIva.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+        <br />
         {/* Totales */}
         <div className="totals-section">
           <div className="total-row">
-            <div className="total-label">TOTAL:</div>
-            <div>{total.toLocaleString()} Gs.</div>
+            <div className="total-label">SUBTOTAL:</div>
+            <div>{subtotalGeneral.toLocaleString()}</div>
           </div>
-          {/* Puedes calcular o mostrar IVA aquí si está en los datos */}
+          <div className="total-row">
+            <div className="total-label">TOTAL DE LA OPERACIÓN:</div>
+            <div>{totalOperacion.toLocaleString()}</div>
+          </div>
+          <div className="total-row">
+            <div className="total-label">TOTAL EN GUARANÍES:</div>
+            <div>{totalOperacion.toLocaleString()}</div>
+          </div>
+          <div className="total-row">
+            <div className="total-label">LIQUIDACIÓN IVA:</div>
+            <div className="total-label">5%</div>
+            <div>{iva5Total.toLocaleString()}</div>
+            <div className="total-label">10%</div>
+            <div>{iva10Total.toLocaleString()}</div>
+            <div className="total-label">TOTAL IVA</div>
+            <div>{ivaTotal.toLocaleString()}</div>
+          </div>
         </div>
-        {/* Botón */}
+        {/* Botones */}
         <div
           className="d-flex justify-content-center align-items-center mt-4 no-print"
           style={{ gap: "30px" }}

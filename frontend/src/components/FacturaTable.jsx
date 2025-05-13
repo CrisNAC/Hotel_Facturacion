@@ -171,7 +171,7 @@ const FacturaTable = ({
                                 </td>
                                 <td className="text-center">
                                     <div className="d-flex justify-content-center">
-                                        <Skeleton variant="circular" animation="wave" width={25} height={25} />
+                                        <Skeleton variant="circular" animation="wave" width="25px" height="25px" sx={{ marginTop: "3.5px" }} />
                                     </div>
                                 </td>
                             </tr>

@@ -48,12 +48,7 @@ function App() {
               </div>
             }
             ></Route>
-            <Route path="/Invoice/:id" element={
-              <div style={{ marginTop: "5rem" }}>
-                <Invoice />
-              </div>
-            }
-            ></Route>
+            <Route path="/Invoice/:id" element={<Invoice />}></Route>
           </Routes>
         </Router>
       </QueryClientProvider>
