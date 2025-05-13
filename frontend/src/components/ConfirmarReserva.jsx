@@ -41,11 +41,6 @@ const ConfirmarReserva = () => {
 					<button
 						type="button"
 						className="btn btn-primary btn-sm ms-3"
-						style={{
-							backgroundColor: "#003366",
-							color: "white",
-							border: "#003366",
-						}}
 						onClick={() => navigate('/AgregarHuesped', { state: { huespedes: listaHuespedes } })}
 					>
 						<FaUserPlus className="me-2" /> Agregar
@@ -55,32 +50,32 @@ const ConfirmarReserva = () => {
 				<table className="table table-bordered table-hover w-100 text-center">
 					<thead style={{ backgroundColor: "#E6E6E6" }}>
 						<tr>
-							<th style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}>#</th>
-							<th style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}>
+							<th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>#</th>
+							<th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>
 								Nombre
 							</th>
 							<th
-								style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}
+								style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}
 							>
 								Apellido
 							</th>
 							<th
-								style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}
+								style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}
 							>
 								Nacionalidad
 							</th>
 							<th
-								style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}
+								style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}
 							>
 								Teléfono
 							</th>
 							<th
-								style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}
+								style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}
 							>
 								Correo
 							</th>
 							<th
-								style={{ backgroundColor: "##E6E6E6", color: "2E2E2E" }}
+								style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}
 							>
 								Acciones
 							</th>
@@ -178,7 +173,7 @@ const ConfirmarReserva = () => {
 
 				{/* Button */}
 				<div className="d-flex justify-content-center mt-4">
-					<button type="button" className="btn btn-success" style={{ width: '150px', height: '40px' }} onClick={() => navigate('/')}>
+					<button type="button" className="btn btn-success" onClick={() => navigate('/')}>
 						Confirmar Reserva
 					</button>
 				</div>
