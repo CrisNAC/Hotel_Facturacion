@@ -1,6 +1,7 @@
 import React from "react";
 import ReactPaginate from "react-paginate";
 import "../styles/FacturaTable.css";
+import Skeleton from "@mui/material/Skeleton";
 import Alert from "@mui/material/Alert";
 
 const FacturaTable = ({
@@ -141,7 +142,40 @@ const FacturaTable = ({
                 </thead>
                 <tbody>
                     {loading ? (
-                        <tr><td colSpan="6">Cargando...</td></tr>
+                        [...Array(5)].map((_, i) => (
+                            <tr key={i}>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <Skeleton variant="text" animation="wave" width="80%" height="32px" />
+                                    </div>
+                                </td>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <Skeleton variant="text" animation="wave" width="60%" height="32px" />
+                                    </div>
+                                </td>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <Skeleton variant="text" animation="wave" width="70%" height="32px" />
+                                    </div>
+                                </td>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <Skeleton variant="text" animation="wave" width="50%" height="32px" />
+                                    </div>
+                                </td>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <Skeleton variant="text" animation="wave" width="60%" height="32px" />
+                                    </div>
+                                </td>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <Skeleton variant="circular" animation="wave" width={25} height={25} />
+                                    </div>
+                                </td>
+                            </tr>
+                        ))
                     ) : !filtered || filtered.length === 0 ? (
                         <tr><td colSpan="6">No se encontraron resultados.</td></tr>
                     ) : (

@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Skeleton, Container } from "@mui/material";
 import html2pdf from "html2pdf.js";
 import NavBar from "../components/navbar.jsx";
-import NavBarSkeleton from '../skeleton/navbar.skeleton.jsx';
 import "../styles/Invoice.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -90,7 +89,7 @@ const Invoice = () => {
   if (loading) {
     return (
       <>
-        <NavBarSkeleton />
+        <NavBar />
         <Container className="mt-5">
           <div className="d-flex justify-content-center mt-3">
             <Skeleton variant="rectangular" animation="wave" width={701} height={480} />
@@ -147,8 +146,8 @@ const Invoice = () => {
             Av. Dr. Francia, Encarnación, Paraguay
           </div>
           <div className="invoice-meta text-start">
-            <div><span>RUC:</span> {titular?.ruc || '-------'}</div>
-            <div><span>Timbrado N°:</span> {id_factura}</div>
+            <div><span>RUC:</span> 80000519-8</div>
+            <div><span>Timbrado N°:</span> 12557904</div>
             <div><span>Inicio Vigencia:</span> {formatDMY(timbrado?.fecha_inicio) || '---'}</div>
             <div>
               <span>Factura Electrónica<br />N°:</span> {factura?.numero_factura || '---------------'}
@@ -191,9 +190,12 @@ const Invoice = () => {
               <tr className="table-row" key={index}>
                 <td>{detalle.id_detalle_factura}</td>
                 <td>{detalle.descripcion}</td>
+                <td>UNI</td>
                 <td>{detalle.cantidad}</td>
                 <td>{detalle.precio_unitario}</td>
                 <td>{detalle.descuento}</td>
+                <td>-</td>
+                <td>-</td>
                 <td>{detalle.porcentaje_iva}</td>
                 <td>{(detalle.cantidad * detalle.precio_unitario - detalle.descuento).toLocaleString()}</td>
               </tr>
