@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { debounce } from "lodash";
+// import { debounce } from "lodash";
 import NavBar from "./navbar";
 import { useReserva } from "../context/ReservaContext.jsx";
 
@@ -46,9 +46,9 @@ const CheckInReserva = () => {
 		setReservaId(e.target.value);
 	}
 
-	const handleBuscarReserva = debounce(() => {
+	const handleBuscarReserva = () => {
 		if (reservaId) getReservaById(reservaId);
-	}, 3000);
+	};
 
 	return (
 		<div>

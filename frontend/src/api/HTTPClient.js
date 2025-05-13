@@ -19,7 +19,7 @@ class HTTPClient {
 
     /****               LOGIN                ***/
     cerrarSesion() {
-        return this.instance.delete('/session', { withCredentials: true });
+        return this.instance.delete('/session');
     };
 
     /* login(email, password){
