@@ -11,7 +11,7 @@ const initialState = {
 
 const Login = () => {
     
-	const [loginForm, setLoginForm] = useState( initialState ); 
+	const [loginForm, setLoginForm] = useState(initialState); 
     const [errors, setErrors] = useState("");
     const navigate = useNavigate();
 

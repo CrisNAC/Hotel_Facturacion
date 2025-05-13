@@ -72,5 +72,46 @@ export const logout = async (req, res) => {
 	res.status(200).clearCookie('userToken').json({ message: 'Hasta luego!'});
 };
 
+export const userSession = async (req, res) => {
+	try {
+		const token = req.cookies.token;
 
+		if (!token) {
+			return res.status(401).json({
+				success: false,
+				error: "No se encontro el token de autenticacion"
+			});
+		}
 
+		const token_decodificado = jwt.verify(token, proccess.env.JWT_SECRET);
+
+		const user = await prisma.usuario.findUnique({
+			where: {
+				id_usuario: token_decodificado.id_usuario,
+				activo: true
+			}
+		});
+
+		if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: "Usuario no encontrado"
+            });
+        }
+
+		return res.status(200).json({
+			success: true,
+			user: {
+				id_usuario: user.id_usuario,
+				nombre_usuario: user.nombre_usuario
+			}
+		});
+
+	} catch (error) {
+		console.error("Error al verificar sesion:", error);
+		return res.status(401).json({
+            success: false,
+            error: "Sesión inválida o expirada"
+        });
+	}
+};
