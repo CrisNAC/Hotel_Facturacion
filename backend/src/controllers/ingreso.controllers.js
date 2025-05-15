@@ -54,8 +54,13 @@ export const getAllIngresos = async (req, res) => {
 						id_cuenta: true,
 						consumos: {
 							select: {
+								Productos: {
+									select: {
+										descripcion: true,
+										precio_unitario: true
+									}
+								},
 								id_consumo: true,
-								descripcion: true,
 								cantidad: true,
 								monto: true,
 								activo: true
@@ -71,10 +76,16 @@ export const getAllIngresos = async (req, res) => {
 
 			}
 		});
-		res.status(200).json(ingresos);
+		const safeIngresos = JSON.parse(JSON.stringify(ingresos, (_, value) =>
+			typeof value === 'bigint' ? value.toString() : value
+		));
+
+		res.status(200).json(safeIngresos);
 	} catch (error) {
-		res.status(500).json({ error: "Internal Server Error: Error al listar ingresos" });
-	}
+	console.error(error); // Mostrar el error en consola
+	res.status(500).json({ error: "Internal Server Error: " + error.message });
+}
+
 }
 
 export const createIngreso = async (req, res) => {

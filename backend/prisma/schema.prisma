@@ -144,15 +144,16 @@ model Cuenta {
 }
 
 model Consumo {
-  id_consumo  Int     @id @default(autoincrement())
+  id_consumo  Int       @id @default(autoincrement())
   fk_cuenta   Int
-  descripcion String
   cantidad    Int
   monto       Int
   fk_usuario  Int
-  activo      Boolean @default(true)
-  cuenta      Cuenta  @relation(fields: [fk_cuenta], references: [id_cuenta])
-  usuario     Usuario @relation(fields: [fk_usuario], references: [id_usuario])
+  activo      Boolean   @default(true)
+  fk_producto Int       @default(1)
+  cuenta      Cuenta    @relation(fields: [fk_cuenta], references: [id_cuenta])
+  Productos   Productos @relation(fields: [fk_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction)
+  usuario     Usuario   @relation(fields: [fk_usuario], references: [id_usuario])
 }
 
 model Timbrado {
@@ -190,6 +191,17 @@ model DetalleFactura {
   descuento          Int
   porcentaje_iva     Int
   factura            Factura @relation(fields: [fk_factura], references: [id_factura])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Productos {
+  id_producto     Int       @id @default(autoincrement())
+  precio_unitario Int
+  activo          Boolean   @default(true)
+  created_at      DateTime  @db.Timestamp(6)
+  descripcion     String    @default("Agua")
+  porcentaje_iva  Int       @default(10) @db.SmallInt
+  Consumo         Consumo[]
 }
 
 enum DocumentoIdentidad {

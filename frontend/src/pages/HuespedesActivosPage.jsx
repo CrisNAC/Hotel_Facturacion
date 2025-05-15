@@ -42,17 +42,6 @@ function HuespedesActivosPage() {
         }
     };
 
-    const fetchIngresos = async () => {
-        try {
-            const response = await client.getIngresos();
-            setIngresosOriginales(response.data);
-        } catch (err) {
-            setError(err.message);
-            console.error('Error al obtener ingresos:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     useEffect(() => {
         fetchIngresos();
