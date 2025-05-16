@@ -78,6 +78,9 @@ const SeleccionHabitacion = () => {
 
 		if(reservaSeleccionada) {
 			fetchHabitaciones();
+		} else {
+			setHabitacionesDisponibles([]);
+			setCargando(false);
 		}
 	}, [reservaSeleccionada]);
 

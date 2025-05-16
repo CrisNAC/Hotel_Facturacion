@@ -7,8 +7,10 @@ import HTTPClient from "../api/HTTPClient.js";
 import { Dropdown } from 'react-bootstrap';
 import { Avatar } from '@mui/material';
 
-export const NavBar = () => {
+export const NavBar = ({ className = "" }) => {
+
   const client = new HTTPClient();
+
   const navigate = useNavigate();
 
   const irAInicio = () => {
@@ -40,6 +42,10 @@ export const NavBar = () => {
       console.log('Error al intentar hacer logout:', error);
     }
   }
+
+	const irAPerfil = () => {
+		navigate('/profile');
+	}
 
   function stringToColor(string) {
     let hash = 0;
@@ -75,7 +81,7 @@ export const NavBar = () => {
     <>
       {/* NavBar */}
       <div
-        className="nav-bar fixed-top w-100 d-flex align-items-center py-2 px-4 mb-1"
+        className={`nav-bar fixed-top w-100 d-flex align-items-center py-2 px-4 mb-1 ${className}`}
         style={{ backgroundColor: "#83A3A8", height: "50px" }}
       >
         {/* Logo */}
@@ -100,8 +106,10 @@ export const NavBar = () => {
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
+			<Dropdown.Item onClick={irAPerfil}>Perfil</Dropdown.Item>
             <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
           </Dropdown.Menu>
+
         </Dropdown>
       </div >
 

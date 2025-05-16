@@ -42,13 +42,14 @@ function HuespedesActivosPage() {
         }
     };
 
+
     useEffect(() => {
         fetchIngresos();
     }, []);
 
     const skeletonPage = () => (
         <>
-            <NavBarSkeleton />
+            <NavBar></NavBar>
             <HuespedesActivosSkeleton></HuespedesActivosSkeleton>
         </>
     );
@@ -73,7 +74,7 @@ function HuespedesActivosPage() {
                                                 <NavBar />
                                                 <HuespedesActivos ingresosOriginales={ingresosOriginales} refresh={fetchIngresos} />
                                             </>
-                                    )}
+                                        )}
                                 </Container>
                             ) : vistaFactura ? (
                                 <Container>

@@ -1,6 +1,8 @@
 import React from "react";
 import ReactPaginate from "react-paginate";
 import "../styles/FacturaTable.css";
+import Skeleton from "@mui/material/Skeleton";
+import Alert from "@mui/material/Alert";
 
 const FacturaTable = ({
     filters,
@@ -30,11 +32,15 @@ const FacturaTable = ({
         setFilters(nuevosFiltros);
 
         if (desde && hasta && desde > hasta) {
-            alert("La fecha 'Desde' no puede ser mayor que la fecha 'Hasta'.");
+            setFechaInvalida(true);
+            setDateError("La fecha 'Desde' no puede ser mayor que la fecha 'Hasta'.");
         } else {
+            setFechaInvalida(false);
             setDateError("");
         }
     };
+
+    const [fechaInvalida, setFechaInvalida] = React.useState(false);
 
     const handlePageClick = (event) => {
         setCurrentPage(event.selected);
@@ -42,6 +48,21 @@ const FacturaTable = ({
 
     return (
         <div className="factura-wrapper container-fluid px-4 mt-4">
+            {fechaInvalida && (
+                <div
+                    style={{
+                        position: "fixed",
+                        top: "80px",
+                        right: "20px",
+                        zIndex: 9999,
+                        width: "300px"
+                    }}
+                >
+                    <Alert severity="warning" onClose={() => setFechaInvalida(false)}>
+                        {dateError}
+                    </Alert>
+                </div>
+            )}
             <h2 className="text-center" style={{ paddingBottom: "20px" }}>Facturas emitidas</h2>
             {/* Filtros */}
             <div className="bg-light p-3 rounded mb-3">
@@ -69,11 +90,6 @@ const FacturaTable = ({
                                 onChange={handleChange}
                             />
                         </div>
-                        {dateError && (
-                            <div className="text-danger mt-1" style={{ fontSize: "0.9rem" }}>
-                                {dateError}
-                            </div>
-                        )}
                     </div>
                     <div className="col-12 col-md-auto">
                         <label className="form-label">Huésped:</label>
@@ -126,7 +142,40 @@ const FacturaTable = ({
                 </thead>
                 <tbody>
                     {loading ? (
-                        <tr><td colSpan="6">Cargando...</td></tr>
+                        [...Array(5)].map((_, i) => (
+                            <tr key={i}>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <Skeleton variant="text" animation="wave" width="80%" height="32px" />
+                                    </div>
+                                </td>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <Skeleton variant="text" animation="wave" width="60%" height="32px" />
+                                    </div>
+                                </td>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <Skeleton variant="text" animation="wave" width="70%" height="32px" />
+                                    </div>
+                                </td>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <Skeleton variant="text" animation="wave" width="50%" height="32px" />
+                                    </div>
+                                </td>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <Skeleton variant="text" animation="wave" width="60%" height="32px" />
+                                    </div>
+                                </td>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <Skeleton variant="circular" animation="wave" width="25px" height="25px" sx={{ marginTop: "3.5px" }} />
+                                    </div>
+                                </td>
+                            </tr>
+                        ))
                     ) : !filtered || filtered.length === 0 ? (
                         <tr><td colSpan="6">No se encontraron resultados.</td></tr>
                     ) : (
@@ -158,18 +207,18 @@ const FacturaTable = ({
                 </tbody>
             </table>
 
-            {pageCount > 1 && (
+            {pageCount > 0 && (
                 <div className="d-flex justify-content-center mt-3">
                     <ReactPaginate
-                        previousLabel={"←"}
-                        nextLabel={"→"}
+                        previousLabel={"Anterior"}
+                        nextLabel={"Siguiente"}
                         breakLabel={"..."}
                         pageCount={pageCount}
                         marginPagesDisplayed={2}
                         pageRangeDisplayed={3}
                         onPageChange={handlePageClick}
                         containerClassName={"pagination"}
-                        activeClassName={"active"}
+                        activeClassName={"mi-clase-activa"}
                         pageClassName={"page-item"}
                         pageLinkClassName={"page-link"}
                         previousClassName={"page-item"}

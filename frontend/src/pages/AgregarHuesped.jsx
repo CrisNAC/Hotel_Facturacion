@@ -6,6 +6,7 @@ import NavBar from "../components/navbar";
 const AgregarHuesped = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
+	const [cancelado, setCancelado] = useState(false);
 
 	const huespedEditar = location.state?.huespedEditar || null;
 	const indexEditar = location.state?.indexEditar;
@@ -46,48 +47,52 @@ const AgregarHuesped = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		if (cancelado) {
+			navigate('/ConfirmarReserva')
+		} else {
 
-		const nuevoHuesped = {
-			nombre: formData.nombre,
-			apellido: formData.apellido,
-			documento_identidad: formData.documento_identidad,
-			numero_documento: formData.numero_documento,
-			ruc: formData.ruc,
-			nacionalidad: formData.nacionalidad,
-			telefono: formData.telefono,
-			email: formData.correo,
-			fecha_nacimiento: formData.fecha_nacimiento
-		};
+			const nuevoHuesped = {
+				nombre: formData.nombre,
+				apellido: formData.apellido,
+				documento_identidad: formData.documento_identidad,
+				numero_documento: formData.numero_documento,
+				ruc: formData.ruc,
+				nacionalidad: formData.nacionalidad,
+				telefono: formData.telefono,
+				email: formData.correo,
+				fecha_nacimiento: formData.fecha_nacimiento
+			};
 
-		try {
-			let huespedActualizado;
+			try {
+				let huespedActualizado;
 
-			if (huespedEditar && typeof huespedEditar.id_huesped === 'number') {
-				// Modo edición: enviar PUT al backend
-				const response = await axios.put(`http://localhost:4000/api/huesped/${huespedEditar.id_huesped}`, nuevoHuesped);
-				huespedActualizado = response.data.data;
+				if (huespedEditar && typeof huespedEditar.id_huesped === 'number') {
+					// Modo edición: enviar PUT al backend
+					const response = await axios.put(`http://localhost:4000/api/huesped/${huespedEditar.id_huesped}`, nuevoHuesped);
+					huespedActualizado = response.data.data;
 
-				// Reemplazar huésped en la lista
-				const nuevosHuespedes = [...huespedesPrevios];
-				nuevosHuespedes[indexEditar] = huespedActualizado;
+					// Reemplazar huésped en la lista
+					const nuevosHuespedes = [...huespedesPrevios];
+					nuevosHuespedes[indexEditar] = huespedActualizado;
 
-				navigate('/ConfirmarReserva', {
-					state: { huespedes: nuevosHuespedes }
-				});
-			} else {
-				// Modo creación: enviar POST
-				const response = await axios.post('http://localhost:4000/api/huesped', nuevoHuesped);
-				huespedActualizado = response.data;
+					navigate('/ConfirmarReserva', {
+						state: { huespedes: nuevosHuespedes }
+					});
+				} else {
+					// Modo creación: enviar POST
+					const response = await axios.post('http://localhost:4000/api/huesped', nuevoHuesped);
+					huespedActualizado = response.data;
 
-				navigate('/ConfirmarReserva', {
-					state: {
-						huespedes: [...huespedesPrevios, huespedActualizado]
-					}
-				});
+					navigate('/ConfirmarReserva', {
+						state: {
+							huespedes: [...huespedesPrevios, huespedActualizado]
+						}
+					});
+				}
+			} catch (error) {
+				console.error("Error al guardar huésped:", error.response?.data || error.message);
+				alert(error.response?.data?.error || "Error al guardar huésped");
 			}
-		} catch (error) {
-			console.error("Error al guardar huésped:", error.response?.data || error.message);
-			alert(error.response?.data?.error || "Error al guardar huésped");
 		}
 	};
 
@@ -278,7 +283,10 @@ const AgregarHuesped = () => {
 								</div>
 
 								<div className="text-center mt-4">
-									<button type="submit" className="btn btn-primary px-4">
+									<button type="submit" className="btn btn-secondary px-4 mx-1" onClick={() => setCancelado(true)}>
+										Cancelar
+									</button>
+									<button type="submit" className="btn btn-primary px-4 mx-1">
 										{huespedEditar ? "Guardar cambios" : "Agregar"}
 									</button>
 								</div>
