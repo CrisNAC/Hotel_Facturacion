@@ -39,7 +39,13 @@ export const getAllIngresos = async (req, res) => {
 
 				habitacion: {
 					select: {
-						numero: true
+						id_habitacion:true,
+						numero: true,
+						tipoHabitacion:{
+							select:{
+								nombre:true
+							}
+						}
 					}
 				},
 				tarifa: {
@@ -53,6 +59,7 @@ export const getAllIngresos = async (req, res) => {
 					select: {
 						id_cuenta: true,
 						consumos: {
+							where: { activo: true },
 							select: {
 								Productos: {
 									select: {

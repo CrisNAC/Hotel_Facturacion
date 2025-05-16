@@ -399,10 +399,10 @@ function DetallesCuenta({ refresh }) {
         </thead>
         <tbody>
           <tr>
-            <td>{tarifa.descripcion || 'Habitación'}</td>
+            <td>{habitacion?.tipoHabitacion?.nombre|| 'Habitación'}</td>
             <td className="text-center">{noches}</td>
             <td className="text-center">{habitacion.numero || '—'}</td>
-            <td className="text-center">{huespedSeleccionado?.adicionales || '—'}</td>
+            <td className="text-center">{tarifa.descripcion || '—'}</td>
             <td className="text-end">{precioHabitacion.toLocaleString()}</td>
             <td className="text-end">{totalHabitacion.toLocaleString()}</td>
           </tr>
