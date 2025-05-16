@@ -42,6 +42,7 @@ function HuespedesActivosPage() {
         }
     };
 
+
     useEffect(() => {
         fetchIngresos();
     }, []);
