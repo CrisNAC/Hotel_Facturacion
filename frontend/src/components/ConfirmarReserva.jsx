@@ -87,7 +87,7 @@ const ConfirmarReserva = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{listaHuespedes.map((huesped, index) => (
+						{(listaHuespedes.length === 0) && listaHuespedes.map((huesped, index) => (
 							<tr key={huesped.id_huesped}>
 								<td>{index + 1}</td>
 								<td>{huesped.nombre}</td>
