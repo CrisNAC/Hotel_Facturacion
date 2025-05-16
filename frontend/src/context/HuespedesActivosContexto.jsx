@@ -8,6 +8,7 @@ export const HuespedesActivosProvider = ({ children }) => {
     // Estados para controlar la navegación
     const [mainPage, setMainPage] = useState(true);
     const [vistaFactura, setVistaFactura] = useState(false);
+    const [facturaTemporal, setFacturaTemporal] = useState(null); 
     
     // Estado para el huésped seleccionado
     const [huespedSeleccionado, setHuespedSeleccionado] = useState(null);
@@ -33,8 +34,11 @@ export const HuespedesActivosProvider = ({ children }) => {
         huespedSeleccionado,
         setHuespedSeleccionado,
         datosFacturacion,
-        actualizarDatosFacturacion
+        actualizarDatosFacturacion,
+        facturaTemporal,
+        setFacturaTemporal
     };
+
 
     return (
         <HuespedesActivosContext.Provider value={value}>
