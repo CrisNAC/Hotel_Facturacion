@@ -10,24 +10,26 @@ const initialState = {
 }
 
 const Login = () => {
-    
-	const [loginForm, setLoginForm] = useState( initialState ); 
-    const [errors, setErrors] = useState("");
-    const navigate = useNavigate();
+
+	const [loginForm, setLoginForm] = useState(initialState);
+	const [loading, setLoading] = useState(false);
+	const [errors, setErrors] = useState("");
+	const navigate = useNavigate();
 
 	const handleChange = (e) => {
 		setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
 	}
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
+	const handleLogin = async (e) => {
+		e.preventDefault();
 
-        try {
+		try {
+			setLoading(true);
 			const response = await axios.post('/api/session', loginForm, { withCredentials: true });
 			const data = response.data;
 			console.log(data);
 
-			if(response) {
+			if (response) {
 				setErrors([]);
 
 				navigate('/Inicio');
@@ -38,10 +40,12 @@ const Login = () => {
 				setErrors(error.response.data.error);
 				console.log(errors);
 			}
+		} finally{
+			setLoading(false);
 		}
-    }
-    
-    return (
+	}
+
+	return (
 		<div className="d-flex justify-content-center align-items-center vh-100">
 			<div className="card p-4 shadow" style={{ width: "350px" }}>
 
@@ -59,8 +63,8 @@ const Login = () => {
 							id="nombre_usuario"
 							name='nombre_usuario'
 							className="form-control"
-							value={ loginForm.nombre_usuario }
-							onChange={ handleChange }                               
+							value={loginForm.nombre_usuario}
+							onChange={handleChange}
 						/>
 					</div>
 
@@ -71,15 +75,15 @@ const Login = () => {
 							id="contrasena"
 							name='contrasena'
 							className="form-control"
-							value={ loginForm.contrasena }
-							onChange={ handleChange }                               
+							value={loginForm.contrasena}
+							onChange={handleChange}
 						/>
 					</div>
 
 					<button type="submit" className="btn btn-dark w-100">
-						Iniciar sesión
+						{loading?"Verificando":"Iniciar sesión"}
 					</button>
-					
+
 				</form>
 				{errors && (
 					<div className="alert alert-danger mt-3 text-center" role="alert">
@@ -88,7 +92,7 @@ const Login = () => {
 				)}
 			</div>
 		</div>
-    );
+	);
 }
 
 export default Login;

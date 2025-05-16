@@ -102,6 +102,7 @@ export const NavBar = ({ className = "" }) => {
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
+            <Dropdown.Item >Perfil</Dropdown.Item>
             <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
