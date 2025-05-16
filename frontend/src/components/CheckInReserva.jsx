@@ -17,8 +17,8 @@ const CheckInReserva = () => {
 			const response = await axios.get('/api/session/user-session', {
 				withCredentials: true,
 			});
-			console.log(response.data.user);
-			return response.data.user;
+			const dataUser = response.data.user;
+			return dataUser;
 
 		} catch (error) {
 			console.error('Error obteniendo usuario en sesión:', error.response?.data?.error || error.message);
@@ -56,9 +56,9 @@ const CheckInReserva = () => {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);*/
 
-	/*useEffect(() => {
+	useEffect(() => {
 		getUserInSession();
-	}, []);*/
+	}, []);
 
 	const handleReservaIdChange = (e) => {
 		setReservaId(e.target.value);

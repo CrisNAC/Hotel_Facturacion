@@ -74,7 +74,7 @@ export const logout = async (req, res) => {
 
 export const userSession = async (req, res) => {
 	try {
-		const token = req.cookies.token;
+		const token = req.cookies.userToken;
 
 		if (!token) {
 			return res.status(401).json({
@@ -103,7 +103,9 @@ export const userSession = async (req, res) => {
 			success: true,
 			user: {
 				id_usuario: user.id_usuario,
-				nombre_usuario: user.nombre_usuario
+				nombre_usuario: user.nombre_usuario,
+				nombre: user.nombre,
+				apellido: user.apellido
 			}
 		});
 
