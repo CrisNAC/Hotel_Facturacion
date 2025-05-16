@@ -13,7 +13,8 @@ class HTTPClient {
         }
 
         this.instance = axios.create({
-            baseURL
+            baseURL,
+			withCredentials: true
         });
     }
 

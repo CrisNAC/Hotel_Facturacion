@@ -47,6 +47,10 @@ export const NavBar = ({ className = "" }) => {
     }
   }
 
+	const irAPerfil = () => {
+		navigate('/profile');
+	}
+
   function stringToColor(string) {
     let hash = 0;
     let i;
@@ -106,9 +110,10 @@ export const NavBar = ({ className = "" }) => {
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
-            <Dropdown.Item >Perfil</Dropdown.Item>
+			<Dropdown.Item onClick={irAPerfil}>Perfil</Dropdown.Item>
             <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
           </Dropdown.Menu>
+
         </Dropdown>
       </div >
 
