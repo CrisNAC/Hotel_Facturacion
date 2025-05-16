@@ -8,7 +8,7 @@ router.post('/', login);
 
 router.delete('/', logout);
 
-router.get('user-session', userSession);
+router.get('/user-session', userSession);
 /*-----------------------------------------------------------------*/
 
 export default router;

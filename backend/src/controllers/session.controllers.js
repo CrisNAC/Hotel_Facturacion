@@ -83,7 +83,7 @@ export const userSession = async (req, res) => {
 			});
 		}
 
-		const token_decodificado = jwt.verify(token, proccess.env.JWT_SECRET);
+		const token_decodificado = jwt.verify(token, process.env.JWT_SECRET);
 
 		const user = await prisma.usuario.findUnique({
 			where: {

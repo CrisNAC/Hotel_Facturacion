@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 // import { debounce } from "lodash";
@@ -11,6 +11,20 @@ const CheckInReserva = () => {
 	const [reserva, setReserva] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const { setReservaSeleccionada } = useReserva();
+
+	const getUserInSession = async () => {
+		try {
+			const response = await axios.get('/api/session/user-session', {
+				withCredentials: true,
+			});
+			console.log(response.data.user);
+			return response.data.user;
+
+		} catch (error) {
+			console.error('Error obteniendo usuario en sesión:', error.response?.data?.error || error.message);
+			return null;
+		}
+	}
 
 	const getReservaById = async (id) => {
 		try {
@@ -42,12 +56,17 @@ const CheckInReserva = () => {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);*/
 
+	/*useEffect(() => {
+		getUserInSession();
+	}, []);*/
+
 	const handleReservaIdChange = (e) => {
 		setReservaId(e.target.value);
 	}
 
 	const handleBuscarReserva = () => {
 		if (reservaId) getReservaById(reservaId);
+		//getUserInSession();
 	};
 
 	return (
