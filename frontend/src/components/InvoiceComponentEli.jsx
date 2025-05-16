@@ -1,184 +1,110 @@
-import React, { useContext } from "react";
-import "../styles/InvoiceStyleEli.css";
+import React, { useContext, useRef } from "react";
+import "./InvoiceStyleEli.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { HuespedesActivosContext } from "../context/HuespedesActivosContexto.jsx";
 
 const Invoice = () => {
-  // Datos de la factura
-  const invoiceData = {
-    hotelName: "Hotel Jazel",
-    activity: "Actividad Comercial",
-    address: "Dirección",
-    ruc: "1234567",
-    timbrado: "12557904",
-    vigencia: "12/01/2025",
-    invoiceNumber: "001-001-8000915",
-    customer: {
-      name: "María López",
-      document: "3458237",
-      email: "marialopez@gmail.com",
-      phone: "595981654234"
-    },
-    invoiceDetails: {
-      date: "22/03/2025 15:33:15",
-      condition: "Contado",
-      currency: "Guarani"
-    },
-    items: [
-      {
-        code: "001",
-        description: "Habitación Ejecutiva",
-        unit: "UNI",
-        quantity: 3,
-        unitPrice: "150.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "450.000"
-      },
-      {
-        code: "002",
-        description: "Habitación Suite",
-        unit: "UNI",
-        quantity: 2,
-        unitPrice: "250.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "500.000"
-      },
-      {
-        code: "101",
-        description: "Servicio de Spa Completo",
-        unit: "UNI",
-        quantity: 1,
-        unitPrice: "120.000",
-        discount: "10.000",
-        exempt: "-",
-        tax5: "-",
-        tax10: "110.000"
-      },
-      {
-        code: "102",
-        description: "Almuerzo Ejecutivo",
-        unit: "UNI",
-        quantity: 4,
-        unitPrice: "45.000",
-        discount: "-",
-        exempt: "SI",
-        tax5: "-",
-        tax10: "-"
-      },
-      {
-        code: "103",
-        description: "Transporte Aeropuerto",
-        unit: "VIAJE",
-        quantity: 2,
-        unitPrice: "80.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "8.000",
-        tax10: "-"
-      },
-      {
-        code: "201",
-        description: "Lavandería Express",
-        unit: "KG",
-        quantity: 5,
-        unitPrice: "12.000",
-        discount: "2.000",
-        exempt: "-",
-        tax5: "-",
-        tax10: "50.000"
-      },
-      {
-        code: "202",
-        description: "Minibar Premium",
-        unit: "DÍA",
-        quantity: 3,
-        unitPrice: "35.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "105.000"
-      },
-      {
-        code: "401",
-        description: "Paquete Romántico",
-        unit: "UNI",
-        quantity: 1,
-        unitPrice: "180.000",
-        discount: "15.000",
-        exempt: "-",
-        tax5: "-",
-        tax10: "165.000"
-      },
-      {
-        code: "402",
-        description: "Paquete Familiar",
-        unit: "UNI",
-        quantity: 1,
-        unitPrice: "320.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "320.000"
-      },
-      {
-        code: "404",
-        description: "Tour Ciudad",
-        unit: "PERS",
-        quantity: 2,
-        unitPrice: "75.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "150.000"
-      },
-      {
-        code: "405",
-        description: "Late Check-out",
-        unit: "HORA",
-        quantity: 4,
-        unitPrice: "25.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "100.000"
-      },
-      {
-        code: "303",
-        description: "Servicio a la Habitación",
-        unit: "PEDIDO",
-        quantity: 6,
-        unitPrice: "18.000",
-        discount: "-",
-        exempt: "-",
-        tax5: "-",
-        tax10: "108.000"
-      }
-    ],
-
-    totals: {
-      subtotal: "0  0  2.558.000",
-      totalOperation: "2.558.000",
-      totalGuaranies: "2.558.000",
-      taxLiquidation: "5%     8.000      10%     230.500   TOTAL IVA 238.500"
-    }
-  };
-
-  const { setMainPage } = useContext(HuespedesActivosContext);
-  const { setVistaFactura } = useContext(HuespedesActivosContext);
+  const {
+    setMainPage,
+    setVistaFactura,
+    huespedSeleccionado,
+    datosFacturacion,
+  } = useContext(HuespedesActivosContext);
+  const invoiceRef = useRef();
 
   const irADetCuenta = () => {
     setMainPage(false);
     setVistaFactura(false);
   };
+  const huesped = huespedSeleccionado?.huesped || {};
+  const cuenta = huespedSeleccionado?.cuenta?.[0] || {};
+  const tarifa = huespedSeleccionado?.tarifa || {};
+  const habitacion = huespedSeleccionado?.habitacion || {};
+  //const precioHabitacion = tarifa.precio;
+  console.log(tarifa.precio)
+  // Calcular noches de estadía
+  const calcularNoches = (checkIn, checkOut) => {
+    if (!checkIn || !checkOut) return 0;
+    const unDia = 24 * 60 * 60 * 1000;
+    const fechaInicio = new Date(checkIn);
+    const fechaFin = new Date(checkOut);
+    return Math.round(Math.abs((fechaFin - fechaInicio) / unDia));
+  };
+  const noches = calcularNoches(huespedSeleccionado.checkIn, huespedSeleccionado.checkOut);
+  const precioHabitacion = tarifa?.precio;
+  const totalHabitacion = noches * precioHabitacion;
+  const itemEstadia = {
+    id_consumo: habitacion?.id_habitacion,
+    Productos: { descripcion: habitacion?.tipoHabitacion?.nombre,
+                precio_unitario: precioHabitacion
+     },
+    cantidad: noches,
+    monto: totalHabitacion
+  };
+
+  const invoiceItems = [itemEstadia, ...(cuenta?.consumos || [])];
+
+  const invoiceData = {
+    hotelName: "Hotel Jazel",
+    activity: "Servicios de hospedaje y alojamiento",
+    address: "Av. Dr. Francia, Encarnación, Paraguay Comercial",
+    ruc: "1234567",
+    timbrado: "12557904",
+    vigencia: "12/01/2025",
+    invoiceNumber: "001-001-8000915",
+    customer: {
+      name: huesped?.nombre +' '+ huesped?.apellido|| "No definido",
+      document: huesped?.ruc || "Sin documento",
+      email: huesped?.email || "Sin correo",
+      phone: huesped?.telefono || "Sin teléfono"
+    },
+    invoiceDetails: {
+      date: new Date().toLocaleString(),
+      condition: datosFacturacion.condicionVenta || "Contado",
+      currency: "Guaraní"
+    },
+    items:invoiceItems|| [],
+
+    totals: {
+      subtotal: cuenta?.consumos.reduce((acc, item) => acc + (item.monto|| 0), 0)+totalHabitacion,
+      totalOperation: cuenta?.consumos.reduce((acc, item) => acc + (item.monto|| 0), 0)+totalHabitacion,
+      totalGuaranies: cuenta?.consumos.reduce((acc, item) => acc + (item.monto|| 0), 0)+totalHabitacion,
+      taxLiquidation: ""
+    }
+  };
+
+console.log("Cuenta consumos:", cuenta.consumos);
+console.log("invoiceData.items:", invoiceData.items);
+   const handleDownload = () => {
+    const element = document.querySelector(".invoice");
+
+    // Ocultar todos los elementos con clase no-print
+    const noPrintElements = document.querySelectorAll(".no-print");
+    noPrintElements.forEach(el => el.style.visibility = "hidden");
+
+    import("html2pdf.js").then((html2pdf) => {
+      html2pdf.default()
+        .set({
+          margin: 0,
+          filename: `factura-.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+        })
+        .from(element)
+        .save()
+        .then(() => {
+          // Restaurar visibilidad
+          noPrintElements.forEach(el => el.style.visibility = "visible");
+        });
+    });
+  };
+
+
 
   return (
-    <div className="invoice">
-      {/* Encabezado */}
+    <div className="invoice" ref={invoiceRef}>     
       <div className="invoice-header">
         <div className="hotel-name">{invoiceData.hotelName}</div>
         <div className="invoice-title">Factura Electrónica</div>
@@ -230,15 +156,15 @@ const Invoice = () => {
         <tbody>
           {invoiceData.items.map((item, index) => (
             <tr className="table-row" key={index}>
-              <td>{item.code}</td>
-              <td>{item.description}</td>
-              <td>{item.unit}</td>
-              <td>{item.quantity}</td>
-              <td>{item.unitPrice}</td>
-              <td>{item.discount}</td>
-              <td>{item.exempt}</td>
-              <td>{item.tax5}</td>
-              <td>{item.tax10}</td>
+              <td>{'0'+ item.id_consumo}</td>
+              <td>{item.Productos?.descripcion || "Sin descripción"}</td>
+              <td>UNI</td>
+              <td>{item.cantidad}</td>
+              <td>{item.Productos?.precio_unitario.toLocaleString("de-DE") || 0}</td>
+              <td>0</td> {/* descuentos */}
+              <td>0</td> {/* exentas */}
+              <td>0</td> {/* 5% */}
+              <td>{item.monto.toLocaleString("de-DE")}</td>
             </tr>
           ))}
 
@@ -249,24 +175,30 @@ const Invoice = () => {
       <div className="totals-section">
         <div className="total-row">
           <div className="total-label">SUBTOTAL:</div>
-          <div>{invoiceData.totals.subtotal}</div>
+          <div>{invoiceData.totals.subtotal.toLocaleString("de-DE")}</div>
         </div>
         <div className="total-row">
           <div className="total-label">TOTAL DE LA OPERACIÓN:</div>
-          <div>{invoiceData.totals.totalOperation}</div>
+          <div>{invoiceData.totals.totalOperation.toLocaleString("de-DE")}</div>
         </div>
         <div className="total-row">
           <div className="total-label">TOTAL EN GUARANÍES:</div>
-          <div>{invoiceData.totals.totalGuaranies}</div>
+          <div>{invoiceData.totals.totalGuaranies.toLocaleString("de-DE")}</div>
         </div>
-        <div className="total-row">
-          <div className="total-label">LIQUIDACIÓN IVA:</div>
-          <div>{invoiceData.totals.taxLiquidation}</div>
+        <div className="total-row d-flex justify-content-between">
+          <div className="d-flex justify-content-between w-100">
+            <span><strong>LIQUIDACIÓN IVA:</strong></span>
+            <span><strong>5%</strong></span>
+            <span>0</span>
+            <span><strong>10%</strong></span>
+            <span>{(invoiceData.totals.totalGuaranies * 0.1).toLocaleString("de-DE")}</span>
+            <span><strong>TOTAL IVA:</strong> {(invoiceData.totals.totalGuaranies * 0.1).toLocaleString("de-DE")}</span>
+          </div>
         </div>
       </div>
       <div className="d-flex justify-content-center align-items-center  mt-4" style={{ gap: "30px" }}>
         <button className="btn btn-secondary fw-bold" style={{ width: "150px", height: "40px" }} onClick={irADetCuenta}>Cancelar</button>
-        <button className="btn btn-success fw-bold" style={{ width: "150px", height: "40px" }}>Generar</button>
+        <button className="btn btn-success fw-bold" style={{ width: "150px", height: "40px" }} onClick={handleDownload}>Generar</button>
       </div>
     </div>
   );
