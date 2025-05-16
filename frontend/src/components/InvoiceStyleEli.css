@@ -172,3 +172,9 @@
   .total-label {
     font-weight: 700;
   }
+
+  @media print {
+  .no-print {
+    display: none !important;
+  }
+}
