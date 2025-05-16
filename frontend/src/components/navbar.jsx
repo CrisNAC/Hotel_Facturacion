@@ -29,6 +29,10 @@ export const NavBar = ({ className = "" }) => {
     navigate('/FacturasEmitidas');
   };
 
+  const irAReportes = () => {
+    navigate('/Reportes');
+  };
+
   const irALogin = () => {
     navigate('/');
   };
@@ -91,7 +95,7 @@ export const NavBar = ({ className = "" }) => {
           <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAHuespedes}>Huespedes</button>
           <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAIngresoHuesped}>Ingreso de huésped</button>
           <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAFacturasEmitidas}>Facturas emitidas</button>
-          <button className="btn btn-link text-white fw-normal text-decoration-none">Reportes</button>
+          <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAReportes}>Reportes</button>
         </div >
 
         {/* Auth section */}
