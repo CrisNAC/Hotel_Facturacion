@@ -94,8 +94,8 @@ function DetallesCuenta({ refresh }) {
   const noches = calcularNoches(huespedSeleccionado.checkIn, huespedSeleccionado.checkOut);
   const precioHabitacion = tarifa.precio || 0;
   const totalHabitacion = noches * precioHabitacion;
-  const totalConsumos = consumos.reduce((acc, item) => acc + (item.monto|| 0), 0);
-  const totalGeneral = totalHabitacion + totalConsumos;
+  const totalConsumos = consumos.reduce((acc, item) => acc + (Number(item.monto)|| 0), 0);
+  const totalGeneral = Number(totalHabitacion) + Number(totalConsumos);
 
   // Navegación
   const irAHuespedes = () => {
