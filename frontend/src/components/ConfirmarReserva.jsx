@@ -66,7 +66,7 @@ const ConfirmarReserva = () => {
 						className="btn btn-primary btn-sm ms-3"
 						onClick={() => navigate('/AgregarHuesped', { state: { huespedes: listaHuespedes } })}
 					>
-						<FaUserPlus className="me-2" /> Agregar
+						<FaUserPlus className="me-2" style={{ fontSize: '1rem', paddingBottom: '2px' }} />Agregar<span></span>
 					</button>
 				</div>
 				{/* Tabla */}
