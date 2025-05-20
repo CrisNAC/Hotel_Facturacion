@@ -1,5 +1,5 @@
 import React, { useContext, useRef } from "react";
-import "./InvoiceStyleEli.css";
+import "../styles/InvoiceStyleEli.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { HuespedesActivosContext } from "../context/HuespedesActivosContexto.jsx";

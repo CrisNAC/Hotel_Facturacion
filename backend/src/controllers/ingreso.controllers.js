@@ -8,8 +8,17 @@ const prisma = new PrismaClient();
 
 export const getAllIngresos = async (req, res) => {
 	try {
+
+		const { desde, hasta } = req.query;
+
 		const ingresos = await prisma.ingreso.findMany({
-			where: { activo: true },
+			where: {
+				activo: true,
+				checkIn: {
+					gte: desde ? new Date(desde) : undefined,
+					lte: hasta ? new Date(hasta) : undefined,
+				}
+			},
 			orderBy: {
 				checkIn: 'asc'
 			},
@@ -39,11 +48,11 @@ export const getAllIngresos = async (req, res) => {
 
 				habitacion: {
 					select: {
-						id_habitacion:true,
+						id_habitacion: true,
 						numero: true,
-						tipoHabitacion:{
-							select:{
-								nombre:true
+						tipoHabitacion: {
+							select: {
+								nombre: true
 							}
 						}
 					}
@@ -89,9 +98,9 @@ export const getAllIngresos = async (req, res) => {
 
 		res.status(200).json(safeIngresos);
 	} catch (error) {
-	console.error(error); // Mostrar el error en consola
-	res.status(500).json({ error: "Internal Server Error: " + error.message });
-}
+		console.error(error); // Mostrar el error en consola
+		res.status(500).json({ error: "Internal Server Error: " + error.message });
+	}
 
 }
 
