@@ -6,7 +6,6 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import NavBar from '../components/navbar';
-import { Navbar } from 'react-bootstrap';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
@@ -30,12 +29,14 @@ export default function ReportesPage() {
             const { data } = await refetch();
 
             const ingresosParseados = data.map(item => {
+                const id_ingreso = item.id_ingreso || 0;
                 const tarifa = item.tarifa?.precio || 0;
                 const consumos = item.cuenta?.consumos || [];
                 const totalConsumos = consumos.reduce((sum, c) => sum + (c.monto || 0), 0);
                 const total = tarifa + totalConsumos;
 
                 return {
+                    id_ingreso: item.id_ingreso || 0,
                     fecha: item.checkIn?.split('T')[0],
                     concepto: `Ingreso habitación ${item.habitacion?.numero || 'N/A'}`,
                     monto: total
@@ -78,7 +79,9 @@ export default function ReportesPage() {
         isLoading,
         error,
         refetch
-    } = useQuery(['ingresos', desde, hasta], fetchIngresos, {
+    } = useQuery({
+        queryKey: ['ingresos', desde, hasta],
+        queryFn: fetchIngresos,
         enabled: categoria === 'ingresos'
     });
 
@@ -151,9 +154,15 @@ export default function ReportesPage() {
                         <TableHead>
                             <TableRow>
                                 {categoria === "ingresos" && <>
-                                    <TableCell>Fecha</TableCell>
-                                    <TableCell>Concepto</TableCell>
-                                    <TableCell>Monto</TableCell>
+                                    <TableCell>id_ingreso</TableCell>
+                                    <TableCell>fk_reserva</TableCell>
+                                    <TableCell>fk_habitacion</TableCell>
+                                    <TableCell>fk_huesped</TableCell>
+                                    <TableCell>fk_tarifa</TableCell>
+                                    <TableCell>estado</TableCell>
+                                    <TableCell>fk_usuario</TableCell>
+                                    <TableCell>checkIn</TableCell>
+                                    <TableCell>checkOut</TableCell>
                                 </>}
                                 {categoria === "reservas" && <>
                                     <TableCell>Fecha</TableCell>
@@ -175,6 +184,8 @@ export default function ReportesPage() {
                             {datos.map((row, i) => (
                                 <TableRow key={i}>
                                     {categoria === "ingresos" && <>
+                                        <TableCell>{row.id_ingreso}</TableCell>
+                                        <TableCell>{row.reservas}</TableCell>
                                         <TableCell>{row.fecha}</TableCell>
                                         <TableCell>{row.concepto}</TableCell>
                                         <TableCell>${row.monto}</TableCell>
