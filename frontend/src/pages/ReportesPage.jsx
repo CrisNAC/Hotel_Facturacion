@@ -29,17 +29,29 @@ export default function ReportesPage() {
             const { data } = await refetch();
 
             const ingresosParseados = data.map(item => {
-                const id_ingreso = item.id_ingreso || 0;
+                const habitacion = item.habitacion?.numero || 'N/A';
+                const huesped = item.huesped?.nombre + item.huesped?.apellido || 'N/A';
+                const tarifa = item.tarifa?.precio || 0;
+                const consumos = item.cuenta?.consumos || 0;
+                const checkIn = item.checkIn?.split('T')[0];
+                const checkOut = item.checkOut?.split('T')[0];
+                /*
                 const tarifa = item.tarifa?.precio || 0;
                 const consumos = item.cuenta?.consumos || [];
                 const totalConsumos = consumos.reduce((sum, c) => sum + (c.monto || 0), 0);
-                const total = tarifa + totalConsumos;
+                const total = tarifa + totalConsumos;*/
 
                 return {
-                    id_ingreso: item.id_ingreso || 0,
+                    habitacion: item.habitacion?.numero || 'N/A',
+                    huesped: item.huesped?.nombre + ' ' + item.huesped?.apellido || 'N/A',
+                    tarifa: item.tarifa?.precio.toLocaleString() || 0,
+                    consumos: item.cuenta?.consumos || 0,
+                    checkIn: item.checkIn?.split('T')[0],
+                    checkOut: item.checkOut?.split('T')[0],
+                    /*
                     fecha: item.checkIn?.split('T')[0],
                     concepto: `Ingreso habitación ${item.habitacion?.numero || 'N/A'}`,
-                    monto: total
+                    monto: total*/
                 };
             });
 
@@ -84,6 +96,26 @@ export default function ReportesPage() {
         queryFn: fetchIngresos,
         enabled: categoria === 'ingresos'
     });
+
+/**
+* Para cambiar el formato de la fecha a Dia/Mes/Año
+* @param {*} dateString Se le pasa el una fecha
+* @returns Retorna la fecha modifica en caso de exito o si no en caso de fracaso -
+*/
+    const formatDMY = (dateString) => {
+        if (!dateString) return '—';
+        try {
+            const date = new Date(dateString);
+            return new Intl.DateTimeFormat('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                timeZone: 'UTC'
+            }).format(date);
+        } catch {
+            return '—';
+        }
+    };
 
     return (
         <>
@@ -154,15 +186,11 @@ export default function ReportesPage() {
                         <TableHead>
                             <TableRow>
                                 {categoria === "ingresos" && <>
-                                    <TableCell>id_ingreso</TableCell>
-                                    <TableCell>fk_reserva</TableCell>
-                                    <TableCell>fk_habitacion</TableCell>
-                                    <TableCell>fk_huesped</TableCell>
-                                    <TableCell>fk_tarifa</TableCell>
-                                    <TableCell>estado</TableCell>
-                                    <TableCell>fk_usuario</TableCell>
-                                    <TableCell>checkIn</TableCell>
-                                    <TableCell>checkOut</TableCell>
+                                    <TableCell>N° de habitación</TableCell>
+                                    <TableCell>Huésped</TableCell>
+                                    <TableCell>Monto</TableCell>
+                                    <TableCell>Fecha de check-in</TableCell>
+                                    <TableCell>Fecha de check-out</TableCell>
                                 </>}
                                 {categoria === "reservas" && <>
                                     <TableCell>Fecha</TableCell>
@@ -184,11 +212,11 @@ export default function ReportesPage() {
                             {datos.map((row, i) => (
                                 <TableRow key={i}>
                                     {categoria === "ingresos" && <>
-                                        <TableCell>{row.id_ingreso}</TableCell>
-                                        <TableCell>{row.reservas}</TableCell>
-                                        <TableCell>{row.fecha}</TableCell>
-                                        <TableCell>{row.concepto}</TableCell>
-                                        <TableCell>${row.monto}</TableCell>
+                                        <TableCell>{row.habitacion}</TableCell>
+                                        <TableCell>{row.huesped}</TableCell>
+                                        <TableCell>{row.tarifa + row.consumos}</TableCell>
+                                        <TableCell>{formatDMY(row.checkIn)}</TableCell>
+                                        <TableCell>{formatDMY(row.checkOut)}</TableCell>
                                     </>}
                                     {categoria === "reservas" && <>
                                         <TableCell>{row.fecha}</TableCell>
