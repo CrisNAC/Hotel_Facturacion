@@ -18,17 +18,14 @@ class HTTPClient {
         });
     }
 
-    /****               LOGIN                ***/
+    /****           SESSION - LOGIN         ****/
     cerrarSesion() {
-        return this.instance.delete('/session', { withCredentials: true });
+        return this.instance.delete('/session');
     };
 
-    /* login(email, password){
-        return this.instance.post("/login", {
-            email,
-            password
-            })
-            }*/
+    getUser(){
+        return this.instance.get('/session/user-session');
+    }
 
     /****       LISTADO DE INGRESOS        ****/
 
