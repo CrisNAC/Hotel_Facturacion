@@ -174,6 +174,7 @@ export const cancelarIngreso = async (req, res) => {
 				id_ingreso: parseInt(id)
 			},
 			data: {
+				fk_habitacion: null,
 				estado: "Cancelado"
 			}
 		});

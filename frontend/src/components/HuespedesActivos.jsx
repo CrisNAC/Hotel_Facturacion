@@ -218,9 +218,9 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                             <tr key={item.id_ingreso}>
                                 <td className='text-center'>{(page - 1) * itemsPerPage + index + 1}</td>
                                 <td className='text-start'>{`${item.huesped?.nombre || 'N/A'} ${item.huesped?.apellido || ''}`}</td>
-                                <td className="text-center">{item.habitacion?.numero || '—'}</td>
-                                <td className="text-center">{formatDMY(item.checkIn) || '—'}</td>
-                                <td className="text-center">{formatDMY(item.checkOut) || '—'}</td>
+                                <td className="text-center">{item.habitacion?.numero || '---'}</td>
+                                <td className="text-center">{formatDMY(item.checkIn) || '---'}</td>
+                                <td className="text-center">{formatDMY(item.checkOut) || '---'}</td>
                                 <td className="text-center">
                                     <span style={{
                                         padding: '4px 8px',
