@@ -193,6 +193,7 @@ model DetalleFactura {
   factura            Factura @relation(fields: [fk_factura], references: [id_factura])
 }
 
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Productos {
   id_producto     Int       @id @default(autoincrement())
   precio_unitario Int

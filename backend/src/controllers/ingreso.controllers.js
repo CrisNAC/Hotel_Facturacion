@@ -1,4 +1,4 @@
-import { PrismaClient } from "../../generated/prisma/index.js";
+import {PrismaClient} from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
 /* [
@@ -7,156 +7,185 @@ const prisma = new PrismaClient();
 ] */
 
 export const getAllIngresos = async (req, res) => {
-	try {
-		const ingresos = await prisma.ingreso.findMany({
-			where: { activo: true },
-			orderBy: {
-				checkIn: 'asc'
-			},
-			select: {
-				id_ingreso: true,
-				estado: true,
-				checkIn: true,
-				checkOut: true,
-				reserva: {
-					select: {
-						id_reserva: true,
-						check_in: true,
-						check_out: true
-					}
-				},
-				huesped: {
-					select: {
-						id_huesped: true,
-						nombre: true,
-						apellido: true,
-						nacionalidad: true,
-						telefono: true,
-						email: true,
-						ruc: true
-					}
-				},
+    try {
+        const {desde, hasta} = req.query;
 
-				habitacion: {
-					select: {
-						numero: true
-					}
-				},
-				tarifa: {
-					select: {
-						descripcion: true,
-						precio: true
-					}
-				},
+        const ingresos = await prisma.ingreso.findMany({
+            where: {
+                activo: true,
+                checkIn: {
+                    gte: desde ? new Date(desde) : undefined,
+                    lte: hasta ? new Date(hasta) : undefined,
+                },
+            },
+            orderBy: {
+                checkIn: "asc",
+            },
+            select: {
+                id_ingreso: true,
+                estado: true,
+                checkIn: true,
+                checkOut: true,
+                reserva: {
+                    select: {
+                        id_reserva: true,
+                        check_in: true,
+                        check_out: true,
+                    },
+                },
+                huesped: {
+                    select: {
+                        id_huesped: true,
+                        nombre: true,
+                        apellido: true,
+                        nacionalidad: true,
+                        telefono: true,
+                        email: true,
+                        ruc: true,
+                    },
+                },
 
-				cuenta: {
-					select: {
-						id_cuenta: true,
-						consumos: {
-							select: {
-								id_consumo: true,
-								cantidad: true,
-								monto: true,
-								activo: true
-							}
-						}
-					}
-				},
-				usuario: {
-					select: {
-						id_usuario: true
-					}
-				}
+                habitacion: {
+                    select: {
+                        id_habitacion: true,
+                        numero: true,
+                        tipoHabitacion: {
+                            select: {
+                                nombre: true,
+                            },
+                        },
+                    },
+                },
+                tarifa: {
+                    select: {
+                        descripcion: true,
+                        precio: true,
+                    },
+                },
 
-			}
-		});
-		res.status(200).json(ingresos);
-	} catch (error) {
-		console.error("Error al obtener todos los ingresos", error);
-		res.status(500).json({ error: "Internal Server Error: Error al listar ingresos" });
-	}
-}
+                cuenta: {
+                    select: {
+                        id_cuenta: true,
+                        consumos: {
+                            where: {activo: true},
+                            select: {
+                                Productos: {
+                                    select: {
+                                        descripcion: true,
+                                        precio_unitario: true,
+                                    },
+                                },
+                                id_consumo: true,
+                                cantidad: true,
+                                monto: true,
+                                activo: true,
+                            },
+                        },
+                    },
+                },
+                usuario: {
+                    select: {
+                        id_usuario: true,
+                    },
+                },
+            },
+        });
+        const safeIngresos = JSON.parse(
+            JSON.stringify(ingresos, (_, value) =>
+                typeof value === "bigint" ? value.toString() : value
+            )
+        );
+
+        res.status(200).json(safeIngresos);
+    } catch (error) {
+        console.error("Error al obtener todos los ingresos", error);
+        res.status(500).json({
+            error: "Internal Server Error: Error al listar ingresos",
+        });
+    }
+};
 
 export const createIngreso = async (req, res) => {
-	try {
-		const {
-			fk_reserva,
-			fk_habitacion,
-			fk_huesped,
-			fk_tarifa,
-			fecha_ingreso,
-			estado,
-			fk_usuario
-		} = req.body;
+    try {
+        const {
+            fk_reserva,
+            fk_habitacion,
+            fk_huesped,
+            fk_tarifa,
+            fecha_ingreso,
+            estado,
+            fk_usuario,
+        } = req.body;
 
-		const nuevoIngreso = await prisma.ingreso.create({
-			data: {
-				fk_reserva,
-				fk_habitacion,
-				fk_huesped,
-				fk_tarifa,
-				fecha_ingreso: new Date(fecha_ingreso),
-				estado,
-				fk_usuario
-			},
+        const nuevoIngreso = await prisma.ingreso.create({
+            data: {
+                fk_reserva,
+                fk_habitacion,
+                fk_huesped,
+                fk_tarifa,
+                fecha_ingreso: new Date(fecha_ingreso),
+                estado,
+                fk_usuario,
+            },
 
-			include: {
-				reserva: {
-					select: {
-						check_in: true,
-						check_out: true
-					}
-				},
-				habitacion: {
-					select: {
-						numero: true
-					}
-				},
-				tarifa: {
-					select: {
-						descripcion: true,
-						precio: true
-					}
-				},
-				huesped: {
-					select: {
-						nombre: true,
-						apellido: true
-					}
-				},
-				usuario: {
-					select: {
-						nombre_usuario: true
-					}
-				}
-			},
-		});
+            include: {
+                reserva: {
+                    select: {
+                        check_in: true,
+                        check_out: true,
+                    },
+                },
+                habitacion: {
+                    select: {
+                        numero: true,
+                    },
+                },
+                tarifa: {
+                    select: {
+                        descripcion: true,
+                        precio: true,
+                    },
+                },
+                huesped: {
+                    select: {
+                        nombre: true,
+                        apellido: true,
+                    },
+                },
+                usuario: {
+                    select: {
+                        nombre_usuario: true,
+                    },
+                },
+            },
+        });
 
-		res.status(201).json(nuevoIngreso);
-
-	} catch (error) {
-		res.status(500).json({ error: "Internal Server Error: Error al crear el ingreso" });
-	}
-}
+        res.status(201).json(nuevoIngreso);
+    } catch (error) {
+        res.status(500).json({
+            error: "Internal Server Error: Error al crear el ingreso",
+        });
+    }
+};
 
 export const cancelarIngreso = async (req, res) => {
-	try {
-		const { id } = req.params;
-		await prisma.ingreso.update({
-			where: {
-				id_ingreso: parseInt(id)
-			},
-			data: {
-				estado: "Cancelado"
-			}
-		});
-		res.status(200).end();
-	} catch (error) {
-		if (error.code === 'P2025') {
-			res.status(404).json({ error: "Ingreso no encontrado" });
-		} else {
-			console.error(error);
-			res.status(500).json({ error: "Error al cancelar el ingreso" });
-		}
-	}
+    try {
+        const {id} = req.params;
+        await prisma.ingreso.update({
+            where: {
+                id_ingreso: parseInt(id),
+            },
+            data: {
+                estado: "Cancelado",
+            },
+        });
+        res.status(200).end();
+    } catch (error) {
+        if (error.code === "P2025") {
+            res.status(404).json({error: "Ingreso no encontrado"});
+        } else {
+            console.error(error);
+            res.status(500).json({error: "Error al cancelar el ingreso"});
+        }
+    }
 };

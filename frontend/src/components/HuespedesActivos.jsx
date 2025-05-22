@@ -245,7 +245,7 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                                         const costoHabitacion = noches * (item.tarifa?.precio || 0);
                                         const totalConsumos = item.cuenta?.[0]?.consumos
                                             ?.filter(consumo => consumo.activo)
-                                            ?.reduce((acc, consumo) => acc + (consumo.monto * consumo.cantidad || 0), 0) || 0;
+                                            ?.reduce((acc, consumo) => acc + (Number(consumo.monto) || 0), 0) || 0;
                                         const total = costoHabitacion + totalConsumos;
 
                                         return total > 0 ? `${total.toLocaleString()} Gs` : '—';
