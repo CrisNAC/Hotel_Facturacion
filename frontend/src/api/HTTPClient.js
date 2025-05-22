@@ -20,18 +20,10 @@ class HTTPClient {
 
     /****               LOGIN                ***/
     cerrarSesion() {
-        return this.instance.delete('/session', { withCredentials: true });
+        return this.instance.delete('/session');
     };
 
-    /* login(email, password){
-        return this.instance.post("/login", {
-            email,
-            password
-            })
-            }*/
-
     /****       LISTADO DE INGRESOS        ****/
-
     getIngresos() {
         return this.instance.get("/ingresos");
     };

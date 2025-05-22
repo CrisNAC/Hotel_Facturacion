@@ -55,7 +55,6 @@ export const getAllIngresos = async (req, res) => {
 						consumos: {
 							select: {
 								id_consumo: true,
-								descripcion: true,
 								cantidad: true,
 								monto: true,
 								activo: true
@@ -73,6 +72,7 @@ export const getAllIngresos = async (req, res) => {
 		});
 		res.status(200).json(ingresos);
 	} catch (error) {
+		console.error("Error al obtener todos los ingresos", error);
 		res.status(500).json({ error: "Internal Server Error: Error al listar ingresos" });
 	}
 }
