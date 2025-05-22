@@ -27,6 +27,11 @@ class HTTPClient {
         return this.instance.get('/session/user-session');
     }
 
+    /**** INICIO ****/
+    getDashboard(){
+        return this.instance.get('/dashboard');
+    }
+
     /****       LISTADO DE INGRESOS        ****/
 
     getIngresos() {

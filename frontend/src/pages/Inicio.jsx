@@ -1,22 +1,59 @@
 // Styles
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { FaRegTrashAlt, FaEye } from "react-icons/fa";
-import { FiFileText } from "react-icons/fi";
-// Components
-import React, { useState, useEffect } from 'react';
+
 import { Card, Container, Row, Col, Table } from 'react-bootstrap';
 import NavBar from '../components/navbar.jsx';
-// Axios
 import HTTPClient from '../api/HTTPClient.js';
-
+import React, { useState, useEffect } from 'react';
 
 const Inicio = () => {
+  const client = new HTTPClient();
+
+  // Estados
+  const [datos, setDatos] = useState({
+    libres: 0,
+    reservadas: 0,
+    ocupadas: 0,
+    huespedesActivos: 0,
+    ingresosHoy: [],
+    egresosHoy: []
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Función para obtener datos del dashboard
+  const fetchDatos = async () => {
+    try {
+      setLoading(true);
+      const response = await client.getDashboard();
+      setDatos(response.data);
+    } catch (err) {
+      setError('Error al cargar los datos del inicio');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDatos();
+  }, []);
+
+  // Fecha actual en formato legible
+  const fechaActual = new Date().toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+
   const cards = [
-    { color: '#B3F2B4', value: 15, label: 'Habitaciones Libres' },      // Verde pastel
-    { color: '#D0EFFF', value: 10, label: 'Habitaciones Reservadas' },  // Celeste pastel
-    { color: '#FFF9C4', value: 17, label: 'Huéspedes Activos' },        // Amarillo pastel
-    { color: '#FFCCBC', value: 100, label: 'Habitaciones Ocupadas' }    // Naranja pastel
+    { color: '#B3F2B4', value: datos.libres, label: 'Habitaciones Libres' },
+    { color: '#D0EFFF', value: datos.reservadas, label: 'Habitaciones Reservadas' },
+    { color: '#FFCCBC', value: datos.ocupadas, label: 'Habitaciones Ocupadas' },
+    { color: '#FFF9C4', value: datos.huespedesActivos, label: 'Huéspedes Activos' },
   ];
+
   return (
     <>
       <NavBar />
@@ -34,7 +71,9 @@ const Inicio = () => {
                 }}
               >
                 <Card.Body className="d-flex flex-column justify-content-center">
-                  <Card.Title className="text-center" style={{ fontSize: '2.5rem' }}>{card.value}</Card.Title>
+                  <Card.Title className="text-center" style={{ fontSize: '2.5rem' }}>
+                    {loading ? '...' : card.value}
+                  </Card.Title>
                   <Card.Text className="text-center" style={{ fontSize: '1.2rem' }}>
                     {card.label}
                   </Card.Text>
@@ -45,7 +84,7 @@ const Inicio = () => {
         </Row>
 
         {/* Tablas */}
-        <h4 className="text-center mb-4">Ingresos y Egresos del día: 24/04/2025</h4>
+        <h4 className="text-center mb-4">Ingresos y Egresos del día: {fechaActual}</h4>
         <Row>
           <Col md={6}>
             <Card className="mb-4 shadow-sm" style={{ backgroundColor: '#DDE7EA' }}>
@@ -54,18 +93,31 @@ const Inicio = () => {
                 <Table bordered>
                   <thead>
                     <tr>
-                      <th>Id</th>
-                      <th>Nombre</th>
-                      <th>Habitación</th>
+                      <th className='text-center'>Id</th>
+                      <th className='text-center'>Nombre</th>
+                      <th className='text-center'>Hora</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td>1</td><td>Juan Pérez</td><td>101</td></tr>
+                    {loading ? (
+                      <tr><td colSpan="3" className='text-center'>Cargando...</td></tr>
+                    ) : datos.ingresosHoy.length === 0 ? (
+                      <tr><td colSpan="3" className='text-center'>Sin ingresos</td></tr>
+                    ) : (
+                      datos.ingresosHoy.map((ing, idx) => (
+                        <tr key={idx}>
+                          <td className='text-center'>{ing.id}</td>
+                          <td>{ing.nombre}</td>
+                          <td>{ing.hora}</td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </Table>
               </Card.Body>
             </Card>
           </Col>
+
           <Col md={6}>
             <Card className="mb-4 shadow-sm" style={{ backgroundColor: '#DDE7EA' }}>
               <Card.Body>
@@ -73,13 +125,25 @@ const Inicio = () => {
                 <Table bordered>
                   <thead>
                     <tr>
-                      <th>Id</th>
-                      <th>Nombre</th>
-                      <th>Habitación</th>
+                      <th className='text-center'>Id</th>
+                      <th className='text-center'>Nombre</th>
+                      <th className='text-center'>Habitación</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td>1</td><td>María Gómez</td><td>202</td></tr>
+                    {loading ? (
+                      <tr><td colSpan="3" className='text-center'>Cargando...</td></tr>
+                    ) : datos.egresosHoy.length === 0 ? (
+                      <tr><td colSpan="3" className='text-center'>Sin egresos</td></tr>
+                    ) : (
+                      datos.egresosHoy.map((salida, idx) => (
+                        <tr key={idx}>
+                          <td className='text-center'>{salida.id}</td>
+                          <td>{salida.nombre}</td>
+                          <td>{salida.habitacion}</td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </Table>
               </Card.Body>
@@ -90,4 +154,5 @@ const Inicio = () => {
     </>
   );
 };
+
 export default Inicio;
