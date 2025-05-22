@@ -13,12 +13,12 @@ export const dashboard = async (req, res) => {
             where: { estado: true },
         });
 
-        const reservadas = await prisma.habitacion.count({
-            where: { estado: false },
+        const reservadas = await prisma.reserva.count({
+            where: { estado: 'Pendiente' }
         });
 
-        const ocupadas = await prisma.ingreso.count({
-            where: { estado: 'Activo' },
+        const ocupadas = await prisma.habitacion.count({
+            where: { estado: false },
         });
 
         const huespedesActivos = await prisma.huespedHabitacion.count({
@@ -42,16 +42,15 @@ export const dashboard = async (req, res) => {
             },
         });
 
-        const egresosHoy = await prisma.reserva.findMany({
+        const egresosHoy = await prisma.ingreso.findMany({
             where: {
-                check_out: {
+                checkOut: {
                     gte: fechaInicio,
                     lte: fechaFin,
                 },
             },
             include: {
                 huesped: true,
-                tipoHabitacion: true,
             },
         });
 
@@ -61,14 +60,16 @@ export const dashboard = async (req, res) => {
             ocupadas,
             huespedesActivos,
             ingresosHoy: ingresosHoy.map(reserva => ({
-                id: reserva.huesped.id_huesped,
+                id: reserva.id_reserva,
                 nombre: reserva.huesped.nombre,
+                apellido: reserva.huesped.apellido,
                 hora: reserva.check_in.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
             })),
-            egresosHoy: egresosHoy.map(reserva => ({
-                id: reserva.huesped.id_huesped,
-                nombre: reserva.huesped.nombre,
-                habitacion: reserva.tipoHabitacion?.nombre || "Sin asignar"
+            egresosHoy: egresosHoy.map(ingreso => ({
+                id: ingreso.id_ingreso,
+                nombre: ingreso.huesped.nombre,
+                apellido: ingreso.huesped.apellido,
+                hora: ingreso.checkIn.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
             })),
         });
     } catch (error) {
