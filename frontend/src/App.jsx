@@ -25,6 +25,8 @@ import ReservaLayout from './components/ReservaLayout.jsx';
 import FacturaPage from './pages/FacturaPage.jsx';
 import ErrorComponent from './components/ErrorComponent.jsx';
 
+import ReportesPage from './pages/ReportesPage.jsx';
+
 function App() {
   return (
     <>
@@ -50,6 +52,8 @@ function App() {
             }
             ></Route>
             <Route path="/Invoice/:id" element={<Invoice />}></Route>
+
+            <Route path="/Reportes" element={<ReportesPage />} />
             <Route path='*' element={<ErrorComponent code={404} message='Pagina no encontrada'></ErrorComponent>}></Route>
           </Routes>
         </Router>
