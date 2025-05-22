@@ -24,41 +24,52 @@ export default function ReportesPage() {
     const [datos, setDatos] = useState([]);
     const [resumen, setResumen] = useState(null);
 
+    // Calcular noches de estadía
+    const calcularNoches = (checkIn, checkOut) => {
+        if (!checkIn || !checkOut) return 0;
+        const unDia = 24 * 60 * 60 * 1000;
+        const fechaInicio = new Date(checkIn);
+        const fechaFin = new Date(checkOut);
+        return Math.round(Math.abs((fechaFin - fechaInicio) / unDia));
+    };
+
     const handleBuscar = async () => {
         if (categoria === 'ingresos') {
             const { data } = await refetch();
 
             const ingresosParseados = data.map(item => {
-                const habitacion = item.habitacion?.numero || 'N/A';
-                const huesped = item.huesped?.nombre + item.huesped?.apellido || 'N/A';
-                const tarifa = item.tarifa?.precio || 0;
-                const consumos = item.cuenta?.consumos || 0;
-                const checkIn = item.checkIn?.split('T')[0];
-                const checkOut = item.checkOut?.split('T')[0];
-                /*
-                const tarifa = item.tarifa?.precio || 0;
+                const noches = calcularNoches(item.checkIn, item.checkOut);
+                console.log("Noches:", noches);
+                const precioNoche = item.tarifa?.precio || 0;
+                console.log("Precio por noche:", precioNoche);
+                const tarifaTotal = noches * precioNoche;
+                console.log("Tarifa total:", tarifaTotal);
+                const id_ingreso = item.ingreso?.id_ingreso || 0;
+                console.log("Ingreso actual:", id_ingreso);
                 const consumos = item.cuenta?.consumos || [];
+                console.log("Consumos:", consumos);
                 const totalConsumos = consumos.reduce((sum, c) => sum + (c.monto || 0), 0);
-                const total = tarifa + totalConsumos;*/
+                console.log("Total consumos:", totalConsumos);
+                const total = tarifaTotal + totalConsumos;
 
                 return {
                     habitacion: item.habitacion?.numero || 'N/A',
                     huesped: item.huesped?.nombre + ' ' + item.huesped?.apellido || 'N/A',
-                    tarifa: item.tarifa?.precio.toLocaleString() || 0,
-                    consumos: item.cuenta?.consumos || 0,
+                    noches,
+                    tarifaPorNoche: precioNoche,
+                    tarifaTotal,
+                    totalConsumos,
+                    total,
                     checkIn: item.checkIn?.split('T')[0],
                     checkOut: item.checkOut?.split('T')[0],
-                    /*
-                    fecha: item.checkIn?.split('T')[0],
-                    concepto: `Ingreso habitación ${item.habitacion?.numero || 'N/A'}`,
-                    monto: total*/
                 };
             });
 
-            const totalIngresos = ingresosParseados.reduce((acc, curr) => acc + curr.monto, 0);
+            const totalIngresos = ingresosParseados.reduce((acc, curr) => acc + curr.total, 0);
 
             setDatos(ingresosParseados);
             setResumen({ total: totalIngresos });
+
         } else {
             const resumenes = {
                 ingresos: { total: 150 },
@@ -97,11 +108,11 @@ export default function ReportesPage() {
         enabled: categoria === 'ingresos'
     });
 
-/**
-* Para cambiar el formato de la fecha a Dia/Mes/Año
-* @param {*} dateString Se le pasa el una fecha
-* @returns Retorna la fecha modifica en caso de exito o si no en caso de fracaso -
-*/
+    /**
+    * Para cambiar el formato de la fecha a Dia/Mes/Año
+    * @param {*} dateString Se le pasa el una fecha
+    * @returns Retorna la fecha modifica en caso de exito o si no en caso de fracaso -
+    */
     const formatDMY = (dateString) => {
         if (!dateString) return '—';
         try {
@@ -189,13 +200,15 @@ export default function ReportesPage() {
                                     <TableCell>N° de habitación</TableCell>
                                     <TableCell>Huésped</TableCell>
                                     <TableCell>Monto</TableCell>
-                                    <TableCell>Fecha de check-in</TableCell>
-                                    <TableCell>Fecha de check-out</TableCell>
+                                    <TableCell>Check-in</TableCell>
+                                    <TableCell>Check-out</TableCell>
                                 </>}
                                 {categoria === "reservas" && <>
-                                    <TableCell>Fecha</TableCell>
                                     <TableCell>Huésped</TableCell>
+                                    <TableCell>Tipo de habitación</TableCell>
                                     <TableCell>Estado</TableCell>
+                                    <TableCell>Check-in</TableCell>
+                                    <TableCell>Check-out</TableCell>
                                 </>}
                                 {categoria === "facturas" && <>
                                     <TableCell>Número</TableCell>
@@ -214,7 +227,7 @@ export default function ReportesPage() {
                                     {categoria === "ingresos" && <>
                                         <TableCell>{row.habitacion}</TableCell>
                                         <TableCell>{row.huesped}</TableCell>
-                                        <TableCell>{row.tarifa + row.consumos}</TableCell>
+                                        <TableCell>{row.total.toLocaleString("de-DE")}</TableCell>
                                         <TableCell>{formatDMY(row.checkIn)}</TableCell>
                                         <TableCell>{formatDMY(row.checkOut)}</TableCell>
                                     </>}
@@ -241,7 +254,7 @@ export default function ReportesPage() {
                 {/* Resumen */}
                 {resumen && (
                     <Typography variant="subtitle1">
-                        {categoria === "ingresos" && `Total de ingresos: $${resumen.total}`}
+                        {categoria === "ingresos" && `Total de ingresos: $${resumen.total.toLocaleString()}`}
                         {categoria === "reservas" && `Reservas completadas: ${resumen.total}`}
                         {categoria === "facturas" && `Total facturado: $${resumen.total}`}
                         {categoria === "huespedes" && `Total de reservas entre huéspedes frecuentes: ${resumen.total}`}
