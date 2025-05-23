@@ -1,5 +1,5 @@
 import React, { useContext, useRef,useState,useEffect   } from "react";
-import "./InvoiceStyleEli.css";
+import "../styles/InvoiceStyleEli.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { HuespedesActivosContext } from "../context/HuespedesActivosContexto.jsx";
@@ -46,64 +46,67 @@ const Invoice = () => {
   };
   const [numeroFactura, setNumeroFactura] = useState(null);
 
-const obtenerNumeroFactura = async () => {
-  try {
-    setError('');
-    
-    const response = await fetch(`http://localhost:4000/api/facturas/ultimafactura`, {
-      method: 'GET',
-      cache: 'no-store'
-    });
+  const obtenerNumeroFactura = async () => {
+    try {
+      setError('');
+      
+      const response = await fetch(`http://localhost:4000/api/facturas/ultimafactura`, {
+        method: 'GET',
+        cache: 'no-store'
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Error al obtener número de factura');
-    }
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Error al obtener número de factura');
+      }
 
-    const data = await response.json();
-    console.log("Factura recibida:", data);
-    setNumeroFactura(data.siguienteNumeroFactura);
+      const data = await response.json();
+      console.log("Factura recibida:", data);
+      setNumeroFactura(data.siguienteNumeroFactura);
 
-  } catch (error) {
-    setError('Error al obtener número de factura: ' + error.message);
-  } 
+    } catch (error) {
+      setError('Error al obtener número de factura: ' + error.message);
+    } 
 };
-
-
 
   const invoiceItems = [itemEstadia, ...(cuenta?.consumos || [])];
 
-  const invoiceData = {
-    hotelName: "Hotel Jazel",
-    activity: "Servicios de hospedaje y alojamiento",
-    address: "Av. Dr. Francia, Encarnación, Paraguay Comercial",
-    ruc: "1234567",
-    timbrado: "12557904",
-    vigencia: "12/01/2025",
-    invoiceNumber: numeroFactura ? "001-001-" + numeroFactura.toString().padStart(7, "0") : "Cargando...",
-    customer: {
-      name: huesped?.nombre +' '+ huesped?.apellido|| "No definido",
-      document: huesped?.ruc || "Sin documento",
-      email: huesped?.email || "Sin correo",
-      phone: huesped?.telefono || "Sin teléfono"
-    },
-    invoiceDetails: {
-      date: new Date().toLocaleString(),
-      condition: datosFacturacion.condicionVenta || "Contado",
-      currency: "Guaraní"
-    },
-    items:invoiceItems|| [],
+  const detallesFactura = invoiceItems.map(item => ({
+    descripcion: item.Productos.descripcion.trim(),
+    cantidad: item.cantidad,
+    precio_unitario: item.Productos.precio_unitario,
+    descuento: 0,
+    porcentaje_iva: item.Productos.porcentaje_iva ?? 10
+  }));
 
-    totals: {
-      subtotal: cuenta?.consumos.reduce((acc, item) => acc + (item.monto|| 0), 0)+totalHabitacion,
-      totalOperation: cuenta?.consumos.reduce((acc, item) => acc + (item.monto|| 0), 0)+totalHabitacion,
-      totalGuaranies: cuenta?.consumos.reduce((acc, item) => acc + (item.monto|| 0), 0)+totalHabitacion,
-      taxLiquidation: ""
-    }
+  const invoiceData = {
+    fk_cuenta: cuenta.id_cuenta,
+    condicion_venta: "Contado",
+    fecha_emision: new Date().toLocaleString(),
+    total: cuenta?.consumos.reduce((acc, item) => acc + (item.monto|| 0), 0)+totalHabitacion,
+    numero_factura: numeroFactura ? "001-001-" + numeroFactura.toString().padStart(7, "0") : "Cargando...",
+    detalles:detallesFactura|| [],
   };
 
-console.log("Cuenta consumos:", cuenta.consumos);
-console.log("invoiceData.items:", invoiceData.items);
+
+  console.log("Cuenta consumos:", cuenta.id_cuenta);
+  console.log("invoiceData:", detallesFactura);
+  const calcularIVA = (detalles) => {
+    let iva5 = 0, iva10 = 0;
+    detalles.forEach(item => {
+      const totalItem = item.precio_unitario * item.cantidad;
+      if (item.porcentaje_iva === 5) iva5 += totalItem;
+      else if (item.porcentaje_iva === 10) iva10 += totalItem;
+    });
+    return {
+      iva5: Math.round(iva5 * 5 / 105),
+      iva10: Math.round(iva10 * 10 / 110),
+      totalIVA: Math.round(iva5 * 5 / 105 + iva10 * 10 / 110)
+    };
+  };
+
+  const iva = calcularIVA(detallesFactura);
+
    const handleDownload = () => {
     const element = document.querySelector(".invoice");
 
@@ -128,28 +131,79 @@ console.log("invoiceData.items:", invoiceData.items);
         });
     });
   };
-useEffect(() => {
-  obtenerNumeroFactura();
-}, []);
+  const irAHuespedes = () => {
+    setMainPage(true);
+    setVistaFactura(false);
+  };
+
+  const generarPDFBlob = async () => {
+  const element = document.querySelector(".invoice");
+
+  const opt = {
+    margin: 0,
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+  };
+
+  return await import("html2pdf.js").then((html2pdf) => {
+    return html2pdf.default()
+      .set(opt)
+      .from(element)
+      .outputPdf('blob'); // <- genera un Blob en vez de guardar el archivo
+  });
+};
+
+  const enviarFactura = async () => {
+  try {
+    const pdfBlob = await generarPDFBlob();
+
+    const formData = new FormData();
+    formData.append('factura', new Blob([JSON.stringify(invoiceData)], { type: 'application/json' }));
+    formData.append('pdf', pdfBlob, 'factura.pdf');
+
+    const response = await fetch('http://localhost:4000/api/facturas', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Error al guardar la factura');
+    }
+
+    const data = await response.json();
+    alert('Factura guardada y enviada por correo con éxito');
+    console.log('Factura registrada:', data);
+    irAHuespedes();
+
+  } catch (error) {
+    setError('Error al guardar/enviar factura: ' + error.message);
+    console.error('Error al enviar factura:', error);
+  }
+};
 
 
+  useEffect(() => {
+    obtenerNumeroFactura();
+  }, []);
 
   return (
     <div className="invoice" ref={invoiceRef}>     
       <div className="invoice-header">
-        <div className="hotel-name">{invoiceData.hotelName}</div>
+        <div className="hotel-name">Hotel Jazel</div>
         <div className="invoice-title">Factura Electrónica</div>
         <div className="commercial-info">
-          {invoiceData.activity}
+          Servicios de hospedaje y alojamiento
           <br />
-          {invoiceData.address}
+          Av. Dr. Francia, Encarnación, Paraguay Comercial
         </div>
         <div className="invoice-meta text-start">
-          <div><span>RUC:</span> {invoiceData.ruc}</div>
-          <div><span>Timbrado N°:</span> {invoiceData.timbrado}</div>
-          <div><span>Inicio Vigencia:</span> {invoiceData.vigencia}</div>
+          <div><span>RUC:</span> 80000519-8</div>
+          <div><span>Timbrado N°:</span> 12557904</div>
+          <div><span>Inicio Vigencia:</span> 01/01/2025</div>
           <div>
-            <span>Factura Electrónica<br />N°:</span> {invoiceData.invoiceNumber}
+            <span>Factura Electrónica<br />N°:</span> {invoiceData.numero_factura}
           </div>
         </div>
       </div>
@@ -157,15 +211,15 @@ useEffect(() => {
       {/* Información del cliente */}
       <div className="customer-section">
         <div className="customer-info text-start">
-          <div><span>Nombre o Razón Social: </span>{invoiceData.customer.name}</div>
-          <div><span>RUC / Documento de Identidad: </span>{invoiceData.customer.document}</div>
-          <div><span>Correo Electrónico: </span>{invoiceData.customer.email}</div>
-          <div><span>Teléfono: </span>{invoiceData.customer.phone}</div>
+          <div><span>Nombre o Razón Social: </span>{huesped.nombre + " "+ huesped.apellido}</div>
+          <div><span>RUC / Documento de Identidad: </span>{huesped.ruc}</div>
+          <div><span>Correo Electrónico: </span>{huesped.email}</div>
+          <div><span>Teléfono: </span>{huesped.telefono}</div>
         </div>
         <div className="invoice-details text-start">
-          <div><span>Fecha y hora de emisión: </span>{invoiceData.invoiceDetails.date}</div>
-          <div><span>Cond. Venta: </span>{invoiceData.invoiceDetails.condition}</div>
-          <div><span>Moneda: </span>{invoiceData.invoiceDetails.currency}</div>
+          <div><span>Fecha y hora de emisión: </span>{invoiceData.fecha_emision}</div>
+          <div><span>Cond. Venta: </span>{invoiceData.condicion_venta}</div>
+          <div><span>Moneda: </span>Guarani</div>
         </div>
       </div>
       <br></br>
@@ -185,17 +239,17 @@ useEffect(() => {
           </tr>
         </thead>
         <tbody>
-          {invoiceData.items.map((item, index) => (
+          {invoiceData.detalles.map((item, index) => (
             <tr className="table-row" key={index}>
-              <td>{'0'+ item.id_consumo}</td>
-              <td>{item.Productos?.descripcion || "Sin descripción"}</td>
+              <td>{'0' + (index + 1)}</td> {/* ID temporal para la tabla */}
+              <td>{item.descripcion || "Sin descripción"}</td>
               <td>UNI</td>
               <td>{item.cantidad}</td>
-              <td>{item.Productos?.precio_unitario.toLocaleString("de-DE") || 0}</td>
-              <td>0</td> {/* descuentos */}
-              <td>0</td> {/* exentas */}
-              <td>0</td> {/* 5% */}
-              <td>{item.monto.toLocaleString("de-DE")}</td>
+              <td className="text-end">{item.precio_unitario.toLocaleString("de-DE")}</td>
+              <td>{item.descuento}</td>
+              <td className="text-end">{item.porcentaje_iva === 0 ? (item.precio_unitario * item.cantidad).toLocaleString("de-DE") : 0}</td>
+              <td className="text-end">{item.porcentaje_iva === 5 ? (item.precio_unitario * item.cantidad).toLocaleString("de-DE") : 0}</td>
+              <td className="text-end">{item.porcentaje_iva === 10 ? (item.precio_unitario * item.cantidad).toLocaleString("de-DE") : 0}</td>
             </tr>
           ))}
 
@@ -206,30 +260,30 @@ useEffect(() => {
       <div className="totals-section">
         <div className="total-row">
           <div className="total-label">SUBTOTAL:</div>
-          <div>{invoiceData.totals.subtotal.toLocaleString("de-DE")}</div>
+          <div>{invoiceData.total.toLocaleString("de-DE")}</div>
         </div>
         <div className="total-row">
           <div className="total-label">TOTAL DE LA OPERACIÓN:</div>
-          <div>{invoiceData.totals.totalOperation.toLocaleString("de-DE")}</div>
+          <div>{invoiceData.total.toLocaleString("de-DE")}</div>
         </div>
         <div className="total-row">
           <div className="total-label">TOTAL EN GUARANÍES:</div>
-          <div>{invoiceData.totals.totalGuaranies.toLocaleString("de-DE")}</div>
+          <div>{invoiceData.total.toLocaleString("de-DE")}</div>
         </div>
         <div className="total-row d-flex justify-content-between">
-          <div className="d-flex justify-content-between w-100">
-            <span><strong>LIQUIDACIÓN IVA:</strong></span>
-            <span><strong>5%</strong></span>
-            <span>0</span>
-            <span><strong>10%</strong></span>
-            <span>{(invoiceData.totals.totalGuaranies * 0.1).toLocaleString("de-DE")}</span>
-            <span><strong>TOTAL IVA:</strong> {(invoiceData.totals.totalGuaranies * 0.1).toLocaleString("de-DE")}</span>
-          </div>
+            <div className="d-flex justify-content-between w-100">
+              <span><strong>LIQUIDACIÓN IVA:</strong></span>
+              <span><strong>5%</strong></span>
+              <span>{iva.iva5.toLocaleString("de-DE")}</span>
+              <span><strong>10%</strong></span>
+              <span>{iva.iva10.toLocaleString("de-DE")}</span>
+              <span><strong>TOTAL IVA:</strong> {iva.totalIVA.toLocaleString("de-DE")}</span>
+            </div>
         </div>
       </div>
       <div className="d-flex justify-content-center align-items-center  mt-4" style={{ gap: "30px" }}>
         <button className="btn btn-secondary fw-bold" style={{ width: "150px", height: "40px" }} onClick={irADetCuenta}>Cancelar</button>
-        <button className="btn btn-success fw-bold" style={{ width: "150px", height: "40px" }} onClick={handleDownload}>Generar</button>
+        <button className="btn btn-success fw-bold" style={{ width: "150px", height: "40px" }} onClick={enviarFactura}>Generar Factura</button>
       </div>
     </div>
   );

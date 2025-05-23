@@ -68,7 +68,8 @@ export const getAllIngresos = async (req, res) => {
 								Productos: {
 									select: {
 										descripcion: true,
-										precio_unitario: true
+										precio_unitario: true,
+										porcentaje_iva:true  
 									}
 								},
 								id_consumo: true,
