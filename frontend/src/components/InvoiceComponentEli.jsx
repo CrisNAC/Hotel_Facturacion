@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef,useState,useEffect   } from "react";
 import "./InvoiceStyleEli.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -21,6 +21,8 @@ const Invoice = () => {
   const cuenta = huespedSeleccionado?.cuenta?.[0] || {};
   const tarifa = huespedSeleccionado?.tarifa || {};
   const habitacion = huespedSeleccionado?.habitacion || {};
+  const [error, setError] = useState('');
+    
   //const precioHabitacion = tarifa.precio;
   console.log(tarifa.precio)
   // Calcular noches de estadía
@@ -42,6 +44,32 @@ const Invoice = () => {
     cantidad: noches,
     monto: totalHabitacion
   };
+  const [numeroFactura, setNumeroFactura] = useState(null);
+
+const obtenerNumeroFactura = async () => {
+  try {
+    setError('');
+    
+    const response = await fetch(`http://localhost:4000/api/facturas/ultimafactura`, {
+      method: 'GET',
+      cache: 'no-store'
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Error al obtener número de factura');
+    }
+
+    const data = await response.json();
+    console.log("Factura recibida:", data);
+    setNumeroFactura(data.siguienteNumeroFactura);
+
+  } catch (error) {
+    setError('Error al obtener número de factura: ' + error.message);
+  } 
+};
+
+
 
   const invoiceItems = [itemEstadia, ...(cuenta?.consumos || [])];
 
@@ -52,7 +80,7 @@ const Invoice = () => {
     ruc: "1234567",
     timbrado: "12557904",
     vigencia: "12/01/2025",
-    invoiceNumber: "001-001-8000915",
+    invoiceNumber: numeroFactura ? "001-001-" + numeroFactura.toString().padStart(7, "0") : "Cargando...",
     customer: {
       name: huesped?.nombre +' '+ huesped?.apellido|| "No definido",
       document: huesped?.ruc || "Sin documento",
@@ -100,6 +128,9 @@ console.log("invoiceData.items:", invoiceData.items);
         });
     });
   };
+useEffect(() => {
+  obtenerNumeroFactura();
+}, []);
 
 
 

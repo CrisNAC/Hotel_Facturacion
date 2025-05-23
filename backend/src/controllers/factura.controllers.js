@@ -141,3 +141,24 @@ export const getFacturaById = async (req, res) => {
 		res.status(500).json({ error: 'Error al obtener la factura' });
 	}
 };
+
+export const obtenerUltimoNumeroFactura = async (req, res) => {
+  try {
+    const ultimaFactura = await prisma.factura.findFirst({
+      orderBy: {
+        id_factura: 'desc',
+      },
+      select: {
+        id_factura: true,
+      }
+    });
+
+    const nuevoNumero = ultimaFactura ? ultimaFactura.id_factura + 1 : 1;
+
+    res.json({ siguienteNumeroFactura: nuevoNumero });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al obtener el último número de factura" });
+  }
+};
+
