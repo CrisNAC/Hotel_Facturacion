@@ -218,9 +218,9 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                             <tr key={item.id_ingreso}>
                                 <td className='text-center'>{(page - 1) * itemsPerPage + index + 1}</td>
                                 <td className='text-start'>{`${item.huesped?.nombre || 'N/A'} ${item.huesped?.apellido || ''}`}</td>
-                                <td className="text-center">{item.habitacion?.numero || '—'}</td>
-                                <td className="text-center">{formatDMY(item.checkIn) || '—'}</td>
-                                <td className="text-center">{formatDMY(item.checkOut) || '—'}</td>
+                                <td className="text-center">{item.habitacion?.numero || '---'}</td>
+                                <td className="text-center">{formatDMY(item.checkIn) || '---'}</td>
+                                <td className="text-center">{formatDMY(item.checkOut) || '---'}</td>
                                 <td className="text-center">
                                     <span style={{
                                         padding: '4px 8px',
@@ -245,7 +245,7 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
                                         const costoHabitacion = noches * (item.tarifa?.precio || 0);
                                         const totalConsumos = item.cuenta?.[0]?.consumos
                                             ?.filter(consumo => consumo.activo)
-                                            ?.reduce((acc, consumo) => acc + (consumo.monto || 0), 0) || 0;
+                                            ?.reduce((acc, consumo) => acc + (Number(consumo.monto) || 0), 0) || 0;
                                         const total = costoHabitacion + totalConsumos;
 
                                         return total > 0 ? `${total.toLocaleString()} Gs` : '—';

@@ -23,6 +23,9 @@ import SeleccionHabitacion from './components/SeleccionHabitacion'
 
 import ReservaLayout from './components/ReservaLayout.jsx';
 import FacturaPage from './pages/FacturaPage.jsx';
+import ErrorComponent from './components/ErrorComponent.jsx';
+
+import ReportesPage from './pages/ReportesPage.jsx';
 
 function App() {
   return (
@@ -37,10 +40,10 @@ function App() {
             <Route element={<ReservaLayout></ReservaLayout>}>
               <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
               <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
+              <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
+              <Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
             </Route>
 
-            <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
-            <Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
 
             <Route path="/FacturasEmitidas" element={
               <div style={{ marginTop: "5rem" }}>
@@ -48,12 +51,10 @@ function App() {
               </div>
             }
             ></Route>
-            <Route path="/Invoice/:id" element={
-              <div style={{ marginTop: "5rem" }}>
-                <Invoice />
-              </div>
-            }
-            ></Route>
+            <Route path="/Invoice/:id" element={<Invoice />}></Route>
+
+            <Route path="/Reportes" element={<ReportesPage />} />
+            <Route path='*' element={<ErrorComponent code={404} message='Pagina no encontrada'></ErrorComponent>}></Route>
           </Routes>
         </Router>
       </QueryClientProvider>

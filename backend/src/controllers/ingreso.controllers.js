@@ -1,15 +1,19 @@
 import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
-/* [
-	{ checkIn: 'asc' },
-	{ estado: 'asc' }
-] */
-
 export const getAllIngresos = async (req, res) => {
 	try {
+
+		const { desde, hasta } = req.query;
+
 		const ingresos = await prisma.ingreso.findMany({
-			where: { activo: true },
+			where: {
+				activo: true,
+				checkIn: {
+					gte: desde ? new Date(desde) : undefined,
+					lte: hasta ? new Date(hasta) : undefined,
+				}
+			},
 			orderBy: {
 				checkIn: 'asc'
 			},
@@ -39,11 +43,11 @@ export const getAllIngresos = async (req, res) => {
 
 				habitacion: {
 					select: {
-						id_habitacion:true,
+						id_habitacion: true,
 						numero: true,
-						tipoHabitacion:{
-							select:{
-								nombre:true
+						tipoHabitacion: {
+							select: {
+								nombre: true
 							}
 						}
 					}
@@ -89,9 +93,9 @@ export const getAllIngresos = async (req, res) => {
 
 		res.status(200).json(safeIngresos);
 	} catch (error) {
-	console.error(error); // Mostrar el error en consola
-	res.status(500).json({ error: "Internal Server Error: " + error.message });
-}
+		console.error(error); // Mostrar el error en consola
+		res.status(500).json({ error: "Internal Server Error: " + error.message });
+	}
 
 }
 
@@ -160,21 +164,38 @@ export const createIngreso = async (req, res) => {
 export const cancelarIngreso = async (req, res) => {
 	try {
 		const { id } = req.params;
+
+		// 1. Buscar el ingreso
+		const ingreso = await prisma.ingreso.findUnique({
+			where: { id_ingreso: parseInt(id) },
+			include: { habitacion: true }
+		});
+
+		if (!ingreso) {
+			return res.status(404).json({ error: "Ingreso no encontrado" });
+		}
+		
+		// 2. Liberar la habitación
+		if (ingreso.fk_habitacion) {
+			await prisma.habitacion.update({
+				where: { id_habitacion: ingreso.fk_habitacion },
+				data: { estado: true } // asumimos que true = libre
+			});
+		}
+
+		// 3. Actualizar el ingreso
 		await prisma.ingreso.update({
-			where: {
-				id_ingreso: parseInt(id)
-			},
+			where: { id_ingreso: parseInt(id) },
 			data: {
+				fk_habitacion: null,
 				estado: "Cancelado"
 			}
 		});
+
+
 		res.status(200).end();
 	} catch (error) {
-		if (error.code === 'P2025') {
-			res.status(404).json({ error: "Ingreso no encontrado" });
-		} else {
-			console.error(error);
-			res.status(500).json({ error: "Error al cancelar el ingreso" });
-		}
+		console.error(error);
+		res.status(500).json({ error: "Error al cancelar el ingreso" });
 	}
 };

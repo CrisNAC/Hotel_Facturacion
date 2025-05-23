@@ -49,7 +49,7 @@ function HuespedesActivosPage() {
 
     const skeletonPage = () => (
         <>
-            <NavBarSkeleton />
+            <NavBar></NavBar>
             <HuespedesActivosSkeleton></HuespedesActivosSkeleton>
         </>
     );
@@ -74,7 +74,7 @@ function HuespedesActivosPage() {
                                                 <NavBar />
                                                 <HuespedesActivos ingresosOriginales={ingresosOriginales} refresh={fetchIngresos} />
                                             </>
-                                    )}
+                                        )}
                                 </Container>
                             ) : vistaFactura ? (
                                 <Container>

@@ -1,25 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { debounce } from "lodash";
+// import { debounce } from "lodash";
 import NavBar from "./navbar";
 import { useReserva } from "../context/ReservaContext.jsx";
 
 const CheckInReserva = () => {
-
+	const navigate = useNavigate();
 	const [reservaId, setReservaId] = useState('');
 	const [reserva, setReserva] = useState(null);
-	const navigate = useNavigate();
+	const [loading, setLoading] = useState(false);
 	const { setReservaSeleccionada } = useReserva();
+
+	const getUserInSession = async () => {
+		try {
+			const response = await axios.get('/api/session/user-session', {
+				withCredentials: true,
+			});
+			const dataUser = response.data.user;
+			return dataUser;
+
+		} catch (error) {
+			console.error('Error obteniendo usuario en sesión:', error.response?.data?.error || error.message);
+			return null;
+		}
+	}
 
 	const getReservaById = async (id) => {
 		try {
+			setLoading(true);
 			const res = await axios.get(`/api/reserva/${id}`);
 			setReserva(res.data);
+			console.log(res.data);
 		} catch (error) {
 			console.error(error);
 			setReserva(null);
-		}
+		}finally{
+			setLoading(false);
+		};
 	};
 
 	const calcularNoches = () => {
@@ -38,13 +56,18 @@ const CheckInReserva = () => {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);*/
 
+	useEffect(() => {
+		getUserInSession();
+	}, []);
+
 	const handleReservaIdChange = (e) => {
 		setReservaId(e.target.value);
 	}
 
-	const handleBuscarReserva = debounce(() => {
+	const handleBuscarReserva = () => {
 		if (reservaId) getReservaById(reservaId);
-	}, 3000);
+		//getUserInSession();
+	};
 
 	return (
 		<div>
@@ -65,8 +88,8 @@ const CheckInReserva = () => {
 								value={reservaId}
 								onChange={handleReservaIdChange}
 							/>
-							<button type="button" className="btn btn-primary" onClick={handleBuscarReserva}>
-								Buscar
+							<button type="button" className="btn btn-primary" onClick={handleBuscarReserva} disabled={loading}>
+								{loading?"Cargando":"Buscar"}
 							</button>
 						</div>
 					</div>

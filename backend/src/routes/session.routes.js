@@ -1,5 +1,5 @@
 import Router from "express";
-import { login, logout } from "../controllers/session.controllers.js";
+import { login, logout, userSession } from "../controllers/session.controllers.js";
 
 const router = Router();
 
@@ -7,6 +7,8 @@ const router = Router();
 router.post('/', login);
 
 router.delete('/', logout);
+
+router.get('/user-session', userSession);
 /*-----------------------------------------------------------------*/
 
 export default router;
