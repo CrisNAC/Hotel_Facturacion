@@ -17,7 +17,8 @@ import consumoRoutes from "./routes/consumo.routes.js";
 import timbradoRoutes from "./routes/timbrado.routes.js";
 import facturaRoutes from "./routes/factura.routes.js";
 import detallefacturaRoutes from "./routes/detallefactura.routes.js";
-import productos from "./routes/productos.routes.js"
+import productos from "./routes/productos.routes.js";
+import dashboard from "./routes/dashboard.routes.js";
 
 dotenv.config();
 const app = express();
@@ -50,7 +51,8 @@ app.use('/api/consumo', consumoRoutes);							//Cristian
 app.use('/api/timbrado', timbradoRoutes);					    //Jazmín
 app.use('/api/facturas', facturaRoutes);						//Jazmín
 app.use('/api/detallefactura', detallefacturaRoutes);           //Jazmín
-app.use('/api/productos', productos);           
+app.use('/api/productos', productos);          
+app.use('/api/dashboard', dashboard); 
 
 app.listen(PORT, () => {
 	console.log(`Servidor corriendo en http://localhost:${PORT}`);
