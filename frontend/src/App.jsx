@@ -21,7 +21,9 @@ import ConfirmarReserva from './components/ConfirmarReserva'
 import AgregarHuesped from './pages/AgregarHuesped.jsx';
 import SeleccionHabitacion from './components/SeleccionHabitacion'
 
-import ReservaLayout from './components/ReservaLayout.jsx';
+import TarifaLayout from './context/tarifa/TarifaLayout.jsx';
+import ReservaLayout from "./context/Reserva/ReservaLayout.jsx";
+
 import FacturaPage from './pages/FacturaPage.jsx';
 import ErrorComponent from './components/ErrorComponent.jsx';
 
@@ -39,9 +41,11 @@ function App() {
 
             <Route element={<ReservaLayout></ReservaLayout>}>
               <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
-              <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
-              <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
               <Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
+              <Route element={<TarifaLayout></TarifaLayout>}>
+                <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
+                <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
+							</Route>
             </Route>
 
 

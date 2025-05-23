@@ -101,7 +101,7 @@ model Reserva {
 model Ingreso {
   id_ingreso            Int                 @id @default(autoincrement())
   fk_reserva            Int?
-  fk_habitacion         Int                 @unique
+  fk_habitacion         Int?                @unique
   fk_huesped            Int
   fk_tarifa             Int
   estado                EstadoIngreso       @default(Activo)
@@ -113,7 +113,7 @@ model Ingreso {
   checkIn               DateTime            @default(now()) @db.Timestamptz(6)
   cuenta                Cuenta[]
   huespedesHabitaciones HuespedHabitacion[]
-  habitacion            Habitacion          @relation(fields: [fk_habitacion], references: [id_habitacion])
+  habitacion            Habitacion?         @relation(fields: [fk_habitacion], references: [id_habitacion], onDelete: Restrict)
   huesped               Huesped             @relation(fields: [fk_huesped], references: [id_huesped])
   reserva               Reserva?            @relation(fields: [fk_reserva], references: [id_reserva])
   tarifa                Tarifa              @relation(fields: [fk_tarifa], references: [id_tarifa])

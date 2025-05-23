@@ -8,7 +8,7 @@ function ErrorComponent({
     message = "Ha ocurrido un error en el servidor",
     showButton = true,
     buttonText = "Volver al inicio",
-    redirectTo = "/"
+    redirectTo = "/Inicio"
 }) {
     const client = new HTTPClient();
     const navigate = useNavigate();
