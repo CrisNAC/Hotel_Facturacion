@@ -87,7 +87,7 @@ model Reserva {
   fk_tipo_habitacion Int
   check_in           DateTime
   check_out          DateTime
-  estado             EstadoReserva  @default(Confirmada)
+  estado             EstadoReserva  @default(Pendiente)
   fk_usuario         Int
   activo             Boolean        @default(true)
   created_at         DateTime       @default(now())

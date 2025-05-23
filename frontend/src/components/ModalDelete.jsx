@@ -47,8 +47,8 @@ function ModalDelete({ item, setShowDeleteModal, refresh }) {
                     <div className="modal-body row row-cols-2 text-start py-5">
                         <p><strong>Nombre:</strong> {item.huesped.nombre}</p>
                         <p><strong>Habitación:</strong> {item.habitacion.numero}</p>
-                        <p><strong>Check-in:</strong>{formatDMY(item.reserva.checkIn)}</p>
-                        <p><strong>Check-out:</strong>{formatDMY(item.reserva.checkOut)}</p>
+                        <p><strong>Check-in:</strong>{formatDMY(item.checkIn)}</p>
+                        <p><strong>Check-out:</strong>{formatDMY(item.checkOut)}</p>
                         <p><strong>Estado ingreso:</strong> {item.estado}</p>
                         <p><strong>Total:</strong> {
                             item.cuenta[0]?.consumos[0]
