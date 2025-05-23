@@ -8,44 +8,66 @@ function ErrorComponent({
     message = "Ha ocurrido un error en el servidor",
     showButton = true,
     buttonText = "Volver al inicio",
-    redirectTo = "/"
+    redirectToDashboard = "/Inicio",
+	redirectToLogin = "/"
 }) {
     const client = new HTTPClient();
     const navigate = useNavigate();
 
-    const accion = async () => {
+    const accionLogin = async () => {
         await client.cerrarSesion();
-        navigate(redirectTo);
+        navigate(redirectToLogin);
+    };
+
+	const accionDash = () => {
+        navigate(redirectToDashboard);
     };
 
     return (
         <Box
             sx={{
-                height: '50vh',
-                width: '50%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center',
+                height: "50vh",
+                width: "50%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
                 px: 2,
                 mt: 10,
-                ml: '25%',
-                border: '1px solid grey',
-                borderRadius: 1
+                ml: "25%",
+                border: "1px solid grey",
+                borderRadius: 1,
             }}
         >
-            <ErrorOutlineIcon sx={{ fontSize: 80, color: 'error.main', mb: 2 }} />
+            <ErrorOutlineIcon sx={{fontSize: 80, color: "error.main", mb: 2}} />
             <Typography variant="h2">{code}</Typography>
-            <Typography variant="h5" sx={{ mb: 3 }}>{message}</Typography>
-            {showButton && (
+            <Typography
+                variant="h5"
+                sx={{mb: 3}}
+            >
+                {message}
+            </Typography>
+            {code === 401 ? (
+                showButton && (
+                    <Button
+                        variant="contained"
+                        onClick={accionLogin}
+                        color="primary"
+                    >
+                        {buttonText}
+                    </Button>
+                )
+            ) : (
+				showButton && (
                 <Button
                     variant="contained"
-                    onClick={accion}
+                    onClick={accionDash}
                     color="primary"
                 >
                     {buttonText}
                 </Button>
+				)
             )}
         </Box>
     );
