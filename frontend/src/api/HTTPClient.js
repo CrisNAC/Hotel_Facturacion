@@ -19,6 +19,10 @@ class HTTPClient {
     }
 
     /****           SESSION - LOGIN         ****/
+    login(data){
+        return this.instance.post('/session', data)
+    };
+
     cerrarSesion() {
         return this.instance.delete('/session');
     };
