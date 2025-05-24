@@ -32,69 +32,88 @@ export const getAllFacturas = async (req, res) => {
 	}
 };
 
-// Crear una nueva factura con numeración automática
 export const createFactura = async (req, res) => {
-	try {
-		const {
-			fk_cuenta,
-			condicion_venta,
-			total,
-			fk_usuario,
-			detalles
-		} = req.body;
+  try {
+    const {
+      fk_cuenta,
+      fk_timbrado = 1,
+      condicion_venta,
+      fecha_emision,
+      total,
+      fk_usuario,
+      numero_factura,
+      detalles
+    } = req.body;
 
-		// Buscar timbrado activo y válido por fecha
-		const timbrado = await prisma.timbrado.findFirst({
-			where: {
-				activo: true,
-				fecha_inicio: { lte: new Date() },
-				fecha_fin: { gte: new Date() }
-			}
-		});
+    // Verificar si el número de factura ya existe
+    const existe = await prisma.factura.findUnique({
+      where: { numero_factura }
+    });
 
-		if (!timbrado) {
-			return res.status(400).json({ error: "No hay timbrado activo válido" });
-		}
+    if (existe) {
+      return res.status(400).json({ error: "El número de factura ya existe" });
+    }
 
-		// Calcular nuevo número secuencial
-		const nuevoSecuencial = timbrado.ultimo_numero + 1;
-		const numeroFactura = `${String(timbrado.codigo_sucursal).padStart(3, '0')}-${String(timbrado.codigo_punto_facturacion).padStart(3, '0')}-${String(nuevoSecuencial).padStart(7, '0')}`;
+    // Transacción para crear la factura
+    const nuevaFactura = await prisma.$transaction(async (tx) => {
+      const cuenta = await tx.cuenta.findUnique({
+        where: { id_cuenta: fk_cuenta },
+        include: { ingreso: true }
+      });
 
-		// Crear la factura y detalles dentro de una transacción
-		const nuevaFactura = await prisma.$transaction(async (tx) => {
-			// Actualizar el timbrado con el nuevo número
-			await tx.timbrado.update({
-				where: { id_timbrado: timbrado.id_timbrado },
-				data: { ultimo_numero: nuevoSecuencial }
-			});
+      if (!cuenta || !cuenta.ingreso) {
+        throw new Error("Cuenta o ingreso no encontrado");
+      }
 
-			// Crear la factura
-			const factura = await tx.factura.create({
-				data: {
-					fk_cuenta,
-					fk_timbrado: timbrado.id_timbrado,
-					numero_factura: numeroFactura,
-					condicion_venta,
-					total,
-					fk_usuario,
-					detalles: {
-						create: detalles
-					}
-				},
-				include: {
-					detalles: true
-				}
-			});
+      // Desactivar ingreso
+      await tx.ingreso.update({
+        where: { id_ingreso: cuenta.fk_ingreso},
+        data: { activo: false }
+      });
 
-			return factura;
-		});
+      await tx.habitacion.update({
+        where: { id_habitacion: ingreso.fk_habitacion },
+        data: { activo: true }
+      });
 
-		res.status(201).json(nuevaFactura);
-	} catch (error) {
-		console.error(error);
-		res.status(500).json({ error: "Error al crear la factura" });
-	}
+      // Desactivar cuenta
+      await tx.cuenta.update({
+        where: { id_cuenta: fk_cuenta },
+        data: {
+          activo: false,
+          estado: false
+        }
+      });
+
+      // Crear la factura
+      const factura = await tx.factura.create({
+        data: {
+          fk_cuenta,
+          fk_timbrado:1,
+          numero_factura,
+          condicion_venta,
+          fecha_emision: fecha_emision ? new Date(fecha_emision) : undefined,
+          total,
+          fk_usuario:1,
+          detalles: {
+            create: detalles
+          }
+        },
+        include: {
+          detalles: true
+        }
+      });
+
+      return factura;
+    });
+
+    res.status(201).json(nuevaFactura);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al crear la factura" });
+  }
 };
+
 
 // Obtener una factura por su ID
 export const getFacturaById = async (req, res) => {
@@ -140,4 +159,39 @@ export const getFacturaById = async (req, res) => {
 		console.error('Error al obtener la factura:', error);
 		res.status(500).json({ error: 'Error al obtener la factura' });
 	}
+};
+
+export const obtenerUltimoNumeroFactura = async (req, res) => {
+  try {
+    const ultimaFactura = await prisma.factura.findFirst({
+      orderBy: {
+        id_factura: 'desc',
+      },
+      select: {
+        id_factura: true,
+      }
+    });
+
+    const nuevoNumero = ultimaFactura ? ultimaFactura.id_factura + 1 : 1;
+
+    res.json({ siguienteNumeroFactura: nuevoNumero });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al obtener el último número de factura" });
+  }
+};
+
+import { enviarFacturaPorCorreo } from '../services/mailer.service.js';
+
+export const enviarFacturaEmail = async (req, res) => {
+  const { id } = req.params;
+  const { emailDestino } = req.body;
+
+  try {
+    await enviarFacturaPorCorreo(id, emailDestino);
+    res.status(200).json({ mensaje: "Factura enviada por correo" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al enviar la factura por correo" });
+  }
 };

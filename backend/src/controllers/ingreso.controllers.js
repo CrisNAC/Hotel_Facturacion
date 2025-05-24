@@ -58,38 +58,38 @@ export const getAllIngresos = async (req, res) => {
                     },
                 },
 
-                cuenta: {
-                    select: {
-                        id_cuenta: true,
-                        consumos: {
-                            where: {activo: true},
-                            select: {
-                                Productos: {
-                                    select: {
-                                        descripcion: true,
-                                        precio_unitario: true,
-                                    },
-                                },
-                                id_consumo: true,
-                                cantidad: true,
-                                monto: true,
-                                activo: true,
-                            },
-                        },
-                    },
-                },
-                usuario: {
-                    select: {
-                        id_usuario: true,
-                    },
-                },
-            },
-        });
-        const safeIngresos = JSON.parse(
-            JSON.stringify(ingresos, (_, value) =>
-                typeof value === "bigint" ? value.toString() : value
-            )
-        );
+				cuenta: {
+					select: {
+						id_cuenta: true,
+						consumos: {
+							where: { activo: true },
+							select: {
+								Productos: {
+									select: {
+										descripcion: true,
+										precio_unitario: true,
+										porcentaje_iva:true  
+									}
+								},
+								id_consumo: true,
+								cantidad: true,
+								monto: true,
+								activo: true
+							}
+						}
+					}
+				},
+				usuario: {
+					select: {
+						id_usuario: true
+					}
+				}
+
+			}
+		});
+		const safeIngresos = JSON.parse(JSON.stringify(ingresos, (_, value) =>
+			typeof value === 'bigint' ? value.toString() : value
+		));
 
         res.status(200).json(safeIngresos);
     } catch (error) {
