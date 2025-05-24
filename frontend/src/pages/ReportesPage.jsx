@@ -79,6 +79,21 @@ export default function ReportesPage() {
                 cantidad: cantidadIngresos,
             });
         }
+        else if (categoria === 'reservas') {
+            const result = await refetchReservas();
+            const data = result.data;
+
+            const reservasParseadas = data.map(r => ({
+                huesped: `${r.huesped?.nombre} ${r.huesped?.apellido}`,
+                tipo_habitacion: r.tipoHabitacion?.nombre || '---',
+                estado: r.estado,
+                checkIn: r.check_in?.split('T')[0],
+                checkOut: r.check_out?.split('T')[0]
+            }));
+
+            setDatos(reservasParseadas);
+            setResumen({ total: reservasParseadas.length });
+        }
         else {
             const resumenes = {
                 ingresos: { total: 150 },
@@ -105,6 +120,16 @@ export default function ReportesPage() {
         return res.data;
     };
 
+    const fetchReservas = async () => {
+        const res = await axios.get('/api/reservas/fechas', {
+            params: {
+                desde,
+                hasta
+            }
+        });
+        return res.data;
+    };
+
     const {
         data: ingresos,
         isLoading,
@@ -114,6 +139,16 @@ export default function ReportesPage() {
         queryKey: ['ingresos', desde, hasta],
         queryFn: fetchIngresos,
         enabled: categoria === 'ingresos'
+    });
+
+    const {
+        data: reservas,
+        refetch: refetchReservas
+    } = useQuery({
+        queryKey: ['reservas', desde, hasta],
+        queryFn: fetchReservas,
+        enabled: false,
+        // enabled: categoria === 'reservas'
     });
 
     /**
@@ -248,8 +283,8 @@ export default function ReportesPage() {
                                         <TableCell>{row.huesped}</TableCell>
                                         <TableCell>{row.tipo_habitacion}</TableCell>
                                         <TableCell>{row.estado}</TableCell>
-                                        <TableCell>{row.checkIn}</TableCell>
-                                        <TableCell>{row.checkOut}</TableCell>
+                                        <TableCell>{formatDMY(row.checkIn)}</TableCell>
+                                        <TableCell>{formatDMY(row.checkOut)}</TableCell>
                                     </>}
                                     {categoria === "facturas" && <>
                                         <TableCell>{row.numero}</TableCell>
