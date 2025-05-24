@@ -2,11 +2,11 @@ import React from "react";
 import { useNavigate } from 'react-router-dom';
 
 const WalkIn = () => {
-
+	//Todavia no funcional
 	const navigate = useNavigate();
+	const [fechaActual, setFechaActual] = useState('');
 	
 	return (
-		/*<div className="d-flex justify-content-center align-items-center vh-100">*/
 		<div style={{ marginTop: '50px' }}>
 
 			<h2 className="text-center mb-4">Seleccione sus Preferencias</h2>

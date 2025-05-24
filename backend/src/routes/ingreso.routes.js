@@ -3,8 +3,8 @@ import { getAllIngresos, createIngreso, cancelarIngreso } from '../controllers/i
 import authenticate from "../../config/jwt.config.js"
 const router = Router();
 
-router.get('/', authenticate, getAllIngresos);
-router.post('/', authenticate, createIngreso);
-router.patch('/:id', authenticate, cancelarIngreso);
+router.get('/', getAllIngresos);
+router.post('/', createIngreso);
+router.patch('/:id', cancelarIngreso);
 
 export default router;

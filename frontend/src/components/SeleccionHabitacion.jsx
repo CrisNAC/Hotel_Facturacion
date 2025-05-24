@@ -2,87 +2,79 @@ import React, { useEffect, useState } from "react";
 import { FaWifi, FaSnowflake, FaTv, FaBath, FaCouch } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import NavBar from "../components/navbar.jsx";
-import { useReserva } from "../context/ReservaContext.jsx";
+import { useReserva } from "../context/Reserva/ReservaContext.jsx";
+import { useTarifa } from "../context/tarifa/TarifaContext.jsx";
+import { useHabitacion } from "../context/habitacion/HabitacionContext.jsx";
 import axios from "axios";
-
-const tarifs = [
-	{ tipo: "Solo habitación", descripcion: "con cancelación gratuita", precio: "300.000" },
-	{ tipo: "Habitación y Desayuno", descripcion: "incluido con cancelación gratuita", precio: "340.000" },
-	{ tipo: "Habitación, Desayuno y Cena", descripcion: "incluidos con cancelación gratuita", precio: "440.000" }
-]
-
-/*const habitaciones = [
-	{
-		id: 1,
-		titulo: "Cama Doble-Matrimonial Estándar",
-		numero: 205,
-		imagen: "/img/hab1-imagen.png",
-		servicios: [
-			{ nombre: "Wifi libre", icono: <FaWifi></FaWifi> },
-			{ nombre: "Aire Acondicionado", icono: <FaSnowflake></FaSnowflake> },
-			{ nombre: "TV Smart 50", icono: <FaTv></FaTv> },
-			{ nombre: "Baño con regadera", icono: <FaBath></FaBath> },
-			{ nombre: "Cama super acolchonada", icono: <FaCouch></FaCouch> }
-		],
-		tarifas: [
-			{ tipo: "Solo habitación", descripcion: "con cancelación gratuita", precio: "300.000" },
-			{ tipo: "Habitación y Desayuno", descripcion: "incluido con cancelación gratuita", precio: "340.000" },
-			{ tipo: "Habitación, Desayuno y Cena", descripcion: "incluidos con cancelación gratuita", precio: "440.000" }
-		]
-	},
-	{
-		id: 2,
-		titulo: "Cama Doble-Matrimonial Deluxe",
-		numero: 206,
-		imagen: "/img/hab2-imagen.png",
-		servicios: [
-			{ nombre: "Wifi libre", icono: <FaWifi></FaWifi> },
-			{ nombre: "Aire Acondicionado", icono: <FaSnowflake></FaSnowflake> },
-			{ nombre: "TV Smart 50", icono: <FaTv></FaTv> },
-			{ nombre: "Baño con regadera", icono: <FaBath></FaBath> },
-			{ nombre: "Cama super acolchonada", icono: <FaCouch></FaCouch> }
-		],
-		tarifas: [
-			{ tipo: "Solo habitación", descripcion: "con cancelación gratuita", precio: "460.000" },
-			{ tipo: "Habitación y Desayuno", descripcion: "incluido con cancelación gratuita", precio: "500.000" },
-			{ tipo: "Habitación, Desayuno y Cena", descripcion: "incluidos con cancelación gratuita", precio: "560.000" }
-		]
-	},
-];*/
 
 const SeleccionHabitacion = () => {
 
 	const { reservaSeleccionada } = useReserva();
+	const { setTarifaSeleccionada } = useTarifa();
+	const { setHabitacionSeleccionada } = useHabitacion();
 
-	console.log(reservaSeleccionada);
+	//console.log(reservaSeleccionada);
 
 	const navigate = useNavigate();
 
 	const [habitacionesDisponibles, setHabitacionesDisponibles] = useState([]);
+	const [tarifasDisponibles, setTarifasDisponibles] = useState([]);
+	const [tarifaMasBarata, setTarifaMasBarata] = useState(null);
 	const [cargando, setCargando] = useState(true);
 
+	const handleSelection = (tarifa, habitacion) => {
+		setTarifaSeleccionada(tarifa);
+		setHabitacionSeleccionada(habitacion);
+		navigate("/ConfirmarReserva");
+	}
+
+	const fetchHabitaciones = async () => {
+        try {
+            const res = await axios.get("/api/habitacion");
+            const allHabitaciones = res.data;
+
+            const filtradas = allHabitaciones.filter(
+                (hab) => hab.tipoHabitacion.nombre === reservaSeleccionada.tipoHabitacion.nombre);
+            setHabitacionesDisponibles(filtradas);
+        } catch (error) {
+            console.error("Error al obtener las habitaciones: ", error);
+        } finally {
+            setCargando(false);
+        }
+    };
+
+	const fetchTarifas = async () => {
+		try {
+			const res = await axios.get("/api/tarifa");
+			const allTarifas = res.data;
+
+			const filtradas = allTarifas.filter(
+				(tar) => tar.tipoHabitacion.nombre === reservaSeleccionada.tipoHabitacion.nombre);
+			setTarifasDisponibles(filtradas);
+		} catch (error) {
+			console.error("Error al obtener las tarifas: ", error);
+		}
+	};
+
 	useEffect(() => {
-		const fetchHabitaciones = async () => {
-			try {
-				const res = await axios.get('/api/habitacion');
-				const allHabitaciones = res.data;
-
-				const filtradas = allHabitaciones.filter(hab => hab.tipoHabitacion.nombre === reservaSeleccionada.tipoHabitacion.nombre);
-				setHabitacionesDisponibles(filtradas);
-			} catch (error) {
-				console.error("Error al obtener las habitaciones: ", error);
-			} finally {
-				setCargando(false);
-			}
-		};
-
 		if(reservaSeleccionada) {
 			fetchHabitaciones();
+			fetchTarifas();
 		} else {
 			setHabitacionesDisponibles([]);
+			setTarifasDisponibles([]);
 			setCargando(false);
 		}
-	}, [reservaSeleccionada]);
+	}, []);
+
+	useEffect(() => {
+		if (tarifasDisponibles.length > 0) {
+			const tarifaEconomica = tarifasDisponibles.reduce((min, actual) => 
+				actual.precio < min.precio ? actual : min
+			);
+			setTarifaMasBarata(tarifaEconomica.id_tarifa);
+		}
+	}, [tarifasDisponibles]);
 
 	return (
 		<>
@@ -104,7 +96,7 @@ const SeleccionHabitacion = () => {
 							<div key={hab.id_habitacion} className="row mb-5 border rounded shadow">
 								
 								<div className="col-md-4 border rounded ">
-									<img src={"/img/hab1-imagen.png"} alt={hab.tipoHabitacion.nombre} className="img-fluid rounded" />
+									<img src={`/img/hab${hab.id_habitacion}-imagen.png`} alt={hab.tipoHabitacion.nombre} className="img-fluid rounded" />
 									<h6 className="mt-2 fw-bold text-center">{hab.tipoHabitacion.nombre}</h6>
 									<p className="text-center">Habitacion {hab.numero}</p>
 									<ul>
@@ -127,20 +119,21 @@ const SeleccionHabitacion = () => {
 								</div>
 
 								<div className="col-md-8 border rounded d-grid">
-									{tarifs.map((t, idx) => (
-										<div key={idx} className="d-flex justify-content-between align-items-center border-bottom py-2 mb-3">
+									{tarifasDisponibles.map((tar) => (
+										<div key={tar.id_tarifa} className="d-flex justify-content-between align-items-center border-bottom py-2 mb-3">
 
 										<div>
-											{idx === 0 && <span className="badge bg-dark mb-1">Económico</span>}
-											<h4 className="m-0">{t.tipo}</h4>
-											<h6>{t.descripcion}</h6>
+											{tar.id_tarifa === tarifaMasBarata && (
+												<span className="badge bg-dark mb-1">Economico</span>
+											)}
+											<h5>{tar.descripcion}</h5>
 										</div>
 
 										<div className="text-end">
-											<strong>Gs. {t.precio}</strong>
+											<strong>Gs. {tar.precio}</strong>
 											<button type="button" className="btn btn-warning btn-sm ms-3 text-white fw-bold"
 												style={{ width: '180px', height: '50px' }}
-												onClick={() => navigate('/ConfirmarReserva')}>Seleccionar
+												onClick={() => handleSelection(tar, hab)}>Seleccionar
 											</button>
 										</div>
 									</div>

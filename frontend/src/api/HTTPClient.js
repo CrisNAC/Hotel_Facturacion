@@ -33,7 +33,6 @@ class HTTPClient {
     }
 
     /****       LISTADO DE INGRESOS        ****/
-
     getIngresos() {
         return this.instance.get("/ingresos");
     };

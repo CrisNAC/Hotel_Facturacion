@@ -48,10 +48,6 @@ export const NavBar = ({ className = "" }) => {
     navigate('/Reportes');
   };
 
-  const irAPerfil = () => {
-    navigate('/profile');
-  }
-
 
   /*** Funciones que tocan la base de datos ***/
 
@@ -162,7 +158,6 @@ export const NavBar = ({ className = "" }) => {
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
-            <Dropdown.Item onClick={irAPerfil}>Perfil</Dropdown.Item>
             <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
           </Dropdown.Menu>
 
