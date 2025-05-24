@@ -1,63 +1,62 @@
-import { PrismaClient } from "../../generated/prisma/index.js";
+import {PrismaClient} from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
 export const getAllIngresos = async (req, res) => {
-	try {
+    try {
+        const {desde, hasta} = req.query;
 
-		const { desde, hasta } = req.query;
+        const ingresos = await prisma.ingreso.findMany({
+            where: {
+                activo: true,
+                checkIn: {
+                    gte: desde ? new Date(desde) : undefined,
+                    lte: hasta ? new Date(hasta) : undefined,
+                },
+            },
+            orderBy: {
+                checkIn: "asc",
+            },
+            select: {
+                id_ingreso: true,
+                estado: true,
+                checkIn: true,
+                checkOut: true,
+                reserva: {
+                    select: {
+                        id_reserva: true,
+                        check_in: true,
+                        check_out: true,
+                    },
+                },
+                huesped: {
+                    select: {
+                        id_huesped: true,
+                        nombre: true,
+                        apellido: true,
+                        nacionalidad: true,
+                        telefono: true,
+                        email: true,
+                        ruc: true,
+                    },
+                },
 
-		const ingresos = await prisma.ingreso.findMany({
-			where: {
-				activo: true,
-				checkIn: {
-					gte: desde ? new Date(desde) : undefined,
-					lte: hasta ? new Date(hasta) : undefined,
-				}
-			},
-			orderBy: {
-				checkIn: 'asc'
-			},
-			select: {
-				id_ingreso: true,
-				estado: true,
-				checkIn: true,
-				checkOut: true,
-				reserva: {
-					select: {
-						id_reserva: true,
-						check_in: true,
-						check_out: true
-					}
-				},
-				huesped: {
-					select: {
-						id_huesped: true,
-						nombre: true,
-						apellido: true,
-						nacionalidad: true,
-						telefono: true,
-						email: true,
-						ruc: true
-					}
-				},
-
-				habitacion: {
-					select: {
-						id_habitacion: true,
-						numero: true,
-						tipoHabitacion: {
-							select: {
-								nombre: true
-							}
-						}
-					}
-				},
-				tarifa: {
-					select: {
-						descripcion: true,
-						precio: true
-					}
-				},
+                habitacion: {
+                    select: {
+                        id_habitacion: true,
+                        numero: true,
+                        tipoHabitacion: {
+                            select: {
+                                nombre: true,
+                            },
+                        },
+                    },
+                },
+                tarifa: {
+                    select: {
+                        descripcion: true,
+                        precio: true,
+                    },
+                },
 
 				cuenta: {
 					select: {
@@ -72,7 +71,8 @@ export const getAllIngresos = async (req, res) => {
 								Productos: {
 									select: {
 										descripcion: true,
-										precio_unitario: true
+										precio_unitario: true,
+										porcentaje_iva:true  
 									}
 								},
 							}
@@ -91,75 +91,77 @@ export const getAllIngresos = async (req, res) => {
 			typeof value === 'bigint' ? value.toString() : value
 		));
 
-		res.status(200).json(safeIngresos);
-	} catch (error) {
-		console.error(error); // Mostrar el error en consola
-		res.status(500).json({ error: "Internal Server Error: " + error.message });
-	}
-
-}
+        res.status(200).json(safeIngresos);
+    } catch (error) {
+        console.error("Error al obtener todos los ingresos", error);
+        res.status(500).json({
+            error: "Internal Server Error: Error al listar ingresos",
+        });
+    }
+};
 
 export const createIngreso = async (req, res) => {
-	try {
-		const {
-			fk_reserva,
-			fk_habitacion,
-			fk_huesped,
-			fk_tarifa,
-			fecha_ingreso,
-			estado,
-			fk_usuario
-		} = req.body;
+    try {
+        const {
+            fk_reserva,
+            fk_habitacion,
+            fk_huesped,
+            fk_tarifa,
+            fecha_ingreso,
+            estado,
+            fk_usuario,
+        } = req.body;
 
-		const nuevoIngreso = await prisma.ingreso.create({
-			data: {
-				fk_reserva,
-				fk_habitacion,
-				fk_huesped,
-				fk_tarifa,
-				fecha_ingreso: new Date(fecha_ingreso),
-				estado,
-				fk_usuario
-			},
+        const nuevoIngreso = await prisma.ingreso.create({
+            data: {
+                fk_reserva,
+                fk_habitacion,
+                fk_huesped,
+                fk_tarifa,
+                fecha_ingreso: new Date(fecha_ingreso),
+                estado,
+                fk_usuario,
+            },
 
-			include: {
-				reserva: {
-					select: {
-						check_in: true,
-						check_out: true
-					}
-				},
-				habitacion: {
-					select: {
-						numero: true
-					}
-				},
-				tarifa: {
-					select: {
-						descripcion: true,
-						precio: true
-					}
-				},
-				huesped: {
-					select: {
-						nombre: true,
-						apellido: true
-					}
-				},
-				usuario: {
-					select: {
-						nombre_usuario: true
-					}
-				}
-			},
-		});
+            include: {
+                reserva: {
+                    select: {
+                        check_in: true,
+                        check_out: true,
+                    },
+                },
+                habitacion: {
+                    select: {
+                        numero: true,
+                    },
+                },
+                tarifa: {
+                    select: {
+                        descripcion: true,
+                        precio: true,
+                    },
+                },
+                huesped: {
+                    select: {
+                        nombre: true,
+                        apellido: true,
+                    },
+                },
+                usuario: {
+                    select: {
+                        nombre_usuario: true,
+                    },
+                },
+            },
+        });
 
-		res.status(201).json(nuevoIngreso);
-
-	} catch (error) {
-		res.status(500).json({ error: "Internal Server Error: Error al crear el ingreso" });
-	}
-}
+        res.status(201).json(nuevoIngreso);
+    } catch (error) {
+        res.status(500).json({
+            error: "Internal Server Error: Error al crear el ingreso",
+        });
+    }
+};
 
 export const cancelarIngreso = async (req, res) => {
 	try {

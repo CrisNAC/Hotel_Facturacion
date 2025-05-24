@@ -3,7 +3,9 @@ import { FaEdit, FaTrash, FaUserPlus } from "react-icons/fa";
 import { useNavigate, useLocation } from 'react-router-dom';
 import NavBar from "./navbar";
 import HTTPClient from "../api/HTTPClient";
-import { useReserva } from "../context/ReservaContext.jsx";
+import { useReserva } from "../context/Reserva/ReservaContext.jsx";
+import { useTarifa } from "../context/tarifa/TarifaContext.jsx";
+import { useHabitacion } from "../context/habitacion/HabitacionContext.jsx";
 
 const ConfirmarReserva = () => {
 	const client = new HTTPClient();
@@ -12,8 +14,23 @@ const ConfirmarReserva = () => {
 
 	const [listaHuespedes, setListaHuespedes] = useState(location.state?.huespedes || []);
 	const { reservaSeleccionada } = useReserva();
-	// const [loading, setLoading] = useState(true);
-	// const [error, setError] = useState(false);
+	const { tarifaSeleccionada } = useTarifa();
+	const { habitacionSeleccionada } = useHabitacion();
+	
+	console.log(reservaSeleccionada);
+	console.log(tarifaSeleccionada);
+	console.log(habitacionSeleccionada);
+
+	const calcularNoches = (ingreso, egreso) => {
+        if (ingreso && egreso) {
+            const checkInDate = new Date(ingreso);
+            const checkOutDate = new Date(egreso);
+            const diffTime = Math.abs(checkOutDate - checkInDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+        return 0;
+    };
 
 	// Función para eliminar huésped
 	const eliminarHuesped = async (id) => {
@@ -54,13 +71,24 @@ const ConfirmarReserva = () => {
 		}
 	};
 
+	const check_in = reservaSeleccionada ? reservaSeleccionada.check_in.substring(0, 10) : "";
+	const check_out = reservaSeleccionada ? reservaSeleccionada.check_out.substring(0, 10) : "";
+	const numero_habitacion = habitacionSeleccionada ? habitacionSeleccionada.numero : 0;
+	const piso_habitacion = habitacionSeleccionada ? habitacionSeleccionada.piso : 0;
+	const nombre_habitacion = habitacionSeleccionada ? habitacionSeleccionada.tipoHabitacion.nombre : "";
+	const capacidad_habitacion = habitacionSeleccionada ? habitacionSeleccionada.tipoHabitacion.capacidad : 0;
+	const descripcion_tarifa = tarifaSeleccionada ? tarifaSeleccionada.descripcion : "";
+	const precio_tarifa = tarifaSeleccionada ? tarifaSeleccionada.precio : 0;
+	const noches = calcularNoches(check_in, check_out);
+	const costoTotal = precio_tarifa * noches;
+
 	return (
 		<div>
 			<NavBar />
 			<div className="container py-4" style={{ marginTop: '50px' }}>
 				{/* Titulo y boton */}
 				<div className="d-flex justify-content-between align-items-center mb-3">
-					<h3>Huéspedes habitación 205</h3>
+					<h3>Huéspedes habitación {numero_habitacion}</h3>
 					<button
 						type="button"
 						className="btn btn-primary btn-sm ms-3"
@@ -73,13 +101,13 @@ const ConfirmarReserva = () => {
 				<table className="table table-bordered table-hover w-100 text-center">
 					<thead>
 						<tr>
-							<th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>#</th>
-							<th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Nombre</th>
-							<th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Apellido</th>
-							<th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Nacionalidad</th>
-							<th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Teléfono</th>
-							<th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Correo</th>
-							<th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Acciones</th>
+							<th style={thStyle}>#</th>
+							<th style={thStyle}>Nombre</th>
+							<th style={thStyle}>Apellido</th>
+							<th style={thStyle}>Nacionalidad</th>
+							<th style={thStyle}>Teléfono</th>
+							<th style={thStyle}>Correo</th>
+							<th style={thStyle}>Acciones</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -153,20 +181,20 @@ const ConfirmarReserva = () => {
 					<div className="col-md-6">
 						<div className="shadow p-4 rounded">
 
-							<h4 className="fw-bold mb-3">Resumen {reservaSeleccionada ? "Reserva" : "Ingreso"}</h4>
+							<h4 className="fw-bold mb-3">Resumen</h4>
 
-							<p className="mb-1"><span className="fw-semibold">Check in:</span> {reservaSeleccionada ? formatDMY(reservaSeleccionada.check_in) : "03/16/2025"}</p>
-							<p className="mb-1"><span className="fw-semibold">Check out:</span> {reservaSeleccionada ? formatDMY(reservaSeleccionada.check_out) :"03/18/2025"}</p>
-							<p className="fw-bold mt-3 mb-2">Habitación 205 {reservaSeleccionada ? ("("+reservaSeleccionada.tipoHabitacion.nombre+")") :"(Doble-Matrimonial Estándar)"}</p>
-							<p className="mb-1"><span className="fw-semibold">Costo Base:</span> 300.000 Gs.</p>
-							<p className="mb-1"><span className="fw-semibold">Ocupación:</span> 2 adultos</p>
-							<p className="mb-1"><span className="fw-semibold">Noches:</span> 2 noches</p>
-							<p className="mb-1"><span className="fw-semibold">Costo:</span> 600.000 Gs.</p>
-							<p className="mb-1"><span className="fw-semibold">Extra:</span> Desayuno (2 días)</p>
-							<p className="mb-3"><span className="fw-semibold">Costo Extra:</span> 80.000 Gs.</p>
+							<p className="mb-1"><span className="fw-semibold">Check in:</span> {formatDMY(check_in)}</p>
+							<p className="mb-1"><span className="fw-semibold">Check out:</span> {formatDMY(check_out)}</p>
+							<p className="fw-bold mt-3 mb-2">Habitación {numero_habitacion} ({nombre_habitacion})</p>
+							<p className="mb-1"><span className="fw-semibold">Ubicacion:</span> Piso {piso_habitacion}</p>
+							<p className="mb-1"><span className="fw-semibold">Ocupación:</span> {capacidad_habitacion} persona/s</p>
+							<p className="fw-bold mt-3 mb-2">Tarifas</p>
+							<p className="mb-1"><span className="fw-semibold">Descripcion:</span> {descripcion_tarifa}</p>
+							<p className="mb-1"><span className="fw-semibold">Costo:</span> {precio_tarifa} Gs.</p>
+							<p className="mb-1"><span className="fw-semibold">Noches:</span> {noches} noche/s</p>
 
 							<hr></hr>
-							<p className="fw-bold fs-5">Costo Total <span className="ms-3">680.000 Gs.</span></p>
+							<p className="fw-bold fs-5">Costo Total:<span className="ms-3">{costoTotal} Gs.</span></p>
 
 						</div>
 					</div>
@@ -184,6 +212,11 @@ const ConfirmarReserva = () => {
 
 		</div>
 	);
+};
+
+const thStyle = {
+    backgroundColor: "#E6E6E6",
+    color: "#2E2E2E"
 };
 
 export default ConfirmarReserva;
