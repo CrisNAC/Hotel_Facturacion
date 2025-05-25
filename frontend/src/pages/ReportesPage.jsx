@@ -37,7 +37,6 @@ export default function ReportesPage() {
         if (categoria === 'ingresos') {
             const result = await refetch();
             const data = result.data;
-            console.log(data);
 
             const ingresosParseados = data.map(item => {
                 console.log("Item completo:", JSON.stringify(item, null, 2));
@@ -81,8 +80,8 @@ export default function ReportesPage() {
         }
         else if (categoria === 'reservas') {
             const result = await refetchReservas();
-            const data = result.data;
-
+            const data = result.data || [];
+            console.log(data);
             const reservasParseadas = data.map(r => ({
                 huesped: `${r.huesped?.nombre} ${r.huesped?.apellido}`,
                 tipo_habitacion: r.tipoHabitacion?.nombre || '---',
@@ -91,8 +90,13 @@ export default function ReportesPage() {
                 checkOut: r.check_out?.split('T')[0]
             }));
 
+            const resumenEstado = {
+                completadas: data.filter(r => r.estado === 'Completada').length,
+                pendientes: data.filter(r => r.estado === 'Pendiente').length,
+                canceladas: data.filter(r => r.estado === 'Cancelada').length,
+            };
             setDatos(reservasParseadas);
-            setResumen({ total: reservasParseadas.length });
+            setResumen(resumenEstado);
         }
         else {
             const resumenes = {
@@ -121,7 +125,7 @@ export default function ReportesPage() {
     };
 
     const fetchReservas = async () => {
-        const res = await axios.get('/api/reservas/fechas', {
+        const res = await axios.get(`/api/reserva/fechas`, {
             params: {
                 desde,
                 hasta
@@ -147,8 +151,7 @@ export default function ReportesPage() {
     } = useQuery({
         queryKey: ['reservas', desde, hasta],
         queryFn: fetchReservas,
-        enabled: false,
-        // enabled: categoria === 'reservas'
+        enabled: categoria === 'reservas'
     });
 
     /**
@@ -314,7 +317,19 @@ export default function ReportesPage() {
                                 </Typography>
                             </>
                         )}
-                        {categoria === "reservas" && `Reservas completadas: ${resumen.total}`}
+                        {categoria === "reservas" && (
+                            <>
+                                <Typography variant="subtitle1">
+                                    <strong>Reservas completadas:</strong> {resumen.completadas}
+                                </Typography>
+                                <Typography variant="subtitle1">
+                                    <strong>Reservas pendientes:</strong> {resumen.pendientes}
+                                </Typography>
+                                <Typography variant="subtitle1">
+                                    <strong>Reservas canceladas:</strong> {resumen.canceladas}
+                                </Typography>
+                            </>
+                        )}
                         {categoria === "facturas" && `Total facturado: Gs. ${resumen.total}`}
                         {categoria === "huespedes" && `Total de reservas entre huéspedes frecuentes: ${resumen.total}`}
                     </Typography>
