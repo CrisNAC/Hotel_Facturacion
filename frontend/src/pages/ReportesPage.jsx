@@ -213,61 +213,67 @@ export default function ReportesPage() {
         <>
             <NavBar />
             <Box sx={{ p: 4 }}>
-                <Typography variant="h4" gutterBottom>
+                <Typography variant="h4" align='center' gutterBottom>
                     Reportes del sistema
                 </Typography>
 
                 {/* Filtros */}
-                <Grid container spacing={2} sx={{ mb: 2 }}>
-                    <Grid item xs={12} sm={4}>
-                        <FormControl fullWidth>
-                            <InputLabel>Categoría</InputLabel>
-                            <Select
-                                value={categoria}
-                                label="Categoría"
-                                onChange={(e) => setCategoria(e.target.value)}
+                <Paper sx={{ p: 3, mb: 3 }}>
+                    <Grid container spacing={2} justifyContent="center" alignItems="center">
+                        <Grid item xs={12} sm={4}>
+                            <FormControl fullWidth>
+                                <InputLabel>Categoría</InputLabel>
+                                <Select
+                                    value={categoria}
+                                    label="Categoría"
+                                    onChange={(e) => setCategoria(e.target.value)}
+                                >
+                                    {categorias.map(cat => (
+                                        <MenuItem key={cat.value} value={cat.value}>{cat.label}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+
+                        <Grid item xs={12} sm={3}>
+                            <TextField
+                                label="Desde"
+                                type="date"
+                                fullWidth
+                                value={desde}
+                                onChange={(e) => setDesde(e.target.value)}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12} sm={3}>
+                            <TextField
+                                label="Hasta"
+                                type="date"
+                                fullWidth
+                                value={hasta}
+                                onChange={(e) => setHasta(e.target.value)}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12} sm={2}>
+                            <Button variant="contained" fullWidth onClick={handleBuscar}>
+                                Buscar
+                            </Button>
+                        </Grid>
+
+                        <Grid item xs={12} sm={3} sx={{ mt: 1 }}>
+                            <Button
+                                variant="outlined"
+                                color="success"
+                                fullWidth
+                                onClick={handleExportar}
                             >
-                                {categorias.map(cat => (
-                                    <MenuItem key={cat.value} value={cat.value}>{cat.label}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                                Exportar a PDF / Excel
+                            </Button>
+                        </Grid>
                     </Grid>
-
-                    <Grid item xs={12} sm={3}>
-                        <TextField
-                            label="Desde"
-                            type="date"
-                            fullWidth
-                            value={desde}
-                            onChange={(e) => setDesde(e.target.value)}
-                        />
-                    </Grid>
-
-                    <Grid item xs={12} sm={3}>
-                        <TextField
-                            label="Hasta"
-                            type="date"
-                            fullWidth
-                            value={hasta}
-                            onChange={(e) => setHasta(e.target.value)}
-                        />
-                    </Grid>
-
-                    <Grid item xs={12} sm={2}>
-                        <Button variant="contained" fullWidth onClick={handleBuscar}>
-                            Buscar
-                        </Button>
-                    </Grid>
-                </Grid>
-
-                {/* Botón de exportar */}
-                <Box sx={{ mb: 2 }}>
-                    <Button variant="outlined" color="success" onClick={handleExportar}>
-                        Exportar a PDF / Excel
-                    </Button>
-                </Box>
-
+                </Paper>
+                
                 {/* Tabla */}
                 <Paper sx={{ mb: 3 }}>
                     <Typography variant="h6" sx={{ p: 2 }}>
