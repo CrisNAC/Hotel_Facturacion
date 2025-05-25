@@ -98,6 +98,24 @@ export default function ReportesPage() {
             setDatos(reservasParseadas);
             setResumen(resumenEstado);
         }
+        else if (categoria === 'facturas') {
+            const result = await refetchFacturas();
+            const data = result.data || [];
+
+            const facturasParseadas = data.map(f => ({
+                numero: f.numero_factura,
+                huesped: `${f.cuenta?.ingreso?.huesped?.nombre} ${f.cuenta?.ingreso?.huesped?.apellido}`,
+                fecha: f.fecha_emision?.split('T')[0],
+                concepto: f.detalles?.map((d, i) => <div key={i}>{d.descripcion}</div>) || '—',
+                total: f.total || 0,
+                condicion: f.condicion_venta || '-------'
+            }));
+
+            const totalFacturado = facturasParseadas.reduce((sum, f) => sum + f.total, 0);
+
+            setDatos(facturasParseadas);
+            setResumen({ total: totalFacturado });
+        }
         else {
             const resumenes = {
                 ingresos: { total: 150 },
@@ -134,10 +152,18 @@ export default function ReportesPage() {
         return res.data;
     };
 
+    const fetchFacturas = async () => {
+        const res = await axios.get(`/api/facturas/fechas`, {
+            params: {
+                desde,
+                hasta
+            }
+        });
+        return res.data;
+    };
+
     const {
         data: ingresos,
-        isLoading,
-        error,
         refetch
     } = useQuery({
         queryKey: ['ingresos', desde, hasta],
@@ -152,6 +178,15 @@ export default function ReportesPage() {
         queryKey: ['reservas', desde, hasta],
         queryFn: fetchReservas,
         enabled: categoria === 'reservas'
+    });
+
+    const {
+        data: facturas,
+        refetch: refetchFacturas
+    } = useQuery({
+        queryKey: ['facturas', desde, hasta],
+        queryFn: fetchFacturas,
+        enabled: categoria === 'facturas'
     });
 
     /**
@@ -291,8 +326,15 @@ export default function ReportesPage() {
                                     </>}
                                     {categoria === "facturas" && <>
                                         <TableCell>{row.numero}</TableCell>
-                                        <TableCell>{row.fecha}</TableCell>
-                                        <TableCell>${row.total}</TableCell>
+                                        <TableCell>{row.huesped}</TableCell>
+                                        <TableCell>{formatDMY(row.fecha)}</TableCell>
+                                        <TableCell>
+                                            {Array.isArray(row.concepto) ? row.concepto : row.concepto}
+                                        </TableCell>
+                                        <TableCell>
+                                            {(row.total || 0).toLocaleString("de-DE")}
+                                        </TableCell>
+                                        <TableCell>{row.condicion}</TableCell>
                                     </>}
                                     {categoria === "huespedes" && <>
                                         <TableCell>{row.nombre}</TableCell>
@@ -310,10 +352,10 @@ export default function ReportesPage() {
                         {categoria === "ingresos" && (
                             <>
                                 <Typography variant="subtitle1">
-                                    <strong>Cantidad de ingresos registrados:</strong> {resumen.cantidad}
+                                    <strong>Ingresos registrados:</strong> {resumen.cantidad}
                                 </Typography>
                                 <Typography variant="subtitle1">
-                                    <strong>Monto de ingresos:</strong> Gs. {resumen.total.toLocaleString()}
+                                    <strong>Monto:</strong> Gs. {resumen.total.toLocaleString()}
                                 </Typography>
                             </>
                         )}
@@ -330,7 +372,13 @@ export default function ReportesPage() {
                                 </Typography>
                             </>
                         )}
-                        {categoria === "facturas" && `Total facturado: Gs. ${resumen.total}`}
+                        {categoria === "facturas" && (
+                            <>
+                                <Typography variant="subtitle1">
+                                    <strong>Total facturado:</strong> Gs. {resumen.total.toLocaleString()}
+                                </Typography>
+                            </>
+                        )}
                         {categoria === "huespedes" && `Total de reservas entre huéspedes frecuentes: ${resumen.total}`}
                     </Typography>
                 )}
