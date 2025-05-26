@@ -8,6 +8,8 @@ import dayjs from 'dayjs';
 import NavBar from '../components/navbar';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { saveAs } from 'file-saver'; // Importa saveAs
+
 
 const categorias = [
     { label: "Ingresos", value: "ingresos" },
@@ -150,7 +152,76 @@ export default function ReportesPage() {
     }
 
     const handleExportar = () => {
-        alert("Exportar a PDF o Excel (implementación futura)");
+        if (!datos || datos.length === 0) {
+            alert('No hay datos para exportar.');
+            return;
+        }
+
+        let headers = [];
+        let rows = [];
+        let fileName = `${categoria}_reporte.csv`;
+
+        if (categoria === 'ingresos') {
+            headers = ["N° de habitación", "Huésped", "Noches", "Tarifa por Noche", "Tarifa Total", "Total Consumos", "Total", "Check-in", "Check-out"];
+            rows = datos.map(row => [
+                row.habitacion,
+                row.huesped,
+                row.noches,
+                row.tarifaPorNoche,
+                row.tarifaTotal,
+                row.totalConsumos,
+                row.total,
+                formatDMY(row.checkIn),
+                formatDMY(row.checkOut)
+            ]);
+        } else if (categoria === 'reservas') {
+            headers = ["Huésped", "Tipo de habitación", "Estado", "Check-in", "Check-out"];
+            rows = datos.map(row => [
+                row.huesped,
+                row.tipo_habitacion,
+                row.estado,
+                formatDMY(row.checkIn),
+                formatDMY(row.checkOut)
+            ]);
+        } else if (categoria === 'facturas') {
+            headers = ["Número de factura", "Nombre del huésped", "Fecha de emisión", "Concepto", "Monto total", "Condición de venta"];
+            rows = datos.map(row => [
+                row.numero,
+                row.huesped,
+                formatDMY(row.fecha),
+                Array.isArray(row.concepto) ? row.concepto.join('; ') : row.concepto, // Asegura que el concepto sea string
+                row.total,
+                row.condicion
+            ]);
+        } else if (categoria === 'huespedes') {
+            // Para huéspedes, puedes decidir si exportar solo el top3 o todos los "datos"
+            // Aquí estoy exportando todos los "huespedesParseados" que están en 'datos'
+            headers = ["Nombre", "Documento", "Teléfono", "Email", "Ingresos", "Reservas", "Último Check-in", "Total Gastado"];
+            rows = datos.map(row => [
+                row.nombre,
+                row.documento,
+                row.telefono,
+                row.email,
+                row.ingresos,
+                row.reservas,
+                formatDMY(row.ultimoCheckIn),
+                row.total
+            ]);
+            // O si quieres exportar el top 3 en un archivo separado:
+            // fileName = `top3_huespedes_frecuentes.csv`;
+            // rows = top3.map(row => [ ... ]);
+        } else {
+            alert('Categoría no soportada para exportación.');
+            return;
+        }
+
+        const csvContent = [
+            headers.join(','), // Unir los encabezados con comas
+            ...rows.map(e => e.join(',')) // Unir cada fila con comas
+        ].join('\n'); // Unir todas las líneas con saltos de línea
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        saveAs(blob, fileName);
     };
 
     const fetchIngresos = async () => {
@@ -233,6 +304,7 @@ export default function ReportesPage() {
         // Limpiar datos y resumen al cambiar de categoría
         setDatos([]);
         setResumen(null);
+        setTop3([]); // También limpiar el top3 al cambiar de categoría
     }, [categoria]);
 
     /**
@@ -288,6 +360,7 @@ export default function ReportesPage() {
                                 fullWidth
                                 value={desde}
                                 onChange={(e) => setDesde(e.target.value)}
+                                InputLabelProps={{ shrink: true }} // Para que el label no se superponga
                             />
                         </Grid>
 
@@ -298,6 +371,7 @@ export default function ReportesPage() {
                                 fullWidth
                                 value={hasta}
                                 onChange={(e) => setHasta(e.target.value)}
+                                InputLabelProps={{ shrink: true }} // Para que el label no se superponga
                             />
                         </Grid>
 
@@ -313,19 +387,20 @@ export default function ReportesPage() {
                                 color="success"
                                 fullWidth
                                 onClick={handleExportar}
+                                // Deshabilita el botón si no hay datos o la categoría no está soportada
+                                disabled={!datos || datos.length === 0 || !['ingresos', 'reservas', 'facturas', 'huespedes'].includes(categoria)}
                             >
-                                Exportar a PDF / Excel
+                                Exportar a CSV
                             </Button>
                         </Grid>
                     </Grid>
                 </Paper>
 
-                {/* Tabla */}
+                {/* Tabla de Datos Principal */}
                 <Paper sx={{ mb: 3 }}>
                     <Typography variant="h6" sx={{ p: 2 }}>
                         {categorias.find(c => c.value === categoria)?.label}
                     </Typography>
-
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -351,6 +426,7 @@ export default function ReportesPage() {
                                     <TableCell>Monto total</TableCell>
                                     <TableCell>Condición de venta</TableCell>
                                 </>}
+                                {/* No necesitas encabezados aquí para la tabla principal de 'huespedes' si no la muestras directamente */}
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -375,57 +451,60 @@ export default function ReportesPage() {
                                         <TableCell>{row.huesped}</TableCell>
                                         <TableCell>{formatDMY(row.fecha)}</TableCell>
                                         <TableCell>
-                                            {Array.isArray(row.concepto) ? row.concepto : row.concepto}
+                                            {Array.isArray(row.concepto) ? row.concepto.join(', ') : row.concepto}
                                         </TableCell>
                                         <TableCell>
                                             {(row.total || 0).toLocaleString("de-DE")}
                                         </TableCell>
                                         <TableCell>{row.condicion}</TableCell>
                                     </>}
+                                    {/* No necesitas celdas aquí para la tabla principal de 'huespedes' si no la muestras directamente */}
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
-                    {categoria === 'huespedes' && top3.length > 0 && (
-                        <Paper sx={{ p: 2, mt: 4 }}>
-                            <Typography variant="h6" gutterBottom>
-                                Top 3 huéspedes más frecuentes
-                            </Typography>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Nombre</TableCell>
-                                        <TableCell>Documento</TableCell>
-                                        <TableCell>Teléfono</TableCell>
-                                        <TableCell>Email</TableCell>
-                                        <TableCell>Ingresos</TableCell>
-                                        <TableCell>Reservas</TableCell>
-                                        <TableCell>Último check-in</TableCell>
-                                        <TableCell>Total Gastado</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {top3.map((h, i) => (
-                                        <TableRow key={i}>
-                                            <TableCell>{h.nombre}</TableCell>
-                                            <TableCell>{h.documento}</TableCell>
-                                            <TableCell>{h.telefono}</TableCell>
-                                            <TableCell>{h.email}</TableCell>
-                                            <TableCell>{h.ingresos}</TableCell>
-                                            <TableCell>{h.reservas}</TableCell>
-                                            <TableCell>{formatDMY(h.ultimoCheckIn)}</TableCell>
-                                            <TableCell>{(h.total || 0).toLocaleString("de-DE")}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </Paper>
-                    )}
                 </Paper>
+
+                {/* Top 3 Huéspedes Frecuentes (si aplica) */}
+                {categoria === 'huespedes' && top3.length > 0 && (
+                    <Paper sx={{ p: 2, mt: 4 }}>
+                        <Typography variant="h6" gutterBottom>
+                            Top 3 huéspedes más frecuentes
+                        </Typography>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Nombre</TableCell>
+                                    <TableCell>Documento</TableCell>
+                                    <TableCell>Teléfono</TableCell>
+                                    <TableCell>Email</TableCell>
+                                    <TableCell>Ingresos</TableCell>
+                                    <TableCell>Reservas</TableCell>
+                                    <TableCell>Último check-in</TableCell>
+                                    <TableCell>Total Gastado</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {top3.map((h, i) => (
+                                    <TableRow key={i}>
+                                        <TableCell>{h.nombre}</TableCell>
+                                        <TableCell>{h.documento}</TableCell>
+                                        <TableCell>{h.telefono}</TableCell>
+                                        <TableCell>{h.email}</TableCell>
+                                        <TableCell>{h.ingresos}</TableCell>
+                                        <TableCell>{h.reservas}</TableCell>
+                                        <TableCell>{formatDMY(h.ultimoCheckIn)}</TableCell>
+                                        <TableCell>{(h.total || 0).toLocaleString("de-DE")}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </Paper>
+                )}
 
                 {/* Resumen */}
                 {resumen && (
-                    <>
+                    <Paper sx={{ p: 2, mt: 3 }}> {/* Envuelto en Paper para mejor estilo */}
                         {categoria === "ingresos" && (
                             <>
                                 <Typography variant="subtitle1">
@@ -454,7 +533,7 @@ export default function ReportesPage() {
                                 <strong>Total facturado:</strong> Gs. {resumen.total ? resumen.total.toLocaleString() : 0}
                             </Typography>
                         )}
-                    </>
+                    </Paper>
                 )}
             </Box>
         </>
