@@ -103,12 +103,7 @@ const Invoice = () => {
         <NavBar className="no-print" />
         <Container className="mt-5">
           <div className="d-flex justify-content-center mt-3">
-            <Skeleton variant="rectangular" animation="wave" width={701} height={480} sx={{ marginTop: "5px" }} />
-          </div>
-          <div className="d-flex justify-content-center mt-3" style={{ gap: "30px" }}>
-            <Skeleton variant="rectangular" animation="wave" width={150} height={40} />
-            <Skeleton variant="rectangular" animation="wave" width={150} height={40} />
-            <Skeleton variant="rectangular" animation="wave" width={150} height={40} />
+            <Skeleton variant="rectangular" animation="wave" width={701} height={600} sx={{ marginTop: "5px" }} />
           </div>
         </Container>
       </>
