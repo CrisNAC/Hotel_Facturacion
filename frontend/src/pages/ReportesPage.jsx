@@ -330,7 +330,7 @@ export default function ReportesPage() {
     return (
         <>
             <NavBar />
-            <Box sx={{ p: 4 }}>
+            <Box sx={{ p: 4, maxWidth: '1140px', mx: 'auto' }}>
                 <Typography variant="h4" align='center' gutterBottom>
                     Reportes del sistema
                 </Typography>
@@ -381,13 +381,12 @@ export default function ReportesPage() {
                             </Button>
                         </Grid>
 
-                        <Grid item xs={12} sm={3} sx={{ mt: 1 }}>
+                        <Grid item xs={12} sm={3} sx={{ mt: 1, ml: 'auto' }}>
                             <Button
                                 variant="outlined"
                                 color="success"
                                 fullWidth
                                 onClick={handleExportar}
-                                // Deshabilita el botón si no hay datos o la categoría no está soportada
                                 disabled={!datos || datos.length === 0 || !['ingresos', 'reservas', 'facturas', 'huespedes'].includes(categoria)}
                             >
                                 Exportar a CSV
@@ -402,7 +401,13 @@ export default function ReportesPage() {
                         {categorias.find(c => c.value === categoria)?.label}
                     </Typography>
                     <Table>
-                        <TableHead>
+                        <TableHead sx={{
+                            backgroundColor: '#E6E6E6',
+                            '& th': {
+                                textAlign: 'center',
+                                py: 0.8,
+                            }
+                        }}>
                             <TableRow>
                                 {categoria === "ingresos" && <>
                                     <TableCell>N° de habitación</TableCell>
@@ -426,12 +431,11 @@ export default function ReportesPage() {
                                     <TableCell>Monto total</TableCell>
                                     <TableCell>Condición de venta</TableCell>
                                 </>}
-                                {/* No necesitas encabezados aquí para la tabla principal de 'huespedes' si no la muestras directamente */}
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {datos.map((row, i) => (
-                                <TableRow key={i}>
+                                <TableRow key={i} sx={{ '& td': { textAlign: 'center', py: 0.5 } }}>
                                     {categoria === "ingresos" && <>
                                         <TableCell>{row.habitacion}</TableCell>
                                         <TableCell>{row.huesped}</TableCell>
@@ -458,7 +462,6 @@ export default function ReportesPage() {
                                         </TableCell>
                                         <TableCell>{row.condicion}</TableCell>
                                     </>}
-                                    {/* No necesitas celdas aquí para la tabla principal de 'huespedes' si no la muestras directamente */}
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -472,7 +475,13 @@ export default function ReportesPage() {
                             Top 3 huéspedes más frecuentes
                         </Typography>
                         <Table>
-                            <TableHead>
+                            <TableHead sx={{
+                                backgroundColor: '#E6E6E6',
+                                '& th': {
+                                    textAlign: 'center',
+                                    py: 0.8,
+                                }
+                            }}>
                                 <TableRow>
                                     <TableCell>Nombre</TableCell>
                                     <TableCell>Documento</TableCell>
@@ -486,7 +495,7 @@ export default function ReportesPage() {
                             </TableHead>
                             <TableBody>
                                 {top3.map((h, i) => (
-                                    <TableRow key={i}>
+                                    <TableRow key={i} sx={{ '& td': { textAlign: 'center', py: 0.5 } }}>
                                         <TableCell>{h.nombre}</TableCell>
                                         <TableCell>{h.documento}</TableCell>
                                         <TableCell>{h.telefono}</TableCell>
@@ -504,7 +513,7 @@ export default function ReportesPage() {
 
                 {/* Resumen */}
                 {resumen && (
-                    <Paper sx={{ p: 2, mt: 3 }}> {/* Envuelto en Paper para mejor estilo */}
+                    <Paper sx={{ p: 2, mt: 3, backgroundColor: '#C6EAD6' }}>
                         {categoria === "ingresos" && (
                             <>
                                 <Typography variant="subtitle1">
