@@ -173,8 +173,73 @@
     font-weight: 700;
   }
 
-  @media print {
-  .no-print {
-    display: none !important;
-  }
+/* Estilos para el modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 500px;
+  animation: modalFadeIn 0.3s;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos normales del modal (visible solo cuando se activa) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none; /* Oculto por defecto */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Clase para mostrar el modal cuando está activo */
+.modal-overlay.active {
+  display: flex;
+}
+
+/* Ocultar elementos durante generación de PDF */
+.generando-pdf .no-print,
+.generando-pdf .modal-overlay,
+.generando-pdf .action-buttons-container,
+.generando-pdf .btn-cancelar,
+.generando-pdf .btn-generar-factura {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Estilos normales de los botones */
+.action-buttons-container {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.btn-cancelar,
+.btn-generar-factura {
+  width: 150px;
+  height: 40px;
+  font-weight: bold;
 }
