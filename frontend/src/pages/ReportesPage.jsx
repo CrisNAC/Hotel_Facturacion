@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Box, Typography, Grid, FormControl, InputLabel, Select,
     MenuItem, TextField, Button, Table, TableHead, TableRow,
@@ -17,6 +17,8 @@ const categorias = [
 ];
 
 export default function ReportesPage() {
+    const [top3, setTop3] = useState([]);
+    const [frecuentes, setFrecuentes] = useState([]);
     const [categoria, setCategoria] = useState('ingresos');
     const [desde, setDesde] = useState(dayjs().startOf('month').format('YYYY-MM-DD'));
     const [hasta, setHasta] = useState(dayjs().endOf('month').format('YYYY-MM-DD'));
@@ -36,18 +38,17 @@ export default function ReportesPage() {
     const handleBuscar = async () => {
         if (categoria === 'ingresos') {
             const result = await refetch();
-            const data = result.data;
+            const data = result?.data;
+
+            if (!Array.isArray(data)) {
+                console.error("Error al obtener datos de ingresos:", result);
+                return;
+            }
 
             const ingresosParseados = data.map(item => {
-                console.log("Item completo:", JSON.stringify(item, null, 2));
                 const noches = calcularNoches(item.checkIn, item.checkOut);
-                console.log("Noches:", noches);
                 const precioNoche = item.tarifa?.precio || 0;
-                console.log("Precio por noche:", precioNoche);
                 const tarifaTotal = noches * precioNoche;
-                console.log("Tarifa total:", tarifaTotal);
-                const id_ingreso = item.ingreso?.id_ingreso || 0;
-                console.log("Ingreso actual:", id_ingreso);
                 const cuentas = item.cuenta || [];
                 const totalConsumos = cuentas.reduce((sum, cuenta) => {
                     const consumos = cuenta.consumos || [];
@@ -106,7 +107,8 @@ export default function ReportesPage() {
                 numero: f.numero_factura,
                 huesped: `${f.cuenta?.ingreso?.huesped?.nombre} ${f.cuenta?.ingreso?.huesped?.apellido}`,
                 fecha: f.fecha_emision?.split('T')[0],
-                concepto: f.detalles?.map((d, i) => <div key={i}>{d.descripcion}</div>) || '—',
+                concepto: f.detalles?.map(d => d.descripcion).join(', ') || '—',
+                //concepto: f.detalles?.map((d, i) => <div key={i}>{d.descripcion}</div>) || '—',
                 total: f.total || 0,
                 condicion: f.condicion_venta || '-------'
             }));
@@ -116,17 +118,36 @@ export default function ReportesPage() {
             setDatos(facturasParseadas);
             setResumen({ total: totalFacturado });
         }
-        else {
-            const resumenes = {
-                ingresos: { total: 150 },
-                reservas: { total: 1 },
-                facturas: { total: 150 },
-                huespedes: { total: 5 },
-            };
+        else if (categoria === 'huespedes') {
+            const result = await refetchHuespedes();
+            const data = result.data || [];
 
-            setResumen(resumenes[categoria]);
+            const huespedesParseados = data.map(h => {
+                return {
+                    nombre: h.nombre_completo,
+                    documento: h.numero_documento,
+                    telefono: h.telefono || '—',
+                    email: h.email || '—',
+                    ingresos: h.total_ingresos,
+                    reservas: h.total_reservas,
+                    ultimoCheckIn: h.ultimo_checkin
+                        ? new Date(h.ultimo_checkin).toISOString().split('T')[0]
+                        : '—',
+                    total: h.total_facturado || 0
+                };
+            });
+
+            // Ordenar por la suma de ingresos y reservas de forma descendente
+            const ordenado = [...huespedesParseados].sort((a, b) => {
+                const totalA = a.ingresos + a.reservas;
+                const totalB = b.ingresos + b.reservas;
+                return totalB - totalA; // Ordena de mayor a menor
+            });
+
+            setDatos(huespedesParseados);
+            setTop3(ordenado.slice(0, 3));
         }
-    };
+    }
 
     const handleExportar = () => {
         alert("Exportar a PDF o Excel (implementación futura)");
@@ -162,6 +183,16 @@ export default function ReportesPage() {
         return res.data;
     };
 
+    const fetchHuespedes = async () => {
+        const res = await axios.get(`/api/huesped/frecuentes`, {
+            params: {
+                desde,
+                hasta
+            }
+        });
+        return res.data;
+    };
+
     const {
         data: ingresos,
         refetch
@@ -188,6 +219,21 @@ export default function ReportesPage() {
         queryFn: fetchFacturas,
         enabled: categoria === 'facturas'
     });
+
+    const {
+        data: huespedes,
+        refetch: refetchHuespedes
+    } = useQuery({
+        queryKey: ['huespedes', desde, hasta],
+        queryFn: fetchHuespedes,
+        enabled: categoria === 'huespedes'
+    });
+
+    useEffect(() => {
+        // Limpiar datos y resumen al cambiar de categoría
+        setDatos([]);
+        setResumen(null);
+    }, [categoria]);
 
     /**
     * Para cambiar el formato de la fecha a Dia/Mes/Año
@@ -273,7 +319,7 @@ export default function ReportesPage() {
                         </Grid>
                     </Grid>
                 </Paper>
-                
+
                 {/* Tabla */}
                 <Paper sx={{ mb: 3 }}>
                     <Typography variant="h6" sx={{ p: 2 }}>
@@ -304,12 +350,6 @@ export default function ReportesPage() {
                                     <TableCell>Concepto</TableCell>
                                     <TableCell>Monto total</TableCell>
                                     <TableCell>Condición de venta</TableCell>
-                                </>}
-                                {categoria === "huespedes" && <>
-                                    <TableCell>Nombre del huésped</TableCell> // ¿Mostrar más datos?
-                                    <TableCell>Cantidad de reservas hechas</TableCell> // Fechas, cuántos días
-                                    <TableCell>Cantidad de ingresos hechos</TableCell> // Fechas, cuántos días
-                                    <TableCell>Monto total gastado</TableCell> // total total
                                 </>}
                             </TableRow>
                         </TableHead>
@@ -342,26 +382,57 @@ export default function ReportesPage() {
                                         </TableCell>
                                         <TableCell>{row.condicion}</TableCell>
                                     </>}
-                                    {categoria === "huespedes" && <>
-                                        <TableCell>{row.nombre}</TableCell>
-                                        <TableCell>{row.reservas}</TableCell>
-                                    </>}
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
+                    {categoria === 'huespedes' && top3.length > 0 && (
+                        <Paper sx={{ p: 2, mt: 4 }}>
+                            <Typography variant="h6" gutterBottom>
+                                Top 3 huéspedes más frecuentes
+                            </Typography>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Nombre</TableCell>
+                                        <TableCell>Documento</TableCell>
+                                        <TableCell>Teléfono</TableCell>
+                                        <TableCell>Email</TableCell>
+                                        <TableCell>Ingresos</TableCell>
+                                        <TableCell>Reservas</TableCell>
+                                        <TableCell>Último check-in</TableCell>
+                                        <TableCell>Total Gastado</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {top3.map((h, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell>{h.nombre}</TableCell>
+                                            <TableCell>{h.documento}</TableCell>
+                                            <TableCell>{h.telefono}</TableCell>
+                                            <TableCell>{h.email}</TableCell>
+                                            <TableCell>{h.ingresos}</TableCell>
+                                            <TableCell>{h.reservas}</TableCell>
+                                            <TableCell>{formatDMY(h.ultimoCheckIn)}</TableCell>
+                                            <TableCell>{(h.total || 0).toLocaleString("de-DE")}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </Paper>
+                    )}
                 </Paper>
 
                 {/* Resumen */}
                 {resumen && (
-                    <Typography variant="subtitle1">
+                    <>
                         {categoria === "ingresos" && (
                             <>
                                 <Typography variant="subtitle1">
                                     <strong>Ingresos registrados:</strong> {resumen.cantidad}
                                 </Typography>
                                 <Typography variant="subtitle1">
-                                    <strong>Monto:</strong> Gs. {resumen.total.toLocaleString()}
+                                    <strong>Monto:</strong> Gs. {resumen.total ? resumen.total.toLocaleString() : 0}
                                 </Typography>
                             </>
                         )}
@@ -379,14 +450,11 @@ export default function ReportesPage() {
                             </>
                         )}
                         {categoria === "facturas" && (
-                            <>
-                                <Typography variant="subtitle1">
-                                    <strong>Total facturado:</strong> Gs. {resumen.total.toLocaleString()}
-                                </Typography>
-                            </>
+                            <Typography variant="subtitle1">
+                                <strong>Total facturado:</strong> Gs. {resumen.total ? resumen.total.toLocaleString() : 0}
+                            </Typography>
                         )}
-                        {categoria === "huespedes" && `Total de reservas entre huéspedes frecuentes: ${resumen.total}`}
-                    </Typography>
+                    </>
                 )}
             </Box>
         </>
