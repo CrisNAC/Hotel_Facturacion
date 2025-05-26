@@ -64,6 +64,10 @@ export const getAllIngresos = async (req, res) => {
 						consumos: {
 							where: { activo: true },
 							select: {
+								id_consumo: true,
+								cantidad: true,
+								monto: true,
+								activo: true,
 								Productos: {
 									select: {
 										descripcion: true,
@@ -71,10 +75,6 @@ export const getAllIngresos = async (req, res) => {
 										porcentaje_iva:true  
 									}
 								},
-								id_consumo: true,
-								cantidad: true,
-								monto: true,
-								activo: true
 							}
 						}
 					}

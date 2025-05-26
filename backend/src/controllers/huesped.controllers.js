@@ -15,6 +15,94 @@ const getAllHuespedes = async (req, res) => {
     }
 };
 
+const getHuespedesFrecuentes = async (req, res) => {
+    try {
+        const { desde, hasta } = req.query;
+
+        const fechaDesde = desde ? new Date(desde) : null;
+        const fechaHasta = hasta ? new Date(hasta) : null;
+
+        const huespedes = await prisma.huesped.findMany({
+            where: { activo: true },
+            select: {
+                id_huesped: true,
+                nombre: true,
+                apellido: true,
+                numero_documento: true,
+                nacionalidad: true,
+                email: true,
+                telefono: true,
+                ingresos: {
+                    where: {
+                        AND: [
+                            fechaDesde ? { checkIn: { gte: fechaDesde } } : {},
+                            fechaHasta ? { checkIn: { lte: fechaHasta } } : {},
+                        ],
+                    },
+                    select: {
+                        checkIn: true,
+                        // Ahora seleccionamos las cuentas, y dentro de cada cuenta, agregamos las facturas
+                        cuenta: {
+                            select: {
+                                // Aquí calculamos la suma de los totales de las facturas directamente en la consulta
+                                factura: {
+                                    select: {
+                                        total: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                reservas: {
+                    where: {
+                        AND: [
+                            fechaDesde ? { check_in: { gte: fechaDesde } } : {},
+                            fechaHasta ? { check_in: { lte: fechaHasta } } : {},
+                        ],
+                    },
+                    select: { id_reserva: true },
+                },
+            },
+        });
+
+        const data = huespedes.map(h => {
+            let totalFacturado = 0;
+            h.ingresos.forEach(ingreso => {
+                ingreso.cuenta.forEach(cuenta => { // Itera sobre las cuentas de un ingreso
+                    cuenta.factura.forEach(factura => { // Itera sobre las facturas de una cuenta
+                        totalFacturado += factura.total || 0;
+                    });
+                });
+            });
+
+            return {
+                id: h.id_huesped,
+                nombre_completo: `${h.nombre} ${h.apellido}`,
+                numero_documento: h.numero_documento,
+                nacionalidad: h.nacionalidad,
+                email: h.email,
+                telefono: h.telefono,
+                total_ingresos: h.ingresos.length,
+                total_reservas: h.reservas.length,
+                ultimo_checkin: h.ingresos
+                    .map(i => new Date(i.checkIn))
+                    .sort((a, b) => b - a)[0] || null,
+                total_facturado: totalFacturado
+            };
+        });
+
+        const ordenado = data.sort((a, b) =>
+            (b.total_ingresos + b.total_reservas) - (a.total_ingresos + a.total_reservas)
+        );
+
+        res.status(200).json(ordenado);
+    } catch (error) {
+        console.error("Error al obtener huéspedes frecuentes:", error);
+        res.status(500).json({ error: "Error al obtener huéspedes frecuentes" });
+    }
+};
+
 const getHuesped = async (req, res) => {
     try {
         const id = parseInt(req.params.id, 10);
@@ -200,6 +288,7 @@ const patchHuesped = async (req, res) => {
 
 export default {
     getAllHuespedes,
+    getHuespedesFrecuentes,
     getHuesped,
     postHuesped,
     deleteHuesped,

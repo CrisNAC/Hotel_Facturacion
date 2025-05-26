@@ -3,33 +3,33 @@ const prisma = new PrismaClient();
 
 // Obtener todas las facturas activas
 export const getAllFacturas = async (req, res) => {
-	try {
-		const facturas = await prisma.factura.findMany({
-			orderBy: { fecha_emision: 'desc' },
-			include: {
-				timbrado: true,
-				detalles: true,
-				usuario: {
-					select: { nombre: true, apellido: true }
-				},
-				cuenta: {
-					include: {
-						ingreso: {
-							include: {
-								huesped: {
-									select: { nombre: true, apellido: true }
-								}
-							}
-						}
-					}
-				}
-			}
-		});
-		res.status(200).json(facturas);
-	} catch (error) {
-		console.error(error);
-		res.status(500).json({ error: "Error al obtener las facturas" });
-	}
+  try {
+    const facturas = await prisma.factura.findMany({
+      orderBy: { fecha_emision: 'desc' },
+      include: {
+        timbrado: true,
+        detalles: true,
+        usuario: {
+          select: { nombre: true, apellido: true }
+        },
+        cuenta: {
+          include: {
+            ingreso: {
+              include: {
+                huesped: {
+                  select: { nombre: true, apellido: true }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+    res.status(200).json(facturas);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener las facturas" });
+  }
 };
 
 export const createFactura = async (req, res) => {
@@ -67,7 +67,7 @@ export const createFactura = async (req, res) => {
 
       // Desactivar ingreso
       await tx.ingreso.update({
-        where: { id_ingreso: cuenta.fk_ingreso},
+        where: { id_ingreso: cuenta.fk_ingreso },
         data: { activo: false }
       });
 
@@ -89,12 +89,12 @@ export const createFactura = async (req, res) => {
       const factura = await tx.factura.create({
         data: {
           fk_cuenta,
-          fk_timbrado:1,
+          fk_timbrado: 1,
           numero_factura,
           condicion_venta,
           fecha_emision: fecha_emision ? new Date(fecha_emision) : undefined,
           total,
-          fk_usuario:1,
+          fk_usuario: 1,
           detalles: {
             create: detalles
           }
@@ -114,51 +114,95 @@ export const createFactura = async (req, res) => {
   }
 };
 
+// Obtener facturas por rango de fechas
+export const getFacturasPorFechas = async (req, res) => {
+  try {
+    const { desde, hasta } = req.query;
+
+    if (!desde || !hasta) {
+      return res.status(400).json({ message: "Fechas 'desde' y 'hasta' son obligatorias." });
+    }
+
+    const facturas = await prisma.factura.findMany({
+      where: {
+        fecha_emision: {
+          gte: new Date(desde),
+          lte: new Date(hasta),
+        },
+      },
+      include: {
+        cuenta: {
+          include: {
+            ingreso: {
+              include: {
+                huesped: {
+                  select: {
+                    nombre: true,
+                    apellido: true
+                  }
+                }
+              }
+            }
+          }
+        },
+        detalles: true
+      },
+      orderBy: {
+        fecha_emision: 'asc',
+      }
+    });
+
+    res.json(facturas);
+  } catch (error) {
+    console.error("Error al obtener facturas:", error);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
 
 // Obtener una factura por su ID
 export const getFacturaById = async (req, res) => {
-	const { id } = req.params;
+  const { id } = req.params;
 
-	try {
-		const factura = await prisma.factura.findUnique({
-			where: { id_factura: parseInt(id) },
-			include: {
-				detalles: {
-					select: { id_detalle_factura: true, descripcion: true, cantidad: true, precio_unitario: true, descuento: true, porcentaje_iva: true }
-				},
-				timbrado: true,
-				usuario: {
-					select: { nombre: true, apellido: true }
-				},
-				cuenta: {
-					include: {
-						ingreso: {
-							include: {
-								huesped: {
-									select: { nombre: true, apellido: true, numero_documento: true, ruc: true, telefono: true, email: true }
-								},
-								habitacion: {
-									include: {
-										tipoHabitacion: true
-									}
-								},
-								tarifa: true
-							}
-						}
-					}
-				}
-			}
-		});
+  try {
+    const factura = await prisma.factura.findUnique({
+      where: { id_factura: parseInt(id) },
+      include: {
+        detalles: {
+          select: { id_detalle_factura: true, descripcion: true, cantidad: true, precio_unitario: true, descuento: true, porcentaje_iva: true }
+        },
+        timbrado: true,
+        usuario: {
+          select: { nombre: true, apellido: true }
+        },
+        cuenta: {
+          include: {
+            ingreso: {
+              include: {
+                huesped: {
+                  select: { nombre: true, apellido: true, numero_documento: true, ruc: true, telefono: true, email: true }
+                },
+                habitacion: {
+                  include: {
+                    tipoHabitacion: true
+                  }
+                },
+                tarifa: true
+              }
+            }
+          }
+        }
+      }
+    });
 
-		if (!factura) {
-			return res.status(404).json({ error: 'Factura no encontrada' });
-		}
+    if (!factura) {
+      return res.status(404).json({ error: 'Factura no encontrada' });
+    }
 
-		res.status(200).json(factura);
-	} catch (error) {
-		console.error('Error al obtener la factura:', error);
-		res.status(500).json({ error: 'Error al obtener la factura' });
-	}
+    res.status(200).json(factura);
+  } catch (error) {
+    console.error('Error al obtener la factura:', error);
+    res.status(500).json({ error: 'Error al obtener la factura' });
+  }
 };
 
 export const obtenerUltimoNumeroFactura = async (req, res) => {
