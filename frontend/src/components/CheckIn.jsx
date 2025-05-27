@@ -11,20 +11,17 @@ const CheckIn = () => {
 	};
 
 	return (
-
 		<div className="container py-4">
 			<NavBar />
-
 			<div className="row justify-content-center">
-				<div className="col-12 col-md-11 col-lg-10" style={{ maxWidth: "1150px" }}>
-					<div className="card shadow p-4">
+				<div className="col-12 col-md-11 col-lg-10">
+					<div className="card shadow p-2">
 						<div className="card-body">
-							<h3 className="text-center mb-3">
+							<h3 className="text-center mb-1">
 								{tieneReserva ? "Check-In" : "Walk-In"}
 							</h3>
-
 							{/* Switch de reserva */}
-							<div className="d-flex align-items-center justify-content-center mb-4">
+							<div className="d-flex align-items-center justify-content-center mb-2">
 								<div className="form-check form-switch">
 									<input
 										className="form-check-input"
@@ -34,14 +31,13 @@ const CheckIn = () => {
 										onChange={handleSwitch}
 									/>
 									<label
-										className="form-check-label ms-2"
+										className="form-check-label ms-1"
 										htmlFor="reservaSwitch"
 									>
 										¿Tiene reserva?
 									</label>
 								</div>
 							</div>
-
 							{/* Formulario correspondiente */}
 							{tieneReserva ? <CheckInReserva /> : <WalkIn />}
 						</div>

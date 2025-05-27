@@ -23,6 +23,7 @@
     "datatables.net": "^2.2.2",
     "datatables.net-dt": "^2.2.2",
     "dayjs": "^1.11.13",
+    "file-saver": "^2.0.5",
     "html2pdf.js": "^0.10.3",
     "jquery": "^3.7.1",
     "lodash": "^4.17.21",

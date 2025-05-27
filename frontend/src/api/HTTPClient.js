@@ -14,21 +14,25 @@ class HTTPClient {
 
         this.instance = axios.create({
             baseURL,
-			withCredentials: true
+            withCredentials: true
         });
     }
 
     /****           SESSION - LOGIN         ****/
+    login(data) {
+        return this.instance.post('/session', data)
+    };
+
     cerrarSesion() {
         return this.instance.delete('/session');
     };
 
-    getUser(){
+    getUser() {
         return this.instance.get('/session/user-session');
     }
 
     /**** INICIO ****/
-    getDashboard(){
+    getDashboard() {
         return this.instance.get('/dashboard');
     }
 
@@ -54,10 +58,17 @@ class HTTPClient {
         return this.instance.get(`/huesped/${id}`);
     }
 
+    postHuesped(datos) { 
+        this.instance.post(`/huesped`,datos);
+    };
+
     deleteAHuespedById(id) {
         return this.instance.delete(`/huesped/${id}`);
     }
 
+    updateHuesped(id, datos) {
+        this.instance.put(`/huesped/${id}`, datos);
+    };
     /****        HUESPEDES HABITACION       ****/
     getDetalleHabitacion(id) {
         return this.instance.get(`/huespedHabitacion/${id}`);
@@ -71,6 +82,11 @@ class HTTPClient {
     getFacturaById(id) {
         return this.instance.get(`/facturas/${id}`);
     }
+
+    /****        RESERVAS       ****/
+    getAReservaById(id) {
+        return this.instance.get(`/reserva/${id}`);
+    };
 };
 
 export default HTTPClient;

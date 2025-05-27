@@ -1,85 +1,89 @@
-import React, {useState, useEffect} from "react";
-import {useNavigate} from "react-router-dom";
-import axios from "axios";
-// import { debounce } from "lodash";
+import HTTPClient from "../api/HTTPClient";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useReserva } from "../context/Reserva/ReservaContext";
+import axios from "axios";
+import NavBar from "./navbar";
 
 const CheckInReserva = () => {
-    const navigate = useNavigate();
+    const client = new HTTPClient();
+    /*** Estados ***/
     const [reservaId, setReservaId] = useState("");
     const [reserva, setReserva] = useState(null);
     const [loading, setLoading] = useState(false);
-    const {setReservaSeleccionada} = useReserva();
-
+    const [mensaje, setMensaje] = useState("");
+    /*** Contexto ***/
+    const navigate = useNavigate();
+    const { setReservaSeleccionada } = useReserva();
+    /**
+     * Para tener los datos del usuario en seccion
+     * @returns Retorna los datos en caso de exito, si no null
+     */
     const getUserInSession = async () => {
         try {
-            const response = await axios.get("/api/session/user-session", {
-                withCredentials: true,
-            });
+            const response = await client.getUser();
             const dataUser = response.data.user;
             return dataUser;
         } catch (error) {
-            console.error( "Error obteniendo usuario en sesión:", error.response?.data?.error || error.message);
+            console.error("Error obteniendo usuario:", error.response?.data?.error || error.message);
             return null;
         }
     };
-
+    /**
+     * Para obtener los datos de la reserva segun su numero.
+     * @param {*} id El numero de la reserva que se quiere obtener
+     */
     const getReservaById = async (id) => {
         try {
             setLoading(true);
-            const res = await axios.get(`/api/reserva/${id}`);
+            const res = await client.getAReservaById(id);
             setReserva(res.data);
-            console.log(res.data);
+            setMensaje("");
         } catch (error) {
             console.error(error);
             setReserva(null);
+            setMensaje("No se encontró ninguna reserva con ese número.");
         } finally {
             setLoading(false);
         }
     };
 
     const calcularNoches = () => {
-        if (reserva && reserva.check_in && reserva.check_out) {
-            const checkInDate = new Date(reserva.check_in);
-            const checkOutDate = new Date(reserva.check_out);
-            const diffTime = Math.abs(checkOutDate - checkInDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays;
+        if (reserva?.check_in && reserva?.check_out) {
+            const checkIn = new Date(reserva.check_in);
+            const checkOut = new Date(reserva.check_out);
+            const diffTime = Math.abs(checkOut - checkIn);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         }
         return 0;
     };
-
-    /*useEffect(() => {
-		getReservaById(reservaId);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);*/
 
     useEffect(() => {
         getUserInSession();
     }, []);
 
     const handleReservaIdChange = (e) => {
-        setReservaId(e.target.value);
+        const value = e.target.value;
+        // Solo permitir números positivos, sin espacios ni signos
+        if (/^\d*$/.test(value)) {
+            setReservaId(value);
+        }
     };
 
     const handleBuscarReserva = () => {
-        if (reservaId) getReservaById(reservaId);
-        //getUserInSession();
+        const id = Number(reservaId);
+        if (id > 0) getReservaById(id);
+        else setMensaje("Ingrese un número válido de reserva.");
     };
 
     return (
         <div>
-            
-            {/* Formulario */}
-            <form>
+            <NavBar />
+            <div className="container">
+                {/* Buscar reserva */}
                 <div className="row justify-content-center my-5">
                     <div className="col-md-6 col-lg-4">
-                        <label
-                            htmlFor="numReserva"
-                            className="form-label"
-                        >
-                            Nº Reserva
-                        </label>
+                        <label htmlFor="numReserva" className="form-label">Nº Reserva</label>
                         <div className="d-flex">
                             <input
                                 type="text"
@@ -87,6 +91,8 @@ const CheckInReserva = () => {
                                 id="numReserva"
                                 value={reservaId}
                                 onChange={handleReservaIdChange}
+                                maxLength={5}
+                                placeholder="Solo números"
                             />
                             <button
                                 type="button"
@@ -94,149 +100,73 @@ const CheckInReserva = () => {
                                 onClick={handleBuscarReserva}
                                 disabled={loading}
                             >
-                                {loading ? "Cargando" : "Buscar"}
+                                {loading ? "Cargando..." : "Buscar"}
                             </button>
                         </div>
+                        {mensaje && (
+                            <div className="alert alert-warning mt-2 p-2">
+                                {mensaje}
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                <div className="row g-5">
-                    <div className="col-md-6 col-lg-4">
-                        <label
-                            htmlFor="titular"
-                            className="form-label"
-                        >
-                            Titular
-                        </label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="titular"
-                            value={ reserva ? `${reserva.huesped.nombre} ${reserva.huesped.apellido}` : "" }
-                            readOnly
-                        />
+                {/* Mostrar resultado si hay reserva */}
+                {reserva && (
+                    <div className="row justify-content-center">
+                        <div className="col-md-10">
+                            <div className="card shadow rounded-4">
+                                <div className="card-header text-center rounded-top-4" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>
+                                    <h5 className="mb-0">Detalles de la Reserva</h5>
+                                </div>
+                                <div className="card-body">
+                                    <div className="row mb-3">
+                                        <div className="col-md-6">
+                                            <p><b>Titular:</b> {reserva.huesped.nombre} {reserva.huesped.apellido}</p>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <p><b>Tipo de Habitación:</b> {reserva.tipoHabitacion.nombre}</p>
+                                        </div>
+                                    </div>
+                                    <div className="row mb-3">
+                                        <div className="col-md-6">
+                                            <p><b>Recepcionista: </b>{reserva.usuario?.nombre_usuario}</p>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <p><b>Cantidad de Huéspedes:</b> {reserva.ingreso[0]?.huespedesHabitaciones?.length || 0}</p>
+                                        </div>
+                                    </div>
+                                    <div className="row mb-3">
+                                        <div className="col-md-6">
+                                            <p><b>Check-in:</b> {reserva.check_in.substring(0, 10)}</p>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <p><b>Check-out:</b> {reserva.check_out.substring(0, 10)}</p>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <p><b>Noches:</b> {reserva ? calcularNoches() : ""}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="text-center mt-4">
+                                <button
+                                    className="btn btn-success"
+                                    onClick={() => {
+                                        setReservaSeleccionada(reserva);
+                                        navigate("/SeleccionHabitacion");
+                                    }}
+                                >
+                                    Verificar Disponibilidad
+                                </button>
+                            </div>
+                        </div>
                     </div>
-
-                    <div className="col-md-6 col-lg-4">
-                        <label
-                            htmlFor="tipo_habitacion"
-                            className="form-label"
-                        >
-                            Tipo Habitacion
-                        </label>
-                        <select
-                            className="form-select"
-                            id="tipo_habitacion"
-                            value={reserva ? reserva.tipoHabitacion.nombre : ""}
-                            readOnly
-                        >
-                            {reserva && reserva.tipoHabitacion && (
-                                <option value={reserva.tipoHabitacion.nombre}>
-                                    {reserva.tipoHabitacion.nombre}
-                                </option>
-                            )}
-                        </select>
-                    </div>
-
-                    <div className="col-md-6 col-lg-4">
-                        <label
-                            htmlFor="recepcionista"
-                            className="form-label"
-                        >
-                            Recepcionista
-                        </label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="recepcionista"
-                            value={ reserva && reserva.usuario ? reserva.usuario.nombre_usuario : "" }
-                            readOnly
-                        />
-                    </div>
-
-                    <div className="col-md-6 col-lg-4">
-                        <label
-                            htmlFor="checkin"
-                            className="form-label"
-                        >
-                            Check-in
-                        </label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            id="checkin"
-                            value={ reserva ? reserva.check_in.substring(0, 10) : "" }
-                            readOnly
-                        />
-                    </div>
-
-                    <div className="col-md-6 col-lg-4">
-                        <label
-                            htmlFor="checkout"
-                            className="form-label"
-                        >
-                            Check-out
-                        </label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            id="checkout"
-                            value={ reserva ? reserva.check_out.substring(0, 10) : "" }
-                            readOnly
-                        />
-                    </div>
-
-                    <div className="col-md-6 col-lg-4"></div>
-
-                    <div className="col-md-6 col-lg-4">
-                        <label
-                            htmlFor="noches"
-                            className="form-label"
-                        >
-                            Noches
-                        </label>
-                        <input
-                            type="number"
-                            className="form-control"
-                            id="noches"
-                            value={reserva ? calcularNoches() : ""}
-                            readOnly
-                        ></input>
-                    </div>
-
-                    <div className="col-md-6 col-lg-4">
-                        <label
-                            htmlFor="huespedes"
-                            className="form-label"
-                        >
-                            Huéspedes
-                        </label>
-                        <input
-                            type="number"
-                            className="form-control"
-                            id="huespedes"
-                            value={ reserva && reserva.ingreso.length > 0 ? reserva.ingreso[0].huespedesHabitaciones.length : "" }
-                            readOnly
-                        />
-                    </div>
-                </div>
-
-                <div
-                    className="text-center"
-                    style={{marginTop: "60px"}}
-                >
-                    <button
-                        type="button"
-                        className="btn btn-success"
-                        onClick={() => {
-                            setReservaSeleccionada(reserva);
-                            navigate("/SeleccionHabitacion");
-                        }}
-                    >
-                        Verificar Disponibilidad
-                    </button>
-                </div>
-            </form>
+                )}
+            </div>
         </div>
     );
 };

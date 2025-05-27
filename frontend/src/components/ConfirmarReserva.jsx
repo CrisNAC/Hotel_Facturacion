@@ -35,12 +35,6 @@ const ConfirmarReserva = () => {
 	// Función para eliminar huésped
 	const eliminarHuesped = async (id) => {
 		try {
-			/* const response = await fetch(`http://localhost:4000/api/huesped/${id}`, {
-				method: 'DELETE',
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			}); */
 			const response = client.deleteAHuespedById(id);
 			const data = await response.json();
 

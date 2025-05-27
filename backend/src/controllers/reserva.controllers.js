@@ -81,6 +81,37 @@ export const getReservasPorHuesped = async (req, res) => {
 	}
 };
 
+// Obtener reservas activas por rango de fechas
+export const getReservasPorFechas = async (req, res) => {
+    try {
+        const { desde, hasta } = req.query;
+
+        if (!desde || !hasta) {
+            return res.status(400).json({ message: "Fechas 'desde' y 'hasta' son obligatorias." });
+        }
+
+        const reservas = await prisma.reserva.findMany({
+            where: {
+                check_in: { gte: new Date(desde) },
+                check_out: { lte: new Date(hasta) },
+                activo: true,
+            },
+            include: {
+                huesped: true,
+                tipoHabitacion: true,
+            },
+            orderBy: {
+                check_in: 'asc',
+            }
+        });
+
+        res.json(reservas);
+    } catch (error) {
+        console.error("Error al obtener reservas por fechas:", error);
+        res.status(500).json({ message: "Error del servidor" });
+    }
+};
+
 // Obtener una reserva por su ID
 export const getReservaPorId = async (req, res) => {
 	const { id_reserva } = req.params;
@@ -93,7 +124,7 @@ export const getReservaPorId = async (req, res) => {
 				tipoHabitacion: true,
 				usuario: true,
 				ingreso: {
-					where: { activo: true},
+					where: { activo: true },
 					include: {
 						huespedesHabitaciones: true,
 					}
