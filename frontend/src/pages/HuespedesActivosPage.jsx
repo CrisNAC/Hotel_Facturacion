@@ -79,12 +79,12 @@ function HuespedesActivosPage() {
                             ) : vistaFactura ? (
                                 <Container>
                                     <NavBar />
-                                    <Invoice></Invoice>
+                                    <Invoice ingresosOriginales={ingresosOriginales} refresh={fetchIngresos}></Invoice>
                                 </Container>
                             ) : (
                                 <Container>
                                     <NavBar />
-                                    <DetallesCuenta refresh={fetchIngresos} />
+                                    <DetallesCuenta ingresosOriginales={ingresosOriginales} refresh={fetchIngresos} />
                                 </Container>
                             )}
                         </>

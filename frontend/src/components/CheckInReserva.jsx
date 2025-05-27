@@ -2,7 +2,6 @@ import HTTPClient from "../api/HTTPClient";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useReserva } from "../context/Reserva/ReservaContext";
-import axios from "axios";
 import NavBar from "./navbar";
 
 const CheckInReserva = () => {
