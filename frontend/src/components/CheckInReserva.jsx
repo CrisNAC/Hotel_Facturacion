@@ -2,6 +2,7 @@ import HTTPClient from "../api/HTTPClient";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useReserva } from "../context/Reserva/ReservaContext";
+import axios from "axios";
 import NavBar from "./navbar";
 
 const CheckInReserva = () => {
@@ -21,7 +22,8 @@ const CheckInReserva = () => {
     const getUserInSession = async () => {
         try {
             const response = await client.getUser();
-            return response.data.user;
+            const dataUser = response.data.user;
+            return dataUser;
         } catch (error) {
             console.error("Error obteniendo usuario:", error.response?.data?.error || error.message);
             return null;
@@ -144,7 +146,7 @@ const CheckInReserva = () => {
                                     </div>
                                     <div className="row">
                                         <div className="col-md-6">
-                                            <p><b>Noches:</b> {calcularNoches()}</p>
+                                            <p><b>Noches:</b> {reserva ? calcularNoches() : ""}</p>
                                         </div>
                                     </div>
                                 </div>

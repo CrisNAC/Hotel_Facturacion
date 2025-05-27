@@ -45,7 +45,7 @@ function App() {
               <Route element={<TarifaLayout></TarifaLayout>}>
                 <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
                 <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
-							</Route>
+			  </Route>
             </Route>
 
 
