@@ -89,6 +89,7 @@ const CheckInReserva = () => {
                                 id="numReserva"
                                 value={reservaId}
                                 onChange={handleReservaIdChange}
+                                maxLength={5}
                                 placeholder="Solo números"
                             />
                             <button
