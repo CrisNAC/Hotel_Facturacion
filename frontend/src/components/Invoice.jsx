@@ -54,6 +54,15 @@ const Invoice = () => {
     }
   };
 
+    // Calcular noches de estadía
+  const calcularNoches = (checkIn, checkOut) => {
+    if (!checkIn || !checkOut) return 0;
+    const unDia = 24 * 60 * 60 * 1000;
+    const fechaInicio = new Date(checkIn);
+    const fechaFin = new Date(checkOut);
+    return Math.round(Math.abs((fechaFin - fechaInicio) / unDia));
+  };
+
   const handleBack = () => navigate("/FacturasEmitidas");
 
   const handleDownload = () => {
@@ -123,7 +132,7 @@ const Invoice = () => {
     );
   }
 
-  if (!factura) return null; // Precaución extra
+  if (!factura) return null;
 
   const {
     id_factura,
@@ -209,7 +218,6 @@ const Invoice = () => {
               <th>Exenta</th>
               <th>5 (%)</th>
               <th>10 (%)</th>
-              <th>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -217,9 +225,8 @@ const Invoice = () => {
               const subtotal = detalle.cantidad * detalle.precio_unitario;
               const descuento = detalle.descuento || 0;
               const base = subtotal - descuento;
-              const iva5 = detalle.porcentaje_iva === 5 ? base * 0.05 : 0;
-              const iva10 = detalle.porcentaje_iva === 10 ? base * 0.10 : 0;
-              const totalConIva = base + iva5 + iva10;
+              const iva5 = detalle.porcentaje_iva === 5 ? subtotal : 0;
+              const iva10 = detalle.porcentaje_iva === 10 ? subtotal : 0;
 
               return (
                 <tr className="table-row" key={index}>
@@ -232,7 +239,6 @@ const Invoice = () => {
                   <td>0</td>
                   <td>{iva5 ? iva5.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
                   <td>{iva10 ? iva10.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
-                  <td>{totalConIva.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
                 </tr>
               );
             })}
@@ -247,11 +253,11 @@ const Invoice = () => {
           </div>
           <div className="total-row">
             <div className="total-label">TOTAL DE LA OPERACIÓN:</div>
-            <div>{totalOperacion.toLocaleString()}</div>
+            <div>{subtotalGeneral.toLocaleString()}</div>
           </div>
           <div className="total-row">
             <div className="total-label">TOTAL EN GUARANÍES:</div>
-            <div>{totalOperacion.toLocaleString()}</div>
+            <div>{subtotalGeneral.toLocaleString()}</div>
           </div>
           <div className="total-row">
             <div className="total-label">LIQUIDACIÓN IVA:</div>

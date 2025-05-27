@@ -21,7 +21,8 @@ const CheckInReserva = () => {
     const getUserInSession = async () => {
         try {
             const response = await client.getUser();
-            return response.data.user;
+            const dataUser = response.data.user;
+            return dataUser;
         } catch (error) {
             console.error("Error obteniendo usuario:", error.response?.data?.error || error.message);
             return null;
@@ -144,7 +145,7 @@ const CheckInReserva = () => {
                                     </div>
                                     <div className="row">
                                         <div className="col-md-6">
-                                            <p><b>Noches:</b> {calcularNoches()}</p>
+                                            <p><b>Noches:</b> {reserva ? calcularNoches() : ""}</p>
                                         </div>
                                     </div>
                                 </div>
