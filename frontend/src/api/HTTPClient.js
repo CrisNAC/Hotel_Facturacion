@@ -14,12 +14,12 @@ class HTTPClient {
 
         this.instance = axios.create({
             baseURL,
-			withCredentials: true
+            withCredentials: true
         });
     }
 
     /****           SESSION - LOGIN         ****/
-    login(data){
+    login(data) {
         return this.instance.post('/session', data)
     };
 
@@ -27,12 +27,12 @@ class HTTPClient {
         return this.instance.delete('/session');
     };
 
-    getUser(){
+    getUser() {
         return this.instance.get('/session/user-session');
     }
 
     /**** INICIO ****/
-    getDashboard(){
+    getDashboard() {
         return this.instance.get('/dashboard');
     }
 
@@ -75,6 +75,11 @@ class HTTPClient {
     getFacturaById(id) {
         return this.instance.get(`/facturas/${id}`);
     }
+
+    /****        RESERVAS       ****/
+    getAReservaById(id) {
+        return this.instance.get(`/reserva/${id}`);
+    };
 };
 
 export default HTTPClient;
