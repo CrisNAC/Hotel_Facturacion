@@ -2,7 +2,6 @@ import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 // import { debounce } from "lodash";
-import NavBar from "./navbar";
 import { useReserva } from "../context/Reserva/ReservaContext";
 
 const CheckInReserva = () => {
@@ -70,7 +69,7 @@ const CheckInReserva = () => {
 
     return (
         <div>
-            <NavBar />
+            
             {/* Formulario */}
             <form>
                 <div className="row justify-content-center my-5">

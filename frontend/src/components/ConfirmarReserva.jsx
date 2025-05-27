@@ -61,7 +61,7 @@ const ConfirmarReserva = () => {
 		 * @param {*} dateString Se le pasa el una fecha
 		 * @returns Retorna la fecha modifica en caso de exito o si no en caso de fracaso -
 		 */
-	const formatDMY = (dateString) => {
+	/*const formatDMY = (dateString) => {
 		if (!dateString) return '--/--/----';
 		try {
 			const date = new Date(dateString);
@@ -69,10 +69,20 @@ const ConfirmarReserva = () => {
 		} catch {
 			return '—';
 		}
+	};*/
+
+	const formatDMY = (fecha) => {
+		const fechaCompletaSplit = fecha.split("T")[0];
+		const fechaObject = new Date(fechaCompletaSplit);
+		return fechaObject.toLocaleDateString('es-ES', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric'
+		})
 	};
 
-	const check_in = reservaSeleccionada ? reservaSeleccionada.check_in.substring(0, 10) : "";
-	const check_out = reservaSeleccionada ? reservaSeleccionada.check_out.substring(0, 10) : "";
+	const check_in = reservaSeleccionada ? reservaSeleccionada.check_in : "";
+	const check_out = reservaSeleccionada ? reservaSeleccionada.check_out : "";
 	const numero_habitacion = habitacionSeleccionada ? habitacionSeleccionada.numero : 0;
 	const piso_habitacion = habitacionSeleccionada ? habitacionSeleccionada.piso : 0;
 	const nombre_habitacion = habitacionSeleccionada ? habitacionSeleccionada.tipoHabitacion.nombre : "";
