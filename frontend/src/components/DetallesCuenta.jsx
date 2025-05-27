@@ -4,7 +4,7 @@ import { FaEdit, FaTrash, FaSearch, FaTimes } from "react-icons/fa";
 import NavBar from "./navbar";
 import { HuespedesActivosContext } from "../context/HuespedesActivosContexto";
 
-function DetallesCuenta({ refresh }) {
+function DetallesCuenta({ingresosOriginales, refresh }) {
   const {
     setMainPage,
     setVistaFactura,
@@ -36,6 +36,7 @@ function DetallesCuenta({ refresh }) {
   const reserva = huespedSeleccionado?.reserva || {};
   const tarifa = huespedSeleccionado?.tarifa || {};
   const cuenta = huespedSeleccionado?.cuenta?.[0] || {};
+  const [recargar, setRecargar] = useState(0);
 
   // Cargar datos iniciales
   useEffect(() => {
@@ -65,9 +66,13 @@ function DetallesCuenta({ refresh }) {
       }
     };
     
-    cargarDatos();
-  }, [cuenta]);
 
+  // Luego en tu useEffect
+    cargarDatos();
+  }, [cuenta, ingresosOriginales, recargar]);
+
+  // Y modifica refresh así:
+ 
   // Filtrar productos según búsqueda
   useEffect(() => {
     if (busqueda.length > 0) {
@@ -379,8 +384,8 @@ function DetallesCuenta({ refresh }) {
       <div className="mb-4 text-start">
         <label className="me-3">Condición de venta:</label>
         <div>
-          <input type="radio" className="me-1" disabled /> Contado
-          <input type="radio" className="ms-3 me-1" checked readOnly /> Crédito
+          <input type="radio" className="me-1" checked readOnly /> Contado
+          <input type="radio" className="ms-3 me-1"  disabled/> Crédito
         </div>
       </div>
 
@@ -492,9 +497,9 @@ function DetallesCuenta({ refresh }) {
           className="btn btn-success fw-bold" 
           style={{ width: "150px", height: "40px" }} 
           onClick={irAFactura}
-          disabled={loading || consumos.length === 0}
+          disabled={loading}
         >
-          Generar Factura
+          Cerrar Cuenta
         </button>
       </div>
 
@@ -659,6 +664,7 @@ function DetallesCuenta({ refresh }) {
                   className="btn btn-success" 
                   onClick={guardarEdicionCantidad}
                   disabled={loading || nuevaCantidad === consumoEditando.cantidad}
+                   refresh={refresh}
                 >
                   {loading ? 'Guardando...' : 'Guardar Cambios'}
                 </button>
