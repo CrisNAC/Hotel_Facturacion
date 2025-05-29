@@ -4,7 +4,6 @@ import authenticate from "../../config/jwt.config.js";
 
 const router = Router();
 
-router.get('/', getAllProductos);
-
+router.get('/', authenticate, getAllProductos);
 
 export default router;
