@@ -3,12 +3,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import HTTPClient from '../api/HTTPClient.js';
 import { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Card, Container, Row, Col, Table } from 'react-bootstrap';
 import NavBar from '../components/navbar.jsx';
 import ErrorComponent from "../components/ErrorComponent.jsx";
 
 const Inicio = () => {
   const client = new HTTPClient();
+  const navigate = useNavigate();
 
   // Estados
   const [datos, setDatos] = useState({
@@ -58,11 +60,20 @@ const Inicio = () => {
     { color: '#FFF9C4', value: datos.huespedesActivos, label: 'Huéspedes Activos' },
   ];
 
+  const errorPage = () => (
+    navigate('/ErrorPage', {
+      state: {
+        code: status,
+        message: error
+      },
+      replace: true
+    })
+  );
+
   return (
     <>
-      {error ? <ErrorComponent code={status} message={error}></ErrorComponent> : (
+      {error ? errorPage : (
         <>
-          <NavBar />
           <Container className="pt-5 mt-3">
             {/* Tarjetas */}
             <Row className="mb-5">

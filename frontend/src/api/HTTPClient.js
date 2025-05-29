@@ -83,6 +83,10 @@ class HTTPClient {
         return this.instance.get(`/facturas/${id}`);
     }
 
+    getUltimaFactura() {
+        return this.instance.get("/facturas/ultimafactura");
+    }
+
     /****        RESERVAS       ****/
     getAReservaById(id) {
         return this.instance.get(`/reserva/${id}`);

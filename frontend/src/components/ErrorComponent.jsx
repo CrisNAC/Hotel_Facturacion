@@ -1,25 +1,34 @@
 import { Box, Typography, Button } from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import HTTPClient from '../api/HTTPClient';
 
-function ErrorComponent({
-    code = 500,
-    message = "Ha ocurrido un error en el servidor",
-    showButton = true,
-    buttonText = "Volver al inicio",
-    redirectToDashboard = "/Inicio",
-	redirectToLogin = "/"
-}) {
+function ErrorComponent() {
     const client = new HTTPClient();
     const navigate = useNavigate();
+    const location = useLocation();
+    const {
+        code,
+        message,
+        showButton,
+        buttonText,
+        redirectToDashboard,
+        redirectToLogin
+    } = location.state || {
+        code: 500,
+        message: "Ha ocurrido un error en el servidor",
+        showButton: true,
+        buttonText: "Volver al inicio",
+        redirectToDashboard: "/Inicio",
+        redirectToLogin: "/"
+    }
 
     const accionLogin = async () => {
         await client.cerrarSesion();
         navigate(redirectToLogin);
     };
 
-	const accionDash = () => {
+    const accionDash = () => {
         navigate(redirectToDashboard);
     };
 
@@ -40,11 +49,11 @@ function ErrorComponent({
                 borderRadius: 1,
             }}
         >
-            <ErrorOutlineIcon sx={{fontSize: 80, color: "error.main", mb: 2}} />
+            <ErrorOutlineIcon sx={{ fontSize: 80, color: "error.main", mb: 2 }} />
             <Typography variant="h2">{code}</Typography>
             <Typography
                 variant="h5"
-                sx={{mb: 3}}
+                sx={{ mb: 3 }}
             >
                 {message}
             </Typography>
@@ -59,15 +68,15 @@ function ErrorComponent({
                     </Button>
                 )
             ) : (
-				showButton && (
-                <Button
-                    variant="contained"
-                    onClick={accionDash}
-                    color="primary"
-                >
-                    {buttonText}
-                </Button>
-				)
+                showButton && (
+                    <Button
+                        variant="contained"
+                        onClick={accionDash}
+                        color="primary"
+                    >
+                        {buttonText}
+                    </Button>
+                )
             )}
         </Box>
     );

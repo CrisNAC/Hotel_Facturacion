@@ -293,7 +293,6 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
 
   return (
     <div className="container mt-5">
-      <NavBar />
       {/* Encabezado */}
       <h2 className="d-block mt-n3 text-center">Detalles Cuenta</h2>
 
