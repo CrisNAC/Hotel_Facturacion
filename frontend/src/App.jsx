@@ -1,18 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Container } from '@mui/material'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
 
+import Login from './components/Login'
 import Inicio from './pages/Inicio.jsx'
 import NavBar from './components/navbar.jsx'
 import HuespedesActivosPage from './pages/HuespedesActivosPage.jsx';
-import DetallesCuentas from "./components/DetallesCuenta"
-import InvoiceComponentEli from "./components/InvoiceComponentEli"
-
-import Login from './components/Login'
-import FacturaTable from "./components/FacturaTable.jsx"
 
 import Invoice from "./components/Invoice.jsx"
 
@@ -45,7 +40,7 @@ function App() {
               <Route element={<TarifaLayout></TarifaLayout>}>
                 <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
                 <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
-			  </Route>
+              </Route>
             </Route>
 
 

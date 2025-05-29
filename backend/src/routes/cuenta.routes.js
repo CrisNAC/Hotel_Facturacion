@@ -1,12 +1,13 @@
 import { Router } from "express";
 import cuentaController from "../controllers/cuenta.controllers.js";
-const { postCuenta, closeCuenta, getCuentaPorIngreso} = cuentaController;
+import authenticate from "../../config/jwt.config.js";
+const { postCuenta, closeCuenta, getCuentaPorIngreso } = cuentaController;
 
 const router = Router();
 
-router.post('/', postCuenta);
-router.patch('/:id', closeCuenta);
-router.get('/:id', getCuentaPorIngreso);
+router.post('/', authenticate, postCuenta);
+router.patch('/:id', authenticate, closeCuenta);
+router.get('/:id', authenticate, getCuentaPorIngreso);
 
 
 export default router;
