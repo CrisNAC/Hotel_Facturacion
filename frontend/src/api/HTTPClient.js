@@ -58,8 +58,8 @@ class HTTPClient {
         return this.instance.get(`/huesped/${id}`);
     }
 
-    postHuesped(datos) { 
-        this.instance.post(`/huesped`,datos);
+    postHuesped(datos) {
+        this.instance.post(`/huesped`, datos);
     };
 
     deleteAHuespedById(id) {
@@ -87,6 +87,24 @@ class HTTPClient {
     getAReservaById(id) {
         return this.instance.get(`/reserva/${id}`);
     };
+
+    /****    CONSUMO   ****/
+    postConsumo(data) {
+        this.instance.post('/consumo', data);
+    };
+
+    updateConsumo(id, data) {
+        this.instance.patch(`/consumo/${id}`, data);
+    };
+
+    deleteConsumo(id, data) {
+        this.instance.put(`/consumo/${id}`, data);
+    };
+
+    /****    PRODUCTOS     ****/
+    getProductos() {
+        return this.instance.get('/productos');
+    }
 };
 
 export default HTTPClient;
