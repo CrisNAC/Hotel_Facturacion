@@ -5,7 +5,6 @@ import {
     TableCell, TableBody, Paper
 } from '@mui/material';
 import dayjs from 'dayjs';
-import NavBar from '../components/navbar';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { saveAs } from 'file-saver'; // Importa saveAs
@@ -329,7 +328,6 @@ export default function ReportesPage() {
 
     return (
         <>
-            <NavBar />
             <Box sx={{ p: 4, maxWidth: '1140px', mx: 'auto' }}>
                 <Typography variant="h4" align='center' gutterBottom>
                     Reportes del sistema

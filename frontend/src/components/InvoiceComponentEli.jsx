@@ -1,10 +1,12 @@
-import React, { useContext, useRef, useState, useEffect } from "react";
+import { useContext, useRef, useState, useEffect } from "react";
 import "../styles/InvoiceStyleEli.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { jsPDF } from "jspdf";
 import { HuespedesActivosContext } from "../context/HuespedesActivosContexto.jsx";
+import HTTPClient from "../api/HTTPClient.js";
 
 const Invoice = ({ ingresosOriginales, refresh }) => {
+  const client = new HTTPClient();
   const {
     setMainPage,
     setVistaFactura,
@@ -57,18 +59,9 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
   const obtenerNumeroFactura = async () => {
     try {
       setError('');
-      
-      const response = await fetch(`http://localhost:4000/api/facturas/ultimafactura`, {
-        method: 'GET',
-        cache: 'no-store'
-      });
+      const response = await client.getUltimaFactura();
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Error al obtener número de factura');
-      }
-
-      const data = await response.json();
+      const data = await response.data;
       setNumeroFactura(data.siguienteNumeroFactura);
 
     } catch (error) {

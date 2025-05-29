@@ -1,12 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Skeleton, Container } from "@mui/material";
-import html2pdf from "html2pdf.js";
 import NavBar from "../components/navbar.jsx";
 import "../styles/Invoice.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import HTTPClient from "../api/HTTPClient.js";
 
 const Invoice = () => {
+  const client = new HTTPClient();
   const { id } = useParams();
   const [factura, setFactura] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,11 +18,8 @@ const Invoice = () => {
   useEffect(() => {
     const fetchFactura = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/facturas/${id}`);
-        if (!res.ok) {
-          throw new Error("Error al obtener la factura");
-        }
-        const data = await res.json();
+        const res = await client.getFacturaById(id);
+        const data = res.data;
         setFactura(data);
       } catch (err) {
         setError(err.message);
@@ -54,7 +52,7 @@ const Invoice = () => {
     }
   };
 
-    // Calcular noches de estadía
+  // Calcular noches de estadía
   const calcularNoches = (checkIn, checkOut) => {
     if (!checkIn || !checkOut) return 0;
     const unDia = 24 * 60 * 60 * 1000;
@@ -76,7 +74,7 @@ const Invoice = () => {
       html2pdf.default()
         .set({
           margin: 0,
-          filename: `factura-${factura?.id_factura}.pdf`,
+          filename: `factura-${factura?.id_factura ?? 'sin-id'}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
           html2canvas: { scale: 2 },
           jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
@@ -234,7 +232,7 @@ const Invoice = () => {
                   <td>{detalle.descripcion}</td>
                   <td>UNI</td>
                   <td>{detalle.cantidad}</td>
-                  <td>{detalle.precio_unitario}</td>
+                  <td>{detalle.precio_unitario.toLocaleString()}</td>
                   <td>{detalle.descuento}</td>
                   <td>0</td>
                   <td>{iva5 ? iva5.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
