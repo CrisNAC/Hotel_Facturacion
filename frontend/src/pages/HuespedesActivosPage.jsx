@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Skeleton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 
 import HTTPClient from '../api/HTTPClient';
-import NavBar from '../components/navbar';
 import HuespedesActivos from '../components/HuespedesActivos.jsx';
 import DetallesCuenta from '../components/DetallesCuenta.jsx';
 import Invoice from "../components/InvoiceComponentEli.jsx";
-import ErrorComponent from "../components/ErrorComponent.jsx";
-import NavBarSkeleton from '../skeleton/navbar.skeleton.jsx';
 import HuespedesActivosSkeleton from '../skeleton/HuespedesActivos.skeleton.jsx';
 
 import { HuespedesActivosContext, HuespedesActivosProvider } from '../context/HuespedesActivosContexto.jsx';
@@ -19,6 +16,7 @@ function HuespedesActivosPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [status, setStatus] = useState(null);
+    const navigate = useNavigate();
 
     const fetchIngresos = async () => {
         try {
@@ -48,16 +46,17 @@ function HuespedesActivosPage() {
     }, []);
 
     const skeletonPage = () => (
-        <>
-            <NavBar></NavBar>
-            <HuespedesActivosSkeleton></HuespedesActivosSkeleton>
-        </>
+        <HuespedesActivosSkeleton></HuespedesActivosSkeleton>
     );
 
     const errorPage = () => (
-        <>
-            <ErrorComponent code={status} message={error}></ErrorComponent>
-        </>
+        navigate('/ErrorPage', {
+            state: {
+                code: status,
+                message: error
+            },
+            replace: true
+        })
     );
 
     return (
@@ -71,19 +70,16 @@ function HuespedesActivosPage() {
                                     {loading ? skeletonPage() :
                                         error ? errorPage() : (
                                             <>
-                                                <NavBar />
                                                 <HuespedesActivos ingresosOriginales={ingresosOriginales} refresh={fetchIngresos} />
                                             </>
                                         )}
                                 </Container>
                             ) : vistaFactura ? (
                                 <Container>
-                                    <NavBar />
                                     <Invoice ingresosOriginales={ingresosOriginales} refresh={fetchIngresos}></Invoice>
                                 </Container>
                             ) : (
                                 <Container>
-                                    <NavBar />
                                     <DetallesCuenta ingresosOriginales={ingresosOriginales} refresh={fetchIngresos} />
                                 </Container>
                             )}

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import HTTPClient from "../api/HTTPClient.js";
-import NavBar from "../components/navbar";
 
 const AgregarHuesped = () => {
 	const client = new HTTPClient();
@@ -101,7 +100,6 @@ const AgregarHuesped = () => {
 
 	return (
 		<div className="container py-4">
-			<NavBar />
 			<div className="row justify-content-center">
 				<div className="col-lg-10">
 					<div className="card shadow p-4">
