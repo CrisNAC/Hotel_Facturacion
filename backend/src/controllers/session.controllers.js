@@ -52,10 +52,10 @@ export const login = async (req, res) => {
         );
 
         //Enviar token en cookie o json
-        res.cookie('token', token, {
+        res.cookie('userToken', token, {
             httpOnly: true,
-            secure: true, // solo en HTTPS
-            sameSite: 'none', // si frontend y backend están en dominios diferentes
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         });
         res.status(200).json({
             success: true,
@@ -75,7 +75,11 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-    res.status(200).clearCookie("userToken").json({ message: "Hasta luego!" });
+    res.clearCookie("userToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    }).json({ message: "Hasta luego!" });
 };
 
 export const userSession = async (req, res) => {
