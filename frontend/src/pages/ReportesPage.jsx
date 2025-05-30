@@ -329,7 +329,7 @@ export default function ReportesPage() {
     return (
         <>
             <Box sx={{ p: 4, maxWidth: '1140px', mx: 'auto' }}>
-                <Typography variant="h4" align='center' gutterBottom>
+                <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold' }}>
                     Reportes del sistema
                 </Typography>
 
