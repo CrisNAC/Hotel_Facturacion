@@ -107,32 +107,44 @@ export const createIngreso = async (req, res) => {
             fk_habitacion,
             fk_huesped,
             fk_tarifa,
-            fecha_ingreso,
             estado,
             fk_usuario,
+			checkIn,
+			checkOut
         } = req.body;
 
         const nuevoIngreso = await prisma.ingreso.create({
             data: {
-                fk_reserva,
-                fk_habitacion,
+                fk_reserva: req.body.fk_reserva ? req.body.fk_reserva : null,
+                fk_habitacion: req.body.fk_habitacion ? req.body.fk_habitacion : null,
                 fk_huesped,
                 fk_tarifa,
-                fecha_ingreso: new Date(fecha_ingreso),
-                estado,
+				estado,
                 fk_usuario,
+				checkIn,
+				checkOut,
+				cuenta: {
+					create: [{}], //Apertura de cuenta vinculada al ingreso
+				}
             },
 
             include: {
                 reserva: {
                     select: {
+						id_reserva: true,
                         check_in: true,
                         check_out: true,
                     },
                 },
                 habitacion: {
                     select: {
+						id_habitacion: true,
                         numero: true,
+						tipoHabitacion: {
+							select: {
+								nombre: true,
+							}
+						},
                     },
                 },
                 tarifa: {
@@ -143,12 +155,33 @@ export const createIngreso = async (req, res) => {
                 },
                 huesped: {
                     select: {
+						id_huesped: true,
                         nombre: true,
                         apellido: true,
+						nacionalidad: true,
+						telefono: true,
+						email: true,
+						ruc: true
                     },
                 },
+				cuenta: {
+					include: {
+						consumos: {
+							include: {
+								Productos: {
+									select: {
+										descripcion: true,
+										precio_unitario: true,
+										porcentaje_iva: true,
+									},
+								},
+							},
+						},
+					},
+				},
                 usuario: {
                     select: {
+						id_usuario: true,
                         nombre_usuario: true,
                     },
                 },
@@ -157,6 +190,7 @@ export const createIngreso = async (req, res) => {
 
         res.status(201).json(nuevoIngreso);
     } catch (error) {
+		console.error(error);
         res.status(500).json({
             error: "Internal Server Error: Error al crear el ingreso",
         });
