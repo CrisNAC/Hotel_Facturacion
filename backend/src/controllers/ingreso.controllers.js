@@ -110,7 +110,8 @@ export const createIngreso = async (req, res) => {
             estado,
             fk_usuario,
 			checkIn,
-			checkOut
+			checkOut,
+			companions
         } = req.body;
 
         const nuevoIngreso = await prisma.ingreso.create({
@@ -125,6 +126,12 @@ export const createIngreso = async (req, res) => {
 				checkOut,
 				cuenta: {
 					create: [{}], //Apertura de cuenta vinculada al ingreso
+				},
+				huespedesHabitaciones: {
+					create: [
+						{ fk_huesped },
+						...companions.map(h => ({ fk_huesped: h.id_huesped }))
+					]
 				}
             },
 
