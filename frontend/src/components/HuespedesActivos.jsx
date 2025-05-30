@@ -102,8 +102,6 @@ function HuespedesActivos({ ingresosOriginales, refresh }) {
 
     const irADetCuenta = (item) => {
         setHuespedSeleccionado(item); // Guarda todo el objeto del huésped
-        console.log(item);
-
         setMainPage(false);
         setVistaFactura(false);
     }
