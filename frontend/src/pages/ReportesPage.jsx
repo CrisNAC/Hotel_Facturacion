@@ -146,7 +146,7 @@ export default function ReportesPage() {
             });
 
             setDatos(huespedesParseados);
-            setTop3(ordenado.slice(0, 3));
+            setTop3(ordenado.slice(0, 10));
         }
     }
 
@@ -206,9 +206,6 @@ export default function ReportesPage() {
                 formatDMY(row.ultimoCheckIn),
                 row.total
             ]);
-            // O si quieres exportar el top 3 en un archivo separado:
-            // fileName = `top3_huespedes_frecuentes.csv`;
-            // rows = top3.map(row => [ ... ]);
         } else {
             alert('Categoría no soportada para exportación.');
             return;
@@ -470,7 +467,7 @@ export default function ReportesPage() {
                 {categoria === 'huespedes' && top3.length > 0 && (
                     <Paper sx={{ p: 2, mt: 4 }}>
                         <Typography variant="h6" gutterBottom>
-                            Top 3 huéspedes más frecuentes
+                            Top 10 huéspedes más frecuentes
                         </Typography>
                         <Table>
                             <TableHead sx={{
