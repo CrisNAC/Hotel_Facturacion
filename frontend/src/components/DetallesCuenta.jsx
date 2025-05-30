@@ -1,16 +1,19 @@
-import React, { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaEdit, FaTrash, FaSearch, FaTimes } from "react-icons/fa";
 import NavBar from "./navbar";
 import { HuespedesActivosContext } from "../context/HuespedesActivosContexto";
+import HTTPClient from "../api/HTTPClient";
 
-function DetallesCuenta({ refresh }) {
+function DetallesCuenta({ ingresosOriginales, refresh }) {
+  const client = new HTTPClient();
   const {
     setMainPage,
     setVistaFactura,
     huespedSeleccionado
   } = useContext(HuespedesActivosContext);
 
+  
   const [consumos, setConsumos] = useState([]);
   const [productos, setProductos] = useState([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -22,7 +25,7 @@ function DetallesCuenta({ refresh }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [consumoEditando, setConsumoEditando] = useState(null);
   const [nuevaCantidad, setNuevaCantidad] = useState(1);
-  
+
   // Estado para nuevo consumo
   const [nuevoConsumo, setNuevoConsumo] = useState({
     producto: null,
@@ -36,6 +39,7 @@ function DetallesCuenta({ refresh }) {
   const reserva = huespedSeleccionado?.reserva || {};
   const tarifa = huespedSeleccionado?.tarifa || {};
   const cuenta = huespedSeleccionado?.cuenta?.[0] || {};
+  const [recargar, setRecargar] = useState(0);
 
   // Cargar datos iniciales
   useEffect(() => {
@@ -47,16 +51,10 @@ function DetallesCuenta({ refresh }) {
         if (cuenta?.consumos) {
           setConsumos(cuenta.consumos.filter(c => c.activo !== false));
         }
-        
+
         // Cargar productos del hotel
-        const response = await fetch('http://localhost:4000/api/productos');
-        const data = await response.json();
-        
-        if (response.ok) {
-          setProductos(data);
-        } else {
-          throw new Error(data.error || 'Error al cargar productos');
-        }
+        const response = await client.getProductos();
+        setProductos(response.data);
       } catch (error) {
         console.error('Error al cargar datos:', error);
         setError(error.message);
@@ -64,9 +62,9 @@ function DetallesCuenta({ refresh }) {
         setLoading(false);
       }
     };
-    
+    // Luego en tu useEffect
     cargarDatos();
-  }, [cuenta]);
+  }, [cuenta, ingresosOriginales, recargar]);
 
   // Filtrar productos según búsqueda
   useEffect(() => {
@@ -94,7 +92,7 @@ function DetallesCuenta({ refresh }) {
   const noches = calcularNoches(huespedSeleccionado.checkIn, huespedSeleccionado.checkOut);
   const precioHabitacion = tarifa.precio || 0;
   const totalHabitacion = noches * precioHabitacion;
-  const totalConsumos = consumos.reduce((acc, item) => acc + (Number(item.monto)|| 0), 0);
+  const totalConsumos = consumos.reduce((acc, item) => acc + (Number(item.monto) || 0), 0);
   const totalGeneral = Number(totalHabitacion) + Number(totalConsumos);
 
   // Navegación
@@ -149,46 +147,33 @@ function DetallesCuenta({ refresh }) {
 
   // Función para guardar la edición de cantidad
   const guardarEdicionCantidad = async () => {
-  if (!consumoEditando || nuevaCantidad < 1) return;
+    if (!consumoEditando || nuevaCantidad < 1) return;
 
-  try {
-    setLoading(true);
-    setError('');
-    
-    const response = await fetch(`http://localhost:4000/api/consumo/${consumoEditando.id_consumo}`, {
-      method: 'PATCH',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({ cantidad: nuevaCantidad })
-    });
+    try {
+      setLoading(true);
+      setError('');
+      const response = await client.updateConsumo(consumoEditando.id_consumo, { cantidad: nuevaCantidad });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Error al actualizar');
+      const data = await response.data;
+
+      // Actualización optimista con los nuevos datos
+      setConsumos(prev =>
+        prev.map(consumo =>
+          consumo.id_consumo === consumoEditando.id_consumo
+            ? { ...consumo, cantidad: data.cantidad, monto: data.monto }
+            : consumo
+        )
+      );
+
+      setShowEditModal(false);
+    } catch (error) {
+      console.error('Error al actualizar cantidad:', error);
+      setError('Error al actualizar cantidad: ' + error.message);
+    } finally {
+      setLoading(false);
+      refresh();
     }
-
-    const data = await response.json();
-
-    // Actualización optimista con los nuevos datos
-    setConsumos(prev => 
-      prev.map(consumo => 
-        consumo.id_consumo === consumoEditando.id_consumo 
-          ? { ...consumo, cantidad: data.cantidad, monto: data.monto } 
-          : consumo
-      )
-    );
-    
-    setShowEditModal(false);
-  } catch (error) {
-    console.error('Error al actualizar cantidad:', error);
-    setError('Error al actualizar cantidad: ' + error.message);
-  } finally {
-    setLoading(false);
-    refresh();
-  }
-};
+  };
 
   const agregarConsumo = async () => {
     try {
@@ -211,45 +196,25 @@ function DetallesCuenta({ refresh }) {
       if (!idCuenta || !idUsuario) {
         throw new Error('No se pudo obtener la cuenta o usuario asociado');
       }
-      
-      const monto = Number(nuevoConsumo.cantidad) * Number(nuevoConsumo.producto.precio_unitario);
+
+      const monto = cantidad * Number(nuevoConsumo.producto.precio_unitario);
 
       // Preparar datos
       const consumoData = {
         fk_producto: Number(nuevoConsumo.producto.id_producto),
-        cantidad: Number(nuevoConsumo.cantidad),
-        monto: monto,
+        cantidad,
+        monto,
         fk_cuenta: idCuenta,
         fk_usuario: idUsuario
       };
 
-      console.log("Enviando datos al backend:", consumoData);
+      console.log("Enviando datos al backend (Axios):", consumoData);
 
-      const response = await fetch('http://localhost:4000/api/consumo', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(consumoData)
-      });
+      // Enviar con Axios (ya configurado con token si usás un interceptor)
+      const response = await client.postConsumo(consumoData);
+      const data = response.data;
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error("Error del backend:", {
-          status: response.status,
-          data,
-          request: consumoData
-        });
-
-        const backendError = data.error || "Error del servidor";
-        const backendMessage = data.message || "No se pudo crear el consumo";
-        
-        throw new Error(`${backendError}: ${backendMessage}`);
-      }
-
-      // Verificar respuesta
+      // Verificar que el backend devuelva el id
       if (!data.id_consumo) {
         console.warn("Respuesta inesperada:", data);
         throw new Error("La respuesta del servidor no contiene ID de consumo");
@@ -271,6 +236,10 @@ function DetallesCuenta({ refresh }) {
       setBusqueda('');
 
     } catch (error) {
+      console.error('Error completo:', error);
+      console.error('Error status:', error.response?.status);
+      console.error('Error data:', error.response?.data);
+
       console.error("Error completo:", {
         message: error.message,
         stack: error.stack,
@@ -284,17 +253,17 @@ function DetallesCuenta({ refresh }) {
 
       // Mensajes amigables
       let userMessage = error.message;
-      
-      if (error.message.includes('Failed to fetch')) {
+
+      if (error.message.includes('Network')) {
         userMessage = 'Error de conexión con el servidor';
-      } else if (error.message.includes('500') || error.message.includes('intern')) {
+      } else if (error.response?.status === 500) {
         userMessage = 'Error interno del servidor. Contacte al administrador.';
-      } else if (error.message.includes('Violación')) {
-        userMessage = 'Problema con los datos relacionados. Verifique la información.';
+      } else if (error.response?.data?.message) {
+        userMessage = error.response.data.message;
       }
 
       setError(userMessage);
-      
+
     } finally {
       setLoading(false);
       refresh(); // Actualizar datos
@@ -306,23 +275,19 @@ function DetallesCuenta({ refresh }) {
 
     try {
       setLoading(true);
-      
-      const response = await fetch(`http://localhost:4000/api/consumo/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ activo: false })
-      });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Error al eliminar');
-      }
+      await client.deleteConsumo(id);
 
-      // Actualización optimista
       setConsumos(prev => prev.filter(c => c.id_consumo !== id));
     } catch (error) {
       console.error('Error al eliminar consumo:', error);
-      setError('Error al eliminar consumo: ' + error.message);
+
+      const mensaje =
+        error.response?.data?.message ||
+        error.message ||
+        'Error desconocido al eliminar consumo';
+
+      setError('Error al eliminar consumo: ' + mensaje);
     } finally {
       setLoading(false);
       refresh();
@@ -331,56 +296,32 @@ function DetallesCuenta({ refresh }) {
 
   return (
     <div className="container mt-5">
-      <NavBar />
       {/* Encabezado */}
       <h2 className="d-block mt-n3 text-center">Detalles Cuenta</h2>
 
-      {/* Formulario */}
-      <div className="row mb-4 text-start">
-        <div className="col-md-3">
-          <label>Nombre Completo</label>
-          <input 
-            type="text" 
-            className="form-control" 
-            value={`${huesped.nombre || ''} ${huesped.apellido || ''}`} 
-            readOnly 
-          />
-        </div>
-        <div className="col-md-3">
-          <label>RUC</label>
-          <input 
-            type="text" 
-            className="form-control" 
-            value={huesped.ruc || ''} 
-            readOnly 
-          />
-        </div>
-        <div className="col-md-3">
-          <label>Correo Electrónico</label>
-          <input 
-            type="email" 
-            className="form-control" 
-            value={huesped.email || ''} 
-            readOnly 
-          />
-        </div>
-        <div className="col-md-3">
-          <label>Teléfono</label>
-          <input 
-            type="text" 
-            className="form-control" 
-            value={huesped.telefono || ''} 
-            readOnly 
-          />
-        </div>
-      </div>
-
-      {/* Condición de venta */}
-      <div className="mb-4 text-start">
-        <label className="me-3">Condición de venta:</label>
-        <div>
-          <input type="radio" className="me-1" disabled /> Contado
-          <input type="radio" className="ms-3 me-1" checked readOnly /> Crédito
+     <div className="card border-secondary-subtle bg-light p-3 mb-4">
+        <h4 className="card-title mb-3">Datos del Huésped</h4>
+        <div className="d-flex flex-wrap gap-4">
+          <div className="flex-fill" style={{ minWidth: "160px" }}>
+            <small className="text-muted">Nombre completo</small>
+            <div className="fw-semibold">{`${huesped.nombre || ''} ${huesped.apellido || ''}`}</div>
+          </div>
+          <div className="flex-fill" style={{ minWidth: "160px" }}>
+            <small className="text-muted">RUC</small>
+            <div className="fw-semibold">{huesped.ruc || '-'}</div>
+          </div>
+          <div className="flex-fill" style={{ minWidth: "160px" }}>
+            <small className="text-muted">Correo electrónico</small>
+            <div className="fw-semibold">{huesped.email || '-'}</div>
+          </div>
+          <div className="flex-fill" style={{ minWidth: "160px" }}>
+            <small className="text-muted">Teléfono</small>
+            <div className="fw-semibold">{huesped.telefono || '-'}</div>
+          </div>
+          <div className="flex-fill" style={{ minWidth: "160px" }}>
+            <small className="text-muted">Condición de venta</small>
+            <div className="fw-semibold">Contado</div>
+          </div>
         </div>
       </div>
 
@@ -399,12 +340,12 @@ function DetallesCuenta({ refresh }) {
         </thead>
         <tbody>
           <tr>
-            <td>{habitacion?.tipoHabitacion?.nombre|| 'Habitación'}</td>
+            <td>{habitacion?.tipoHabitacion?.nombre || 'Habitación'}</td>
             <td className="text-center">{noches}</td>
             <td className="text-center">{habitacion.numero || '—'}</td>
             <td className="text-center">{tarifa.descripcion || '—'}</td>
-            <td className="text-end">{precioHabitacion.toLocaleString()}</td>
-            <td className="text-end">{totalHabitacion.toLocaleString()}</td>
+            <td className="text-end">{precioHabitacion.toLocaleString("de-DE")}</td>
+            <td className="text-end">{totalHabitacion.toLocaleString("de-DE")}</td>
           </tr>
         </tbody>
       </table>
@@ -412,18 +353,18 @@ function DetallesCuenta({ refresh }) {
       {/* Cargos Extras */}
       <h4 className="text-start mt-4">
         Consumos y Cargos Extras
-        <button 
-          className="btn btn-sm ms-3" 
-          style={{ backgroundColor: '#83A3A8', color: "white" }} 
+        <button
+          className="btn btn-sm ms-3"
+          style={{ backgroundColor: '#83A3A8', color: "white" }}
           onClick={() => setShowDetailModal(true)}
           disabled={loading}
         >
           + Agregar
         </button>
       </h4>
-      
+
       {error && <div className="alert alert-danger">{error}</div>}
-      
+
       <table className="table table-bordered">
         <thead>
           <tr className="text-center">
@@ -440,21 +381,21 @@ function DetallesCuenta({ refresh }) {
               <tr key={item.id_consumo}>
                 <td>{item.Productos?.descripcion || item.descripcion || 'Consumo'}</td>
                 <td className="text-center">{item.cantidad || 1}</td>
-                <td className="text-end">{(item.Productos?.precio_unitario || item.monto || 0).toLocaleString()}</td>
+                <td className="text-end">{(item.Productos?.precio_unitario || item.monto || 0).toLocaleString("de-DE")}</td>
                 <td className="text-end">
-                  {((item.Productos?.precio_unitario || item.monto || 0) * (item.cantidad || 1)).toLocaleString()}
+                  {((item.Productos?.precio_unitario || item.monto || 0) * (item.cantidad || 1)).toLocaleString("de-DE")}
                 </td>
                 <td className="d-flex justify-content-center align-items-center" style={{ gap: "3px" }}>
-                  <button 
+                  <button
                     className="btn  rounded-circle d-flex align-items-center justify-content-center"
-                    style={{ width: "30px", height: "30px", padding: 0}}
+                    style={{ width: "30px", height: "30px", padding: 0 }}
                     onClick={() => abrirModalEdicion(item)}
                     disabled={loading}
                     title="Editar cantidad"
                   >
                     <FaEdit />
                   </button>
-                  <button 
+                  <button
                     className="btn rounded-circle d-flex align-items-center justify-content-center"
                     style={{ width: "30px", height: "30px", padding: 0 }}
                     onClick={() => eliminarConsumo(item.id_consumo)}
@@ -473,28 +414,28 @@ function DetallesCuenta({ refresh }) {
           )}
         </tbody>
       </table>
-      
+
       <h5 className="text-end">
-        <strong>Total: {totalGeneral.toLocaleString()} Gs</strong>
+        <strong>Total: {totalGeneral.toLocaleString("de-DE")} Gs</strong>
       </h5>
 
       {/* Botones finales */}
       <div className="d-flex justify-content-center align-items-center mt-4" style={{ gap: "30px" }}>
-        <button 
-          className="btn btn-secondary fw-bold" 
-          style={{ width: "150px", height: "40px" }} 
+        <button
+          className="btn btn-secondary fw-bold"
+          style={{ width: "150px", height: "40px" }}
           onClick={irAHuespedes}
           disabled={loading}
         >
           Volver
         </button>
-        <button 
-          className="btn btn-success fw-bold" 
-          style={{ width: "150px", height: "40px" }} 
+        <button
+          className="btn btn-success fw-bold"
+          style={{ width: "150px", height: "40px" }}
           onClick={irAFactura}
-          disabled={loading || consumos.length === 0}
+          disabled={loading}
         >
-          Generar Factura
+          Cerrar Cuenta
         </button>
       </div>
 
@@ -520,8 +461,8 @@ function DetallesCuenta({ refresh }) {
                       placeholder="Busque y seleccione un producto..."
                     />
                     {busqueda && (
-                      <button 
-                        className="btn btn-outline-secondary" 
+                      <button
+                        className="btn btn-outline-secondary"
                         type="button"
                         onClick={limpiarSeleccion}
                       >
@@ -529,7 +470,7 @@ function DetallesCuenta({ refresh }) {
                       </button>
                     )}
                   </div>
-                  
+
                   {/* Dropdown de resultados */}
                   {showDropdown && (
                     <div className="list-group mt-2" style={{ maxHeight: '200px', overflowY: 'auto' }}>
@@ -538,9 +479,8 @@ function DetallesCuenta({ refresh }) {
                           <button
                             key={producto.id_producto}
                             type="button"
-                            className={`list-group-item list-group-item-action ${
-                              nuevoConsumo.producto?.id_producto === producto.id_producto ? 'active' : ''
-                            }`}
+                            className={`list-group-item list-group-item-action ${nuevoConsumo.producto?.id_producto === producto.id_producto ? 'active' : ''
+                              }`}
                             onClick={() => seleccionarProducto(producto)}
                           >
                             <div className="d-flex justify-content-between">
@@ -589,9 +529,9 @@ function DetallesCuenta({ refresh }) {
                 )}
               </div>
               <div className="modal-footer d-flex justify-content-center">
-                <button 
-                  type="button" 
-                  className="btn btn-secondary" 
+                <button
+                  type="button"
+                  className="btn btn-secondary"
                   onClick={() => {
                     setShowDetailModal(false);
                     limpiarSeleccion();
@@ -599,9 +539,9 @@ function DetallesCuenta({ refresh }) {
                 >
                   Cancelar
                 </button>
-                 <button type="button" className="btn btn-success" onClick={agregarConsumo} disabled={loading || !nuevoConsumo.producto}>
+                <button type="button" className="btn btn-success" onClick={agregarConsumo} disabled={loading || !nuevoConsumo.producto}>
                   {loading ? 'Guardando...' : 'Guardar Consumo'}</button>
-                
+
               </div>
             </div>
           </div>
@@ -647,18 +587,19 @@ function DetallesCuenta({ refresh }) {
                 </div>
               </div>
               <div className="modal-footer d-flex justify-content-center">
-                <button 
-                  type="button" 
-                  className="btn btn-secondary" 
+                <button
+                  type="button"
+                  className="btn btn-secondary"
                   onClick={() => setShowEditModal(false)}
                 >
                   Cancelar
                 </button>
-                <button 
-                  type="button" 
-                  className="btn btn-success" 
+                <button
+                  type="button"
+                  className="btn btn-success"
                   onClick={guardarEdicionCantidad}
                   disabled={loading || nuevaCantidad === consumoEditando.cantidad}
+                  refresh={refresh}
                 >
                   {loading ? 'Guardando...' : 'Guardar Cambios'}
                 </button>

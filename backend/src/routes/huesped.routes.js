@@ -1,15 +1,16 @@
 import { Router } from "express";
 import huespedController from "../controllers/huesped.controllers.js";
 const { getAllHuespedes, getHuespedesFrecuentes, getHuesped, postHuesped, deleteHuesped, putHuesped, patchHuesped } = huespedController;
+import authenticate from "../../config/jwt.config.js";
 
 const router = Router();
 
-router.get('/', getAllHuespedes);
-router.get('/frecuentes', getHuespedesFrecuentes);
-router.get('/:id', getHuesped);
-router.post('/', postHuesped);
-router.delete('/:id', deleteHuesped);
-router.put('/:id', putHuesped);
-router.patch('/:id', patchHuesped);
+router.get('/', authenticate, getAllHuespedes);
+router.get('/frecuentes', authenticate, getHuespedesFrecuentes);
+router.get('/:id', authenticate, getHuesped);
+router.post('/', authenticate, postHuesped);
+router.delete('/:id', authenticate, deleteHuesped);
+router.put('/:id', authenticate, putHuesped);
+router.patch('/:id', authenticate, patchHuesped);
 
 export default router;

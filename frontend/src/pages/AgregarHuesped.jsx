@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import HTTPClient from "../api/HTTPClient.js";
-import NavBar from "../components/navbar";
 
 const AgregarHuesped = () => {
 	const client = new HTTPClient();
@@ -28,6 +27,8 @@ const AgregarHuesped = () => {
 
 	useEffect(() => {
 		if (huespedEditar) {
+			const fecha = huespedEditar.fecha_nacimiento ? new Date(huespedEditar.fecha_nacimiento).toISOString().split("T")[0] : "";
+
 			setFormData({
 				nombre: huespedEditar.nombre || "",
 				apellido: huespedEditar.apellido || "",
@@ -37,7 +38,7 @@ const AgregarHuesped = () => {
 				telefono: huespedEditar.telefono || "",
 				ruc: huespedEditar.ruc || "",
 				nacionalidad: huespedEditar.nacionalidad || "PARAGUAY",
-				fecha_nacimiento: huespedEditar.fecha_nacimiento || "",
+				fecha_nacimiento: fecha,
 			});
 		}
 	}, [huespedEditar]);
@@ -101,7 +102,6 @@ const AgregarHuesped = () => {
 
 	return (
 		<div className="container py-4">
-			<NavBar />
 			<div className="row justify-content-center">
 				<div className="col-lg-10">
 					<div className="card shadow p-4">
@@ -116,7 +116,7 @@ const AgregarHuesped = () => {
 										{ id: "ruc", label: "RUC", type: "text", maxLength: 20 },
 										{ id: "correo", label: "Correo", type: "email", maxLength: 50 },
 										{ id: "telefono", label: "Teléfono", type: "tel", maxLength: 20 },
-										{ id: "fecha_nacimiento", label: "Fecha de Nacimiento", type: "date" }
+										//{ id: "fecha_nacimiento", label: "Fecha de Nacimiento", type: "date" }
 									].map(({ id, label, type, maxLength }) => (
 										<div className="col-md-6" key={id}>
 											<label htmlFor={id} className="form-label mb-1 text-start d-block">
@@ -134,6 +134,22 @@ const AgregarHuesped = () => {
 											/>
 										</div>
 									))}
+
+									{/* Fecha Nacimiento*/}
+									<div className="col-md-6">
+										<label htmlFor="fecha_nacimiento" className="form-label mb-1 text-start d-block">
+											Fecha de Nacimiento
+										</label>
+										<input
+											type="date"
+											className="form-control"
+											id="fecha_nacimiento"
+											value={formData.fecha_nacimiento}
+											onChange={handleChange}
+											style={{ maxWidth: "100%", width: "400px" }}
+											maxLength={11}
+										/>
+									</div>
 
 									{/* Nacionalidad */}
 									<div className="col-md-6">

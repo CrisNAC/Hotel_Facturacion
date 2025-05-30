@@ -4,10 +4,10 @@ import authenticate from "../../config/jwt.config.js";
 
 const router = Router();
 
-router.get('/', getTarifas);
-router.get('/:id', getTarifaById);
-router.post('/', createTarifa);
-router.delete('/:id', deleteTarifa);
-router.put('/:id', updateTarifa);
+router.get('/', authenticate, getTarifas);
+router.get('/:id', authenticate, getTarifaById);
+router.post('/', authenticate, createTarifa);
+router.delete('/:id', authenticate, deleteTarifa);
+router.put('/:id', authenticate, updateTarifa);
 
 export default router;

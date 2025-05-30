@@ -43,6 +43,34 @@ const SeleccionHabitacion = () => {
         }
     };
 
+	const fetchHabitacionesPorId = async (tipoHabitacionId) => {
+		try {
+			const res = await axios.get("/api/habitacion");
+			const allHabitaciones = res.data;
+			const filtradas = allHabitaciones.filter(hab => hab.tipoHabitacion.id_tipo_habitacion === parseInt(tipoHabitacionId));
+			setHabitacionesDisponibles(filtradas);
+			console.log(filtradas);
+		} catch (error) {
+			console.error("Error al obtener las habitaciones por Id: ", error);
+		} finally {
+			setCargando(false);
+		}
+	};
+
+	const fetchTarifasPorId = async (tipoHabitacionId) => {
+		try {
+			const res = await axios.get("/api/tarifa");
+			const allTarifas = res.data;
+			const filtradas = allTarifas.filter(tar => tar.tipoHabitacion.id_tipo_habitacion === parseInt(tipoHabitacionId));
+			setTarifasDisponibles(filtradas);
+			console.log(filtradas);
+		} catch (error) {
+			console.error("Error al obtener las habitaciones por Id: ", error);
+		} finally {
+			setCargando(false);
+		}
+	};
+
 	const fetchTarifas = async () => {
 		try {
 			const res = await axios.get("/api/tarifa");
@@ -58,8 +86,13 @@ const SeleccionHabitacion = () => {
 
 	useEffect(() => {
 		if(reservaSeleccionada) {
-			fetchHabitaciones();
-			fetchTarifas();
+			if (reservaSeleccionada.tipoHabitacion) {
+				fetchHabitaciones();
+				fetchTarifas();
+			} else if (reservaSeleccionada.tipo_habitacion) {
+				fetchHabitacionesPorId(reservaSeleccionada.tipo_habitacion);
+				fetchTarifasPorId(reservaSeleccionada.tipo_habitacion);
+			}
 		} else {
 			setHabitacionesDisponibles([]);
 			setTarifasDisponibles([]);
@@ -78,7 +111,6 @@ const SeleccionHabitacion = () => {
 
 	return (
 		<>
-			<NavBar />
 			<div>
 				<div className="container py-4" style={{ marginTop: '50px' }}>
 					<h4 className="fw-bold mb-4 text-center">Seleccione habitación y tarifa</h4>

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaEdit, FaTrash, FaUserPlus } from "react-icons/fa";
 import { useNavigate, useLocation } from 'react-router-dom';
-import NavBar from "./navbar";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 import HTTPClient from "../api/HTTPClient";
 import { useReserva } from "../context/Reserva/ReservaContext.jsx";
 import { useTarifa } from "../context/tarifa/TarifaContext.jsx";
@@ -16,10 +17,12 @@ const ConfirmarReserva = () => {
 	const { reservaSeleccionada } = useReserva();
 	const { tarifaSeleccionada } = useTarifa();
 	const { habitacionSeleccionada } = useHabitacion();
+	const [loading, setLoading] = useState(false);
 	
 	console.log(reservaSeleccionada);
 	console.log(tarifaSeleccionada);
 	console.log(habitacionSeleccionada);
+	console.log(listaHuespedes);
 
 	const calcularNoches = (ingreso, egreso) => {
         if (ingreso && egreso) {
@@ -35,10 +38,10 @@ const ConfirmarReserva = () => {
 	// Función para eliminar huésped
 	const eliminarHuesped = async (id) => {
 		try {
-			const response = client.deleteAHuespedById(id);
-			const data = await response.json();
+			const response = await client.deleteAHuespedById(id);
+			const data = response.data;
 
-			if (response.ok) {
+			if (response.status === 200) {
 				alert(data.message || "Huésped eliminado con éxito");
 				setListaHuespedes(prev => prev.filter(h => h.id_huesped !== id));
 			} else {
@@ -55,7 +58,7 @@ const ConfirmarReserva = () => {
 		 * @param {*} dateString Se le pasa el una fecha
 		 * @returns Retorna la fecha modifica en caso de exito o si no en caso de fracaso -
 		 */
-	const formatDMY = (dateString) => {
+	/*const formatDMY = (dateString) => {
 		if (!dateString) return '--/--/----';
 		try {
 			const date = new Date(dateString);
@@ -63,10 +66,17 @@ const ConfirmarReserva = () => {
 		} catch {
 			return '—';
 		}
+	};*/
+
+	const formatDMY = (fecha) => {
+		const fechaCompletaSplit = fecha.split("T")[0];
+		const [year, month , day] = fechaCompletaSplit.split("-");
+		const fechaFormateada = `${day}/${month}/${year}`;
+		return fechaFormateada;
 	};
 
-	const check_in = reservaSeleccionada ? reservaSeleccionada.check_in.substring(0, 10) : "";
-	const check_out = reservaSeleccionada ? reservaSeleccionada.check_out.substring(0, 10) : "";
+	const check_in = reservaSeleccionada ? reservaSeleccionada.check_in : "";
+	const check_out = reservaSeleccionada ? reservaSeleccionada.check_out : "";
 	const numero_habitacion = habitacionSeleccionada ? habitacionSeleccionada.numero : 0;
 	const piso_habitacion = habitacionSeleccionada ? habitacionSeleccionada.piso : 0;
 	const nombre_habitacion = habitacionSeleccionada ? habitacionSeleccionada.tipoHabitacion.nombre : "";
@@ -75,10 +85,40 @@ const ConfirmarReserva = () => {
 	const precio_tarifa = tarifaSeleccionada ? tarifaSeleccionada.precio : 0;
 	const noches = calcularNoches(check_in, check_out);
 	const costoTotal = precio_tarifa * noches;
+	const maxHuespedes = reservaSeleccionada ? reservaSeleccionada.huespedes : 0;
+
+	const handleSubmit = async () => {
+
+		// PAYLOADS
+		const payloadWalkIn = {
+			fk_reserva: null,
+			checkIn: check_in,
+			checkOut: check_out,
+			estado: "Activo",
+			fk_habitacion: habitacionSeleccionada.id_habitacion,
+			fk_tarifa: tarifaSeleccionada.id_tarifa,
+			fk_huesped: listaHuespedes[0]?.id_huesped,
+			fk_usuario: reservaSeleccionada.id_usuario
+		}
+
+		try {
+			setLoading(true);
+			const response = await axios.post("/api/ingresos" , payloadWalkIn, {
+				withCredentials: true,
+			});
+			const dataPost = response.data.data;
+			console.log(dataPost);
+			navigate("/Inicio");
+		} catch(error) {
+			console.error("Error al crear el ingreso: ", error.response.data.error);
+		} finally {
+			setLoading(false);
+		}
+	}
 
 	return (
 		<div>
-			<NavBar />
+			<ToastContainer></ToastContainer>
 			<div className="container py-4" style={{ marginTop: '50px' }}>
 				{/* Titulo y boton */}
 				<div className="d-flex justify-content-between align-items-center mb-3">
@@ -86,7 +126,21 @@ const ConfirmarReserva = () => {
 					<button
 						type="button"
 						className="btn btn-primary btn-sm ms-3"
-						onClick={() => navigate('/AgregarHuesped', { state: { huespedes: listaHuespedes } })}
+						onClick={() => {
+							if (listaHuespedes.length < maxHuespedes) {
+								navigate('/AgregarHuesped', { state: { huespedes: listaHuespedes } });
+							} else {
+								toast.error(`No se pueden agregar mas huespedes. Capacidad maxima: ${maxHuespedes}`, {
+									position: "top-right",
+									autoClose: 3000,
+									hideProgressBar: false,
+									closeOnClick: true,
+									pauseOnHover: true,
+									draggable: true,
+									progress: undefined,
+								});
+							}
+						}}
 					>
 						<FaUserPlus className="me-2" style={{ fontSize: '1rem', paddingBottom: '2px' }} />Agregar<span></span>
 					</button>
@@ -197,8 +251,8 @@ const ConfirmarReserva = () => {
 
 				{/* Button */}
 				<div className="d-flex justify-content-center mt-4">
-					<button type="button" className="btn btn-success" onClick={() => navigate('/')}>
-						Confirmar Reserva
+					<button type="button" className="btn btn-success btn-lg fw-bold px-4 py-3 shadow" disabled={loading || listaHuespedes.length === 0} onClick={handleSubmit}>
+						{loading ? "Espere..." : "Confirmar Ingreso"}
 					</button>
 				</div>
 

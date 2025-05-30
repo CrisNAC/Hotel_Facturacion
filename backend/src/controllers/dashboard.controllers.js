@@ -10,21 +10,21 @@ export const dashboard = async (req, res) => {
         fechaFin.setHours(23, 59, 59, 999);
 
         const libres = await prisma.habitacion.count({
-            where: { estado: true },
+            where: { estado: true, activo: true },
         });
 
         const reservadas = await prisma.reserva.count({
-            where: { estado: 'Pendiente' }
+            where: { estado: 'Pendiente', activo: true }
         });
 
         const ocupadas = await prisma.habitacion.count({
-            where: { estado: false },
+            where: { estado: false, activo: true },
         });
 
         const huespedesActivos = await prisma.huespedHabitacion.count({
             where: {
                 ingreso: {
-                    estado: 'Activo',
+                    estado: 'Activo'
                 },
                 activo: true
             },
@@ -35,7 +35,7 @@ export const dashboard = async (req, res) => {
                 check_in: {
                     gte: fechaInicio,
                     lte: fechaFin,
-                },
+                }, activo: true
             },
             include: {
                 huesped: true,
@@ -47,7 +47,7 @@ export const dashboard = async (req, res) => {
                 checkOut: {
                     gte: fechaInicio,
                     lte: fechaFin,
-                },
+                }, activo: true
             },
             include: {
                 huesped: true,
