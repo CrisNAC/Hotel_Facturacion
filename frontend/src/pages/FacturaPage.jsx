@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HTTPClient from "../api/HTTPClient";
-import NavBar from "../components/navbar";
 import FacturaTable from "../components/FacturaTable";
 
 const httpClient = new HTTPClient();
@@ -79,7 +78,6 @@ const FacturaPage = () => {
 
     return (
         <>
-            <NavBar />
             <FacturaTable
                 filters={filters}
                 setFilters={setFilters}

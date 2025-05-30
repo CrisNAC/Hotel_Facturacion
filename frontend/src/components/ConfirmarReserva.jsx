@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaEdit, FaTrash, FaUserPlus } from "react-icons/fa";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
-import NavBar from "./navbar";
 import HTTPClient from "../api/HTTPClient";
 import { useReserva } from "../context/Reserva/ReservaContext.jsx";
 import { useTarifa } from "../context/tarifa/TarifaContext.jsx";
@@ -115,7 +114,6 @@ const ConfirmarReserva = () => {
 	return (
 		<div>
 			<ToastContainer></ToastContainer>
-			<NavBar></NavBar>
 			<div className="container py-4" style={{ marginTop: '50px' }}>
 				{/* Titulo y boton */}
 				<div className="d-flex justify-content-between align-items-center mb-3">

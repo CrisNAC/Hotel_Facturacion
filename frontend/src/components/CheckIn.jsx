@@ -12,7 +12,6 @@ const CheckIn = () => {
 
 	return (
 		<div className="container py-4">
-			<NavBar />
 			<div className="row justify-content-center">
 				<div className="col-12 col-md-11 col-lg-10">
 					<div className="card shadow p-2">

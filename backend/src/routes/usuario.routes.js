@@ -4,10 +4,10 @@ import authenticate from "../../config/jwt.config.js";
 
 const router = Router();
 
-router.get('/', getUsuarios);
-router.get('/:id', getUsuarioById);
-router.post('/', createUsuario);
-router.delete('/:id', deleteUsuario);
-/*router.put('/:id', updateUsuario);*/
+router.get('/', authenticate, getUsuarios);
+router.get('/:id', authenticate, getUsuarioById);
+router.post('/', authenticate, createUsuario);
+router.delete('/:id', authenticate, deleteUsuario);
+/*router.put('/:id', authenticate, updateUsuario);*/
 
 export default router;

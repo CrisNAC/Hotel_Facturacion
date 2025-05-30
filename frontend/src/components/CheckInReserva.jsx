@@ -2,8 +2,6 @@ import HTTPClient from "../api/HTTPClient";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useReserva } from "../context/Reserva/ReservaContext";
-import axios from "axios";
-import NavBar from "./navbar";
 
 const CheckInReserva = () => {
     const client = new HTTPClient();
@@ -78,7 +76,6 @@ const CheckInReserva = () => {
 
     return (
         <div>
-            <NavBar />
             <div className="container">
                 {/* Buscar reserva */}
                 <div className="row justify-content-center my-5">

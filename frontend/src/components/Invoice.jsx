@@ -1,12 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Skeleton, Container } from "@mui/material";
-import html2pdf from "html2pdf.js";
 import NavBar from "../components/navbar.jsx";
 import "../styles/Invoice.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import HTTPClient from "../api/HTTPClient.js";
 
 const Invoice = () => {
+  const client = new HTTPClient();
   const { id } = useParams();
   const [factura, setFactura] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,11 +18,8 @@ const Invoice = () => {
   useEffect(() => {
     const fetchFactura = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/facturas/${id}`);
-        if (!res.ok) {
-          throw new Error("Error al obtener la factura");
-        }
-        const data = await res.json();
+        const res = await client.getFacturaById(id);
+        const data = res.data;
         setFactura(data);
       } catch (err) {
         setError(err.message);
@@ -67,7 +65,7 @@ const Invoice = () => {
       html2pdf.default()
         .set({
           margin: 0,
-          filename: `factura-${factura?.id_factura}.pdf`,
+          filename: `factura-${factura?.id_factura ?? 'sin-id'}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
           html2canvas: { scale: 2 },
           jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
@@ -123,7 +121,7 @@ const Invoice = () => {
     );
   }
 
-  if (!factura) return null; // Precaución extra
+  if (!factura) return null;
 
   const {
     id_factura,
@@ -149,17 +147,31 @@ const Invoice = () => {
     const base = subtotal - descuento;
 
     if (detalle.porcentaje_iva === 5) {
-      iva5Total += base * 0.05;
+      iva5Total += base * 5 / 105;
     } else if (detalle.porcentaje_iva === 10) {
-      iva10Total += base * 0.10;
+      iva10Total += base * 10 / 110;
     }
+
 
     subtotalGeneral += base;
   });
 
   const ivaTotal = iva5Total + iva10Total;
   const totalOperacion = subtotalGeneral + ivaTotal;
+  
+  const fechaISO = factura.fecha_emision;
+  const fechaFormateada = new Date(fechaISO).toLocaleString("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true, 
+  });
 
+
+  
   return (
     <>
       <NavBar className="no-print" />
@@ -191,7 +203,7 @@ const Invoice = () => {
             <div><span>Teléfono:</span> {titular?.telefono || '----------'}</div>
           </div>
           <div className="invoice-details text-start">
-            <div><span>Fecha y hora de emisión:</span> {new Date().toLocaleString()}</div>
+            <div><span>Fecha y hora de emisión:</span> {fechaFormateada || '----------'}</div>
             <div><span>Cond. Venta:</span> {condicion_venta}</div>
             <div><span>Moneda:</span> Guaraní</div>
           </div>
@@ -209,7 +221,6 @@ const Invoice = () => {
               <th>Exenta</th>
               <th>5 (%)</th>
               <th>10 (%)</th>
-              <th>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -217,9 +228,8 @@ const Invoice = () => {
               const subtotal = detalle.cantidad * detalle.precio_unitario;
               const descuento = detalle.descuento || 0;
               const base = subtotal - descuento;
-              const iva5 = detalle.porcentaje_iva === 5 ? base * 0.05 : 0;
-              const iva10 = detalle.porcentaje_iva === 10 ? base * 0.10 : 0;
-              const totalConIva = base + iva5 + iva10;
+              const iva5 = detalle.porcentaje_iva === 5 ? subtotal : 0;
+              const iva10 = detalle.porcentaje_iva === 10 ? subtotal : 0;
 
               return (
                 <tr className="table-row" key={index}>
@@ -227,12 +237,11 @@ const Invoice = () => {
                   <td>{detalle.descripcion}</td>
                   <td>UNI</td>
                   <td>{detalle.cantidad}</td>
-                  <td>{detalle.precio_unitario}</td>
+                  <td>{detalle.precio_unitario.toLocaleString("de-DE")}</td>
                   <td>{detalle.descuento}</td>
                   <td>0</td>
-                  <td>{iva5 ? iva5.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
-                  <td>{iva10 ? iva10.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
-                  <td>{totalConIva.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
+                  <td>{iva5 ? iva5.toLocaleString("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
+                  <td>{iva10 ? iva10.toLocaleString("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
                 </tr>
               );
             })}
@@ -243,24 +252,24 @@ const Invoice = () => {
         <div className="totals-section">
           <div className="total-row">
             <div className="total-label">SUBTOTAL:</div>
-            <div>{subtotalGeneral.toLocaleString()}</div>
+            <div>{subtotalGeneral.toLocaleString("de-DE")}</div>
           </div>
           <div className="total-row">
             <div className="total-label">TOTAL DE LA OPERACIÓN:</div>
-            <div>{totalOperacion.toLocaleString()}</div>
+            <div>{subtotalGeneral.toLocaleString("de-DE")}</div>
           </div>
           <div className="total-row">
             <div className="total-label">TOTAL EN GUARANÍES:</div>
-            <div>{totalOperacion.toLocaleString()}</div>
+            <div>{subtotalGeneral.toLocaleString("de-DE")}</div>
           </div>
           <div className="total-row">
             <div className="total-label">LIQUIDACIÓN IVA:</div>
             <div className="total-label">5%</div>
-            <div>{iva5Total.toLocaleString()}</div>
+            <div>{Math.round(iva5Total).toLocaleString("de-DE")}</div>
             <div className="total-label">10%</div>
-            <div>{iva10Total.toLocaleString()}</div>
+            <div>{Math.round(iva10Total).toLocaleString("de-DE")}</div>
             <div className="total-label">TOTAL IVA</div>
-            <div>{ivaTotal.toLocaleString()}</div>
+            <div>{Math.round(ivaTotal).toLocaleString("de-DE")}</div>
           </div>
         </div>
         {/* Botones */}

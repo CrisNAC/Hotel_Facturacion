@@ -111,7 +111,6 @@ const SeleccionHabitacion = () => {
 
 	return (
 		<>
-			<NavBar />
 			<div>
 				<div className="container py-4" style={{ marginTop: '50px' }}>
 					<h4 className="fw-bold mb-4 text-center">Seleccione habitación y tarifa</h4>
