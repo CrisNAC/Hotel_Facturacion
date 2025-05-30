@@ -58,8 +58,8 @@ class HTTPClient {
         return this.instance.get(`/huesped/${id}`);
     }
 
-    postHuesped(datos) {
-        this.instance.post(`/huesped`, datos);
+    postHuesped(datos) { 
+        return this.instance.post(`/huesped`, datos);
     };
 
     deleteAHuespedById(id) {
@@ -67,7 +67,7 @@ class HTTPClient {
     }
 
     updateHuesped(id, datos) {
-        this.instance.put(`/huesped/${id}`, datos);
+        return this.instance.put(`/huesped/${id}`, datos);
     };
     /****        HUESPEDES HABITACION       ****/
     getDetalleHabitacion(id) {
