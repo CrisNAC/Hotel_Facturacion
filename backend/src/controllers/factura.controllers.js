@@ -1,7 +1,7 @@
 import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 import nodemailer from "nodemailer";
-
+import dotenv from "dotenv";
 
 // Obtener todas las facturas activas
 export const getAllFacturas = async (req, res) => {
@@ -280,6 +280,7 @@ export const enviarFacturaDesdeArchivo = async (req, res) => {
     }
 
     // Configuración mejorada del transporter
+	dotenv.config();
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
