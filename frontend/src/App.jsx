@@ -6,7 +6,6 @@ const queryClient = new QueryClient();
 
 import Login from './components/Login'
 import Inicio from './pages/Inicio.jsx'
-import NavBar from './components/navbar.jsx'
 import HuespedesActivosPage from './pages/HuespedesActivosPage.jsx';
 
 import Invoice from "./components/Invoice.jsx"
@@ -43,20 +42,20 @@ function App() {
               />
             }
           />
-          <Route path="*" element={<ErrorComponent code={404} message="Página no encontrada" />} />
+          <Route path="/ErrorPage" element={<ErrorComponent code={404} message="Página no encontrada" />} />
 
           {/* Rutas con NavBar */}
           <Route element={<MainLayout />}>
             <Route path="/Inicio" element={<Inicio />} />
             <Route path="/Huespedes" element={<HuespedesActivosPage />} />
 
-            <Route element={<ReservaLayout />}>
-              <Route path="/IngresoHuesped" element={<CheckIn />} />
-              <Route path="/AgregarHuesped" element={<AgregarHuesped />} />
-              <Route element={<TarifaLayout />}>
-                <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />} />
-                <Route path="/ConfirmarReserva" element={<ConfirmarReserva />} />
-              </Route>
+            <Route element={<ReservaLayout></ReservaLayout>}>
+				<Route element={<TarifaLayout></TarifaLayout>}>
+					<Route path="/IngresoHuesped" element={<CheckIn />}></Route>
+					<Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
+					<Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
+					<Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
+				</Route>
             </Route>
 
             <Route path="/FacturasEmitidas" element={<FacturaPage />} />

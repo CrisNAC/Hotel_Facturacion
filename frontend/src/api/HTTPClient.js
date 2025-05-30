@@ -58,8 +58,8 @@ class HTTPClient {
         return this.instance.get(`/huesped/${id}`);
     }
 
-    postHuesped(datos) {
-        this.instance.post(`/huesped`, datos);
+    postHuesped(datos) { 
+        return this.instance.post(`/huesped`, datos);
     };
 
     deleteAHuespedById(id) {
@@ -67,7 +67,7 @@ class HTTPClient {
     }
 
     updateHuesped(id, datos) {
-        this.instance.put(`/huesped/${id}`, datos);
+        return this.instance.put(`/huesped/${id}`, datos);
     };
     /****        HUESPEDES HABITACION       ****/
     getDetalleHabitacion(id) {
@@ -86,6 +86,14 @@ class HTTPClient {
     getUltimaFactura() {
         return this.instance.get("/facturas/ultimafactura");
     }
+    crearFactura(data) {
+        return this.instance.post('/facturas', data);
+    }
+
+    enviarFactura(data){
+        return this.instance.post('/facturas/enviar', data);
+    }
+
 
     /****        RESERVAS       ****/
     getAReservaById(id) {
@@ -94,15 +102,15 @@ class HTTPClient {
 
     /****    CONSUMO   ****/
     postConsumo(data) {
-        this.instance.post('/consumo', data);
+        return this.instance.post('/consumo', data);
     };
 
     updateConsumo(id, data) {
-        this.instance.patch(`/consumo/${id}`, data);
+        return this.instance.patch(`/consumo/${id}`, data);
     };
 
     deleteConsumo(id, data) {
-        this.instance.put(`/consumo/${id}`, data);
+        return this.instance.put(`/consumo/${id}`, data);
     };
 
     /****    PRODUCTOS     ****/

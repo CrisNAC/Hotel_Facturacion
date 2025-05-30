@@ -96,81 +96,24 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
       else if (item.porcentaje_iva === 10) iva10 += totalItem;
     });
     return {
-      iva5: Math.round(iva5 * 5 / 105),
-      iva10: Math.round(iva10 * 10 / 110),
-      totalIVA: Math.round(iva5 * 5 / 105 + iva10 * 10 / 110)
+      iva5: iva5 * 5 / 105,
+      iva10: iva10 * 10 / 110,
+      totalIVA: iva5 * 5 / 105 + iva10 * 10 / 110
     };
   };
 
   const iva = calcularIVA(detallesFactura);
 
-  const handleDownload = () => {
-    const element = document.querySelector(".invoice");
-    const noPrintElements = document.querySelectorAll(".no-print");
-    noPrintElements.forEach(el => el.style.visibility = "hidden");
-
-    import("html2pdf.js").then((html2pdf) => {
-      html2pdf.default()
-        .set({
-          margin: 0,
-          filename: `factura-${invoiceData.numero_factura}.pdf`,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
-        })
-        .from(element)
-        .save()
-        .then(() => {
-          noPrintElements.forEach(el => el.style.visibility = "visible");
-        });
-    });
-  };
-  /*const enviarFactura = async () => {
-  try {
-    const response = await fetch('http://localhost:4000/api/facturas', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(invoiceData)
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Error al guardar la factura');
-    }
-
-    const data = await response.json();
-    alert('Factura guardada con éxito');
-    console.log('Factura registrada:', data);
-    
-    // opcional: redirigir o limpiar vista
-    irADetCuenta();
-
-  } catch (error) {
-    setError('Error al guardar factura: ' + error.message);
-    console.error('Error al enviar factura:', error);
-  }
-};*/
 const enviarFactura = async () => {
   try {
-    const response = await fetch('http://localhost:4000/api/facturas', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(invoiceData)
-    });
+    const response = await client.crearFactura(invoiceData);
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Error al guardar la factura');
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error(response.data?.message || 'Error al guardar la factura');
     }
 
-    const data = await response.json();
-    console.log('Factura registrada:', data);
-    
-    return data; // <- ESTO ES IMPORTANTE
+    console.log('Factura registrada:', response.data);
+    return response.data;
 
   } catch (error) {
     setError('Error al guardar factura: ' + error.message);
@@ -245,7 +188,7 @@ const enviarFactura = async () => {
     try {
       setSending(true);
       setError('');
-      
+
       const blob = await generarPDFBlob();
       setPdfBlob(blob);
 
@@ -253,39 +196,24 @@ const enviarFactura = async () => {
       formData.append('archivo', blob, `factura-${invoiceData.numero_factura}.pdf`);
       formData.append('email', email);
 
-      const response = await fetch('http://localhost:4000/api/facturas/enviar', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Error al enviar la factura');
-      }
+      const response = await client.enviarFactura(formData);
+      console.log('Respuesta del servidor:', response.data);
 
       setSendSuccess(true);
       setTimeout(() => {
         setShowEmailModal(false);
-        irAHuespedes(); 
+        irAHuespedes();
       }, 2000);
+
     } catch (error) {
-      setError('Error al enviar factura: ' + error.message);
+      const message = error.response?.data?.error || error.message || 'Error al enviar la factura';
+      setError('Error al enviar factura: ' + message);
       console.error('Error al enviar factura:', error);
     } finally {
       setSending(false);
     }
   };
 
-  const handleGenerarFactura = async () => {
-    try {
-      const blob = await generarPDFBlob();
-      setPdfBlob(blob);
-      setShowEmailModal(true);
-      setSendSuccess(false);
-    } catch (error) {
-      setError('Error al generar PDF: ' + error.message);
-    }
-  };
 
   const cerrarCuenta = async () => {
   try {
@@ -312,6 +240,7 @@ const enviarFactura = async () => {
   useEffect(() => {
     obtenerNumeroFactura();
   }, []);
+
 
   return (
     <div className="invoice" ref={invoiceRef}>     
@@ -401,10 +330,10 @@ const enviarFactura = async () => {
             <div className="d-flex justify-content-between w-100">
               <span><strong>LIQUIDACIÓN IVA:</strong></span>
               <span><strong>5%</strong></span>
-              <span>{iva.iva5.toLocaleString("de-DE")}</span>
+              <span>{Math.round(iva.iva5).toLocaleString("de-DE")}</span>
               <span><strong>10%</strong></span>
-              <span>{iva.iva10.toLocaleString("de-DE")}</span>
-              <span><strong>TOTAL IVA:</strong> {iva.totalIVA.toLocaleString("de-DE")}</span>
+              <span>{Math.round(iva.iva10).toLocaleString("de-DE")}</span>
+              <span><strong>TOTAL IVA:</strong> {Math.round(iva.totalIVA).toLocaleString("de-DE")}</span>
             </div>
         </div>
       </div>

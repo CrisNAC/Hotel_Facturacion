@@ -37,7 +37,7 @@ function ModalDelete({ item, setShowDeleteModal, refresh }) {
     };
 
     return (
-        <div className="modal fade show d-block" tabIndex="-1" role="dialog">
+        <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <div className="modal-dialog" role="document">
                 <div className="modal-content">
                     <div className="modal-header d-flex justify-content-center">
@@ -46,9 +46,9 @@ function ModalDelete({ item, setShowDeleteModal, refresh }) {
                     {/* Presentacion del contenido */}
                     <div className="modal-body row row-cols-2 text-start py-5">
                         <p><strong>Nombre:</strong> {item.huesped.nombre}</p>
-                        <p><strong>Habitación:</strong> {item.habitacion.numero}</p>
-                        <p><strong>Check-in:</strong>{formatDMY(item.checkIn)}</p>
-                        <p><strong>Check-out:</strong>{formatDMY(item.checkOut)}</p>
+                        <p><strong>Habitación:</strong> {item.habitacion? item.habitacion.numero : "Sin asignar"}</p>
+                        <p><strong>Check-in:</strong> {formatDMY(item.checkIn)}</p>
+                        <p><strong>Check-out:</strong> {formatDMY(item.checkOut)}</p>
                         <p><strong>Estado ingreso:</strong> {item.estado}</p>
                         <p><strong>Total:</strong> {
                             item.cuenta[0]?.consumos[0]

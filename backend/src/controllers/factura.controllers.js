@@ -2,6 +2,7 @@ import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 import nodemailer from "nodemailer";
 
+
 // Obtener todas las facturas activas
 export const getAllFacturas = async (req, res) => {
   try {
@@ -32,6 +33,7 @@ export const getAllFacturas = async (req, res) => {
     res.status(500).json({ error: "Error al obtener las facturas" });
   }
 };
+
 
 export const createFactura = async (req, res) => {
   try {
