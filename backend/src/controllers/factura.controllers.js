@@ -2,6 +2,7 @@ import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 import nodemailer from "nodemailer";
 
+
 // Obtener todas las facturas activas
 export const getAllFacturas = async (req, res) => {
   try {
@@ -10,6 +11,7 @@ export const getAllFacturas = async (req, res) => {
       include: {
         timbrado: true,
         detalles: true,
+        fecha_emision:true,
         usuario: {
           select: { nombre: true, apellido: true }
         },

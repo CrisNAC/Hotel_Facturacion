@@ -13,6 +13,7 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
     huespedSeleccionado
   } = useContext(HuespedesActivosContext);
 
+  
   const [consumos, setConsumos] = useState([]);
   const [productos, setProductos] = useState([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -64,8 +65,6 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
     // Luego en tu useEffect
     cargarDatos();
   }, [cuenta, ingresosOriginales, recargar]);
-
-  // Y modifica refresh así:
 
   // Filtrar productos según búsqueda
   useEffect(() => {
@@ -153,7 +152,7 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
     try {
       setLoading(true);
       setError('');
-      const response = await client.updateConsumo(consumoEditando.id_consumo, nuevaCantidad);
+      const response = await client.updateConsumo(consumoEditando.id_consumo, { cantidad: nuevaCantidad });
 
       const data = await response.data;
 
@@ -237,6 +236,10 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
       setBusqueda('');
 
     } catch (error) {
+      console.error('Error completo:', error);
+      console.error('Error status:', error.response?.status);
+      console.error('Error data:', error.response?.data);
+
       console.error("Error completo:", {
         message: error.message,
         stack: error.stack,
@@ -296,29 +299,28 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
       {/* Encabezado */}
       <h2 className="d-block mt-n3 text-center">Detalles Cuenta</h2>
 
-      {/* Informacion cuenta */}
-      <div className="card px-4 pt-2 mb-4">
-        <div className="row mb-2 text-start">
-          <div className="col-md-4">
-            <p><b>Nombre Completo:</b> {`${huesped.nombre || ''} ${huesped.apellido || ''}`}</p>
+     <div className="card border-secondary-subtle bg-light p-3 mb-4">
+        <h4 className="card-title mb-3">Datos del Huésped</h4>
+        <div className="d-flex flex-wrap gap-4">
+          <div className="flex-fill" style={{ minWidth: "160px" }}>
+            <small className="text-muted">Nombre completo</small>
+            <div className="fw-semibold">{`${huesped.nombre || ''} ${huesped.apellido || ''}`}</div>
           </div>
-          <div className="col-md-4">
-            <p><b>RUC:</b> {huesped.ruc || ''}</p>
+          <div className="flex-fill" style={{ minWidth: "160px" }}>
+            <small className="text-muted">RUC</small>
+            <div className="fw-semibold">{huesped.ruc || '-'}</div>
           </div>
-          <div className="col-md-4">
-            <p><b>Teléfono:</b> {huesped.telefono || ''}</p>
+          <div className="flex-fill" style={{ minWidth: "160px" }}>
+            <small className="text-muted">Correo electrónico</small>
+            <div className="fw-semibold">{huesped.email || '-'}</div>
           </div>
-          <div className="col-md-4">
-            <p><b>Correo Electrónico:</b> {huesped.email || ''}</p>
+          <div className="flex-fill" style={{ minWidth: "160px" }}>
+            <small className="text-muted">Teléfono</small>
+            <div className="fw-semibold">{huesped.telefono || '-'}</div>
           </div>
-          <div className="col-md-4">
-            <p><b>Nacionalidad:</b> {huesped.nacionalidad || ''}</p>
-          </div>
-          {/* Condición de venta */}
-          <div className="col-md-4 mb-2 text-start">
-            <label className="me-3"><b>Condición de venta:</b></label>
-            <input type="radio" className="me-1" checked readOnly /> Contado
-            <input type="radio" className="ms-3 me-1" disabled /> Crédito
+          <div className="flex-fill" style={{ minWidth: "160px" }}>
+            <small className="text-muted">Condición de venta</small>
+            <div className="fw-semibold">Contado</div>
           </div>
         </div>
       </div>
@@ -342,8 +344,8 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
             <td className="text-center">{noches}</td>
             <td className="text-center">{habitacion.numero || '—'}</td>
             <td className="text-center">{tarifa.descripcion || '—'}</td>
-            <td className="text-end">{precioHabitacion.toLocaleString()}</td>
-            <td className="text-end">{totalHabitacion.toLocaleString()}</td>
+            <td className="text-end">{precioHabitacion.toLocaleString("de-DE")}</td>
+            <td className="text-end">{totalHabitacion.toLocaleString("de-DE")}</td>
           </tr>
         </tbody>
       </table>
@@ -379,9 +381,9 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
               <tr key={item.id_consumo}>
                 <td>{item.Productos?.descripcion || item.descripcion || 'Consumo'}</td>
                 <td className="text-center">{item.cantidad || 1}</td>
-                <td className="text-end">{(item.Productos?.precio_unitario || item.monto || 0).toLocaleString()}</td>
+                <td className="text-end">{(item.Productos?.precio_unitario || item.monto || 0).toLocaleString("de-DE")}</td>
                 <td className="text-end">
-                  {((item.Productos?.precio_unitario || item.monto || 0) * (item.cantidad || 1)).toLocaleString()}
+                  {((item.Productos?.precio_unitario || item.monto || 0) * (item.cantidad || 1)).toLocaleString("de-DE")}
                 </td>
                 <td className="d-flex justify-content-center align-items-center" style={{ gap: "3px" }}>
                   <button
@@ -414,7 +416,7 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
       </table>
 
       <h5 className="text-end">
-        <strong>Total: {totalGeneral.toLocaleString()} Gs</strong>
+        <strong>Total: {totalGeneral.toLocaleString("de-DE")} Gs</strong>
       </h5>
 
       {/* Botones finales */}
