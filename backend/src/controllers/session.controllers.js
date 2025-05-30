@@ -54,7 +54,7 @@ export const login = async (req, res) => {
         //Enviar token en cookie o json
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // solo en HTTPS
+            secure: true, // solo en HTTPS
             sameSite: 'None', // si frontend y backend están en dominios diferentes
         });
         res.status(200).json({
