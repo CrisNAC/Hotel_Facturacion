@@ -32,6 +32,7 @@ function App() {
         <Routes>
           {/* Rutas sin NavBar */}
           <Route path="/" element={<Login />} />
+          <Route path="/Invoice/:id" element={<Invoice />} />
           <Route
             path="*"
             element={
@@ -59,7 +60,6 @@ function App() {
             </Route>
 
             <Route path="/FacturasEmitidas" element={<FacturaPage />} />
-            <Route path="/Invoice/:id" element={<Invoice />} />
             <Route path="/Reportes" element={<ReportesPage />} />
           </Route>
         </Routes>

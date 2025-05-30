@@ -8,6 +8,8 @@ import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { saveAs } from 'file-saver'; // Importa saveAs
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 
 const categorias = [
@@ -23,6 +25,8 @@ export default function ReportesPage() {
     const [categoria, setCategoria] = useState('ingresos');
     const [desde, setDesde] = useState(dayjs().startOf('month').format('YYYY-MM-DD'));
     const [hasta, setHasta] = useState(dayjs().endOf('month').format('YYYY-MM-DD'));
+    const [openAlert, setOpenAlert] = useState(false);
+    const [alertMsg, setAlertMsg] = useState('');
 
     const [datos, setDatos] = useState([]);
     const [resumen, setResumen] = useState(null);
@@ -37,6 +41,15 @@ export default function ReportesPage() {
     };
 
     const handleBuscar = async () => {
+        const fechaDesde = new Date(desde);
+        const fechaHasta = new Date(hasta);
+
+        if (fechaDesde > fechaHasta) {
+            setAlertMsg("La fecha de inicio no puede ser mayor\nque la fecha de fin.");
+            setOpenAlert(true);
+            return;
+        }
+
         if (categoria === 'ingresos') {
             const result = await refetch();
             const data = result?.data;
@@ -540,6 +553,20 @@ export default function ReportesPage() {
                     </Paper>
                 )}
             </Box>
+            <Snackbar
+                open={openAlert}
+                autoHideDuration={3000}
+                onClose={() => setOpenAlert(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                sx={{ mt: 7 }}
+            >
+                <MuiAlert onClose={() => setOpenAlert(false)}
+                severity="warning"
+                sx={{ width: '100%', whiteSpace: 'pre-line' }}
+                >
+                    {alertMsg}
+                </MuiAlert>
+            </Snackbar>
         </>
     );
 }
