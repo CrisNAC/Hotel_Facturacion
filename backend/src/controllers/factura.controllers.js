@@ -11,7 +11,6 @@ export const getAllFacturas = async (req, res) => {
       include: {
         timbrado: true,
         detalles: true,
-        fecha_emision:true,
         usuario: {
           select: { nombre: true, apellido: true }
         },
@@ -34,6 +33,7 @@ export const getAllFacturas = async (req, res) => {
     res.status(500).json({ error: "Error al obtener las facturas" });
   }
 };
+
 
 export const createFactura = async (req, res) => {
   try {
