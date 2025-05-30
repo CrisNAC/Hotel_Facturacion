@@ -86,6 +86,7 @@ const ConfirmarReserva = () => {
 	const noches = calcularNoches(check_in, check_out);
 	const costoTotal = precio_tarifa * noches;
 	const maxHuespedes = reservaSeleccionada ? reservaSeleccionada.huespedes : 0;
+	//const companions = listaHuespedes?.filter(h => h.id_huesped !== listaHuespedes[0]?.id_huesped);
 
 	const handleSubmit = async () => {
 
@@ -98,7 +99,8 @@ const ConfirmarReserva = () => {
 			fk_habitacion: habitacionSeleccionada.id_habitacion,
 			fk_tarifa: tarifaSeleccionada.id_tarifa,
 			fk_huesped: listaHuespedes[0]?.id_huesped,
-			fk_usuario: reservaSeleccionada.id_usuario
+			fk_usuario: reservaSeleccionada.id_usuario,
+			companions: listaHuespedes?.filter(h => h.id_huesped !== listaHuespedes[0]?.id_huesped)
 		}
 
 		try {
