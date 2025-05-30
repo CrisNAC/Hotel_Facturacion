@@ -8,6 +8,8 @@ import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { saveAs } from 'file-saver'; // Importa saveAs
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 
 const categorias = [
@@ -23,6 +25,8 @@ export default function ReportesPage() {
     const [categoria, setCategoria] = useState('ingresos');
     const [desde, setDesde] = useState(dayjs().startOf('month').format('YYYY-MM-DD'));
     const [hasta, setHasta] = useState(dayjs().endOf('month').format('YYYY-MM-DD'));
+    const [openAlert, setOpenAlert] = useState(false);
+    const [alertMsg, setAlertMsg] = useState('');
 
     const [datos, setDatos] = useState([]);
     const [resumen, setResumen] = useState(null);
@@ -37,6 +41,15 @@ export default function ReportesPage() {
     };
 
     const handleBuscar = async () => {
+        const fechaDesde = new Date(desde);
+        const fechaHasta = new Date(hasta);
+
+        if (fechaDesde > fechaHasta) {
+            setAlertMsg("La fecha de inicio no puede ser mayor\nque la fecha de fin.");
+            setOpenAlert(true);
+            return;
+        }
+
         if (categoria === 'ingresos') {
             const result = await refetch();
             const data = result?.data;
@@ -146,7 +159,7 @@ export default function ReportesPage() {
             });
 
             setDatos(huespedesParseados);
-            setTop3(ordenado.slice(0, 3));
+            setTop3(ordenado.slice(0, 10));
         }
     }
 
@@ -206,9 +219,6 @@ export default function ReportesPage() {
                 formatDMY(row.ultimoCheckIn),
                 row.total
             ]);
-            // O si quieres exportar el top 3 en un archivo separado:
-            // fileName = `top3_huespedes_frecuentes.csv`;
-            // rows = top3.map(row => [ ... ]);
         } else {
             alert('Categoría no soportada para exportación.');
             return;
@@ -470,7 +480,7 @@ export default function ReportesPage() {
                 {categoria === 'huespedes' && top3.length > 0 && (
                     <Paper sx={{ p: 2, mt: 4 }}>
                         <Typography variant="h6" gutterBottom>
-                            Top 3 huéspedes más frecuentes
+                            Top 10 huéspedes más frecuentes
                         </Typography>
                         <Table>
                             <TableHead sx={{
@@ -543,6 +553,20 @@ export default function ReportesPage() {
                     </Paper>
                 )}
             </Box>
+            <Snackbar
+                open={openAlert}
+                autoHideDuration={3000}
+                onClose={() => setOpenAlert(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                sx={{ mt: 7 }}
+            >
+                <MuiAlert onClose={() => setOpenAlert(false)}
+                severity="warning"
+                sx={{ width: '100%', whiteSpace: 'pre-line' }}
+                >
+                    {alertMsg}
+                </MuiAlert>
+            </Snackbar>
         </>
     );
 }
