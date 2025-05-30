@@ -256,7 +256,7 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
         <div className="commercial-info">
           Servicios de hospedaje y alojamiento
           <br />
-          Av. Dr. Francia, Encarnación, Paraguay Comercial
+          Av. Dr. Francia, Encarnación, Paraguay
         </div>
         <div className="invoice-meta text-start">
           <div><span>RUC:</span> 80000519-8</div>
