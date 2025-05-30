@@ -51,12 +51,12 @@ function App() {
             <Route path="/Huespedes" element={<HuespedesActivosPage />} />
 
             <Route element={<ReservaLayout></ReservaLayout>}>
-				<Route element={<TarifaLayout></TarifaLayout>}>
-					<Route path="/IngresoHuesped" element={<CheckIn />}></Route>
-					<Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
-					<Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
-					<Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
-				</Route>
+              <Route element={<TarifaLayout></TarifaLayout>}>
+                <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
+                <Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
+                <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
+                <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
+              </Route>
             </Route>
 
             <Route path="/FacturasEmitidas" element={<FacturaPage />} />
