@@ -15,7 +15,7 @@ export const enviarFacturaPorCorreo = async (idFactura, emailDestino) => {
   });
 
   await transporter.sendMail({
-    from: '"Hotel Gestión" <tuhotel@example.com>',
+    from: '"Hotel JAZEL" hoteljazel@gmail.com',
     to: emailDestino,
     subject: `Factura N° ${factura.numero_factura}`,
     text: 'Adjunto encontrarás tu factura en formato PDF.',

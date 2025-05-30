@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 export const getHabitaciones = async (req, res) => {
 	try {
 		const rooms = await prisma.habitacion.findMany({
-			where: { activo: true },
+			where: { activo: true, estado: true },
 			include: { tipoHabitacion: true }
 		});
 		res.status(200).json(rooms);

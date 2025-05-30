@@ -19,7 +19,7 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
     setMainPage(false);
     setVistaFactura(false);
   };
-  
+
   const huesped = huespedSeleccionado?.huesped || {};
   const cuenta = huespedSeleccionado?.cuenta?.[0] || {};
   const tarifa = huespedSeleccionado?.tarifa || {};
@@ -30,7 +30,7 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
   const [sending, setSending] = useState(false);
   const [sendSuccess, setSendSuccess] = useState(false);
   const [pdfBlob, setPdfBlob] = useState(null);
-    
+
   // Calcular noches de estadía
   const calcularNoches = (checkIn, checkOut) => {
     if (!checkIn || !checkOut) return 0;
@@ -39,21 +39,21 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
     const fechaFin = new Date(checkOut);
     return Math.round(Math.abs((fechaFin - fechaInicio) / unDia));
   };
-  
+
   const noches = calcularNoches(huespedSeleccionado.checkIn, huespedSeleccionado.checkOut);
   const precioHabitacion = tarifa?.precio;
   const totalHabitacion = noches * precioHabitacion;
-  
+
   const itemEstadia = {
     id_consumo: habitacion?.id_habitacion,
-    Productos: { 
+    Productos: {
       descripcion: habitacion?.tipoHabitacion?.nombre,
       precio_unitario: precioHabitacion
     },
     cantidad: noches,
     monto: totalHabitacion
   };
-  
+
   const [numeroFactura, setNumeroFactura] = useState(null);
 
   const obtenerNumeroFactura = async () => {
@@ -66,7 +66,7 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
 
     } catch (error) {
       setError('Error al obtener número de factura: ' + error.message);
-    } 
+    }
   };
 
   const invoiceItems = [itemEstadia, ...(cuenta?.consumos || [])];
@@ -82,8 +82,8 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
   const invoiceData = {
     fk_cuenta: cuenta.id_cuenta,
     condicion_venta: "Contado",
-    fecha_emision: new Date().toLocaleString(),
-    total: cuenta?.consumos.reduce((acc, item) => acc + (item.monto|| 0), 0) + totalHabitacion,
+    fecha_emision: new Date(),
+    total: cuenta?.consumos.reduce((acc, item) => acc + (item.monto || 0), 0) + totalHabitacion,
     numero_factura: numeroFactura ? "001-001-" + numeroFactura.toString().padStart(7, "0") : "Cargando...",
     detalles: detallesFactura || [],
   };
@@ -104,23 +104,29 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
 
   const iva = calcularIVA(detallesFactura);
 
-const enviarFactura = async () => {
-  try {
-    const response = await client.crearFactura(invoiceData);
+  const formatToDatabaseFormat = (fechaStr) => {
+		const date = new Date(fechaStr);
+		return date.toISOString();
+	};
 
-    if (response.status !== 200 && response.status !== 201) {
-      throw new Error(response.data?.message || 'Error al guardar la factura');
+  const enviarFactura = async () => {
+    console.log(formatToDatabaseFormat(invoiceData.fecha_emision));
+    try {
+      const response = await client.crearFactura(invoiceData);
+
+      if (response.status !== 200 && response.status !== 201) {
+        throw new Error(response.data?.message || 'Error al guardar la factura');
+      }
+
+      console.log('Factura registrada:', response.data);
+      return response.data;
+
+    } catch (error) {
+      setError('Error al guardar factura: ' + error.message);
+      console.error('Error al enviar factura:', error);
+      throw error; // para que cerrarCuenta lo capture
     }
-
-    console.log('Factura registrada:', response.data);
-    return response.data;
-
-  } catch (error) {
-    setError('Error al guardar factura: ' + error.message);
-    console.error('Error al enviar factura:', error);
-    throw error; // para que cerrarCuenta lo capture
-  }
-};
+  };
 
   const irAHuespedes = () => {
     setMainPage(true);
@@ -128,60 +134,60 @@ const enviarFactura = async () => {
   };
 
   const generarPDFBlob = async () => {
-  // 1. Ocultar elementos manualmente antes de generar el PDF
-  const elementsToHide = [
-    ...document.querySelectorAll('.no-print'),
-    ...document.querySelectorAll('.modal-overlay'),
-    ...document.querySelectorAll('.action-buttons-container'),
-    ...document.querySelectorAll('.btn-cancelar'),
-    ...document.querySelectorAll('.btn-generar-factura')
-  ];
-  
-  const originalStyles = elementsToHide.map(el => {
-    const style = {
-      display: el.style.display,
-      visibility: el.style.visibility
-    };
-    el.style.display = 'none';
-    el.style.visibility = 'hidden';
-    return style;
-  });
+    // 1. Ocultar elementos manualmente antes de generar el PDF
+    const elementsToHide = [
+      ...document.querySelectorAll('.no-print'),
+      ...document.querySelectorAll('.modal-overlay'),
+      ...document.querySelectorAll('.action-buttons-container'),
+      ...document.querySelectorAll('.btn-cancelar'),
+      ...document.querySelectorAll('.btn-generar-factura')
+    ];
 
-  // 2. Agregar clase al body
-  document.body.classList.add('generando-pdf');
-
-  try {
-    const element = invoiceRef.current;
-    const opt = {
-      margin: 0,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { 
-        scale: 2,
-        ignoreElements: (el) => {
-          return el.classList?.contains('no-print') || 
-                 el.classList?.contains('modal-overlay') ||
-                 el.classList?.contains('action-buttons-container') ||
-                 el.classList?.contains('btn-cancelar') ||
-                 el.classList?.contains('btn-generar-factura');
-        }
-      },
-      jsPDF: { unit: "pt", format: "a4", orientation: "portrait" }
-    };
-
-    const html2pdf = await import("html2pdf.js");
-    return await html2pdf.default()
-      .set(opt)
-      .from(element)
-      .outputPdf('blob');
-  } finally {
-    // 3. Limpieza - Restaurar estilos y remover clase
-    document.body.classList.remove('generando-pdf');
-    elementsToHide.forEach((el, index) => {
-      el.style.display = originalStyles[index].display;
-      el.style.visibility = originalStyles[index].visibility;
+    const originalStyles = elementsToHide.map(el => {
+      const style = {
+        display: el.style.display,
+        visibility: el.style.visibility
+      };
+      el.style.display = 'none';
+      el.style.visibility = 'hidden';
+      return style;
     });
-  }
-};
+
+    // 2. Agregar clase al body
+    document.body.classList.add('generando-pdf');
+
+    try {
+      const element = invoiceRef.current;
+      const opt = {
+        margin: 0,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          ignoreElements: (el) => {
+            return el.classList?.contains('no-print') ||
+              el.classList?.contains('modal-overlay') ||
+              el.classList?.contains('action-buttons-container') ||
+              el.classList?.contains('btn-cancelar') ||
+              el.classList?.contains('btn-generar-factura');
+          }
+        },
+        jsPDF: { unit: "pt", format: "a4", orientation: "portrait" }
+      };
+
+      const html2pdf = await import("html2pdf.js");
+      return await html2pdf.default()
+        .set(opt)
+        .from(element)
+        .outputPdf('blob');
+    } finally {
+      // 3. Limpieza - Restaurar estilos y remover clase
+      document.body.classList.remove('generando-pdf');
+      elementsToHide.forEach((el, index) => {
+        el.style.display = originalStyles[index].display;
+        el.style.visibility = originalStyles[index].visibility;
+      });
+    }
+  };
 
 
   const enviarFacturaPorCorreo = async () => {
@@ -216,26 +222,26 @@ const enviarFactura = async () => {
 
 
   const cerrarCuenta = async () => {
-  try {
-    // 1. Generar PDF primero
-    const blob = await generarPDFBlob();
-    setPdfBlob(blob);
-    
-    // 2. Guardar la factura en el sistema
-    const facturaGuardada = await enviarFactura();
-    
-    // 3. Mostrar modal para enviar por correo
-    setShowEmailModal(true);
-    setSendSuccess(false);
+    try {
+      // 1. Generar PDF primero
+      const blob = await generarPDFBlob();
+      setPdfBlob(blob);
 
-    return facturaGuardada;
-  } catch (error) {
-    console.error('Error en cerrarCuenta:', error);
-    setError('Error al procesar factura: ' + error.message);
-    alert('Error al procesar factura');
-    throw error;
-  }
-};
+      // 2. Guardar la factura en el sistema
+      const facturaGuardada = await enviarFactura();
+
+      // 3. Mostrar modal para enviar por correo
+      setShowEmailModal(true);
+      setSendSuccess(false);
+
+      return facturaGuardada;
+    } catch (error) {
+      console.error('Error en cerrarCuenta:', error);
+      setError('Error al procesar factura: ' + error.message);
+      alert('Error al procesar factura');
+      throw error;
+    }
+  };
 
   useEffect(() => {
     obtenerNumeroFactura();
@@ -243,14 +249,14 @@ const enviarFactura = async () => {
 
 
   return (
-    <div className="invoice" ref={invoiceRef}>     
+    <div className="invoice" ref={invoiceRef}>
       <div className="invoice-header">
         <div className="hotel-name">Hotel Jazel</div>
         <div className="invoice-title">Factura Electrónica</div>
         <div className="commercial-info">
           Servicios de hospedaje y alojamiento
           <br />
-          Av. Dr. Francia, Encarnación, Paraguay Comercial
+          Av. Dr. Francia, Encarnación, Paraguay
         </div>
         <div className="invoice-meta text-start">
           <div><span>RUC:</span> 80000519-8</div>
@@ -262,23 +268,23 @@ const enviarFactura = async () => {
         </div>
       </div>
       <br></br>
-      
+
       {/* Información del cliente */}
       <div className="customer-section">
         <div className="customer-info text-start">
-          <div><span>Nombre o Razón Social: </span>{huesped.nombre + " "+ huesped.apellido}</div>
+          <div><span>Nombre o Razón Social: </span>{huesped.nombre + " " + huesped.apellido}</div>
           <div><span>RUC / Documento de Identidad: </span>{huesped.ruc}</div>
           <div><span>Correo Electrónico: </span>{huesped.email}</div>
           <div><span>Teléfono: </span>{huesped.telefono}</div>
         </div>
         <div className="invoice-details text-start">
-          <div><span>Fecha y hora de emisión: </span>{invoiceData.fecha_emision}</div>
+          <div><span>Fecha y hora de emisión: </span>{invoiceData.fecha_emision.toLocaleString("es-PY")}</div>
           <div><span>Cond. Venta: </span>{invoiceData.condicion_venta}</div>
           <div><span>Moneda: </span>Guarani</div>
         </div>
       </div>
       <br></br>
-      
+
       {/* Tabla de items */}
       <table className="items-table">
         <thead>
@@ -311,7 +317,7 @@ const enviarFactura = async () => {
         </tbody>
       </table>
       <br></br>
-      
+
       {/* Totales */}
       <div className="totals-section">
         <div className="total-row">
@@ -327,43 +333,43 @@ const enviarFactura = async () => {
           <div>{invoiceData.total.toLocaleString("de-DE")}</div>
         </div>
         <div className="total-row d-flex justify-content-between">
-            <div className="d-flex justify-content-between w-100">
-              <span><strong>LIQUIDACIÓN IVA:</strong></span>
-              <span><strong>5%</strong></span>
-              <span>{Math.round(iva.iva5).toLocaleString("de-DE")}</span>
-              <span><strong>10%</strong></span>
-              <span>{Math.round(iva.iva10).toLocaleString("de-DE")}</span>
-              <span><strong>TOTAL IVA:</strong> {Math.round(iva.totalIVA).toLocaleString("de-DE")}</span>
-            </div>
+          <div className="d-flex justify-content-between w-100">
+            <span><strong>LIQUIDACIÓN IVA:</strong></span>
+            <span><strong>5%</strong></span>
+            <span>{Math.round(iva.iva5).toLocaleString("de-DE")}</span>
+            <span><strong>10%</strong></span>
+            <span>{Math.round(iva.iva10).toLocaleString("de-DE")}</span>
+            <span><strong>TOTAL IVA:</strong> {Math.round(iva.totalIVA).toLocaleString("de-DE")}</span>
+          </div>
         </div>
       </div>
-      
+
       {/* Botones de acción */}
       <div className="d-flex justify-content-center align-items-center mt-4" style={{ gap: "30px" }}>
         <div className="action-buttons-container no-print">
-          <button 
-            className="btn btn-secondary fw-bold btn-cancelar" 
-            style={{ width: "150px", height: "40px" }} 
+          <button
+            className="btn btn-secondary fw-bold btn-cancelar"
+            style={{ width: "150px", height: "40px" }}
             onClick={irADetCuenta}
           >
             Cancelar
           </button>
-          <button 
-            className="btn btn-success fw-bold btn-generar-factura" 
-            style={{ width: "150px", height: "40px" }} 
+          <button
+            className="btn btn-success fw-bold btn-generar-factura"
+            style={{ width: "150px", height: "40px" }}
             onClick={cerrarCuenta}
           >
             Generar Factura
           </button>
         </div>
       </div>
-      
+
       {/* Modal para enviar por correo */}
       {showEmailModal && (
         <div className={`modal-overlay ${showEmailModal ? 'active' : ''}`}>
           <div className="modal-content p-4 bg-white rounded">
             <h4>Enviar Factura por Correo</h4>
-            
+
             {sendSuccess ? (
               <div className="alert alert-success">
                 Factura enviada exitosamente a {email}
@@ -380,18 +386,18 @@ const enviarFactura = async () => {
                     required
                   />
                 </div>
-                
+
                 {error && <div className="alert alert-danger">{error}</div>}
-                
+
                 <div className="d-flex justify-content-end gap-2 mt-3">
-                  <button 
+                  <button
                     className="btn btn-secondary"
                     onClick={() => setShowEmailModal(false)}
                     disabled={sending}
                   >
                     Cancelar
                   </button>
-                  <button 
+                  <button
                     className="btn btn-primary"
                     onClick={enviarFacturaPorCorreo}
                     disabled={sending || !email}
