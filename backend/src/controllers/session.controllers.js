@@ -55,7 +55,7 @@ export const login = async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: true, // solo en HTTPS
-            sameSite: 'None', // si frontend y backend están en dominios diferentes
+            sameSite: 'none', // si frontend y backend están en dominios diferentes
         });
         res.status(200).json({
             success: true,
