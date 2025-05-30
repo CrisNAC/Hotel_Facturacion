@@ -86,6 +86,14 @@ class HTTPClient {
     getUltimaFactura() {
         return this.instance.get("/facturas/ultimafactura");
     }
+    crearFactura(data) {
+        return this.instance.post('/facturas', data);
+    }
+
+    enviarFactura(data){
+        return this.instance.post('/facturas/enviar', data);
+    }
+
 
     /****        RESERVAS       ****/
     getAReservaById(id) {

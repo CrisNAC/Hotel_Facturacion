@@ -106,23 +106,14 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
 
 const enviarFactura = async () => {
   try {
-    const response = await fetch('http://localhost:4000/api/facturas', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(invoiceData)
-    });
+    const response = await client.crearFactura(invoiceData);
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Error al guardar la factura');
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error(response.data?.message || 'Error al guardar la factura');
     }
 
-    const data = await response.json();
-    console.log('Factura registrada:', data);
-    
-    return data; 
+    console.log('Factura registrada:', response.data);
+    return response.data;
 
   } catch (error) {
     setError('Error al guardar factura: ' + error.message);
@@ -197,7 +188,7 @@ const enviarFactura = async () => {
     try {
       setSending(true);
       setError('');
-      
+
       const blob = await generarPDFBlob();
       setPdfBlob(blob);
 
@@ -205,28 +196,24 @@ const enviarFactura = async () => {
       formData.append('archivo', blob, `factura-${invoiceData.numero_factura}.pdf`);
       formData.append('email', email);
 
-      const response = await fetch('http://localhost:4000/api/facturas/enviar', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Error al enviar la factura');
-      }
+      const response = await client.enviarFactura(formData);
+      console.log('Respuesta del servidor:', response.data);
 
       setSendSuccess(true);
       setTimeout(() => {
         setShowEmailModal(false);
-        irAHuespedes(); 
+        irAHuespedes();
       }, 2000);
+
     } catch (error) {
-      setError('Error al enviar factura: ' + error.message);
+      const message = error.response?.data?.error || error.message || 'Error al enviar la factura';
+      setError('Error al enviar factura: ' + message);
       console.error('Error al enviar factura:', error);
     } finally {
       setSending(false);
     }
   };
+
 
   const cerrarCuenta = async () => {
   try {
@@ -254,7 +241,7 @@ const enviarFactura = async () => {
     obtenerNumeroFactura();
   }, []);
 
-  
+
   return (
     <div className="invoice" ref={invoiceRef}>     
       <div className="invoice-header">
