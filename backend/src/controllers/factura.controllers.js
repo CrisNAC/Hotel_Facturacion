@@ -10,6 +10,7 @@ export const getAllFacturas = async (req, res) => {
       include: {
         timbrado: true,
         detalles: true,
+        fecha_emision:true,
         usuario: {
           select: { nombre: true, apellido: true }
         },

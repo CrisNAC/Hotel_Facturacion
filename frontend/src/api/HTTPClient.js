@@ -94,15 +94,15 @@ class HTTPClient {
 
     /****    CONSUMO   ****/
     postConsumo(data) {
-        this.instance.post('/consumo', data);
+        return this.instance.post('/consumo', data);
     };
 
     updateConsumo(id, data) {
-        this.instance.patch(`/consumo/${id}`, data);
+        return this.instance.patch(`/consumo/${id}`, data);
     };
 
     deleteConsumo(id, data) {
-        this.instance.put(`/consumo/${id}`, data);
+        return this.instance.put(`/consumo/${id}`, data);
     };
 
     /****    PRODUCTOS     ****/

@@ -52,15 +52,6 @@ const Invoice = () => {
     }
   };
 
-  // Calcular noches de estadía
-  const calcularNoches = (checkIn, checkOut) => {
-    if (!checkIn || !checkOut) return 0;
-    const unDia = 24 * 60 * 60 * 1000;
-    const fechaInicio = new Date(checkIn);
-    const fechaFin = new Date(checkOut);
-    return Math.round(Math.abs((fechaFin - fechaInicio) / unDia));
-  };
-
   const handleBack = () => navigate("/FacturasEmitidas");
 
   const handleDownload = () => {
@@ -156,16 +147,29 @@ const Invoice = () => {
     const base = subtotal - descuento;
 
     if (detalle.porcentaje_iva === 5) {
-      iva5Total += base * 0.05;
+      iva5Total += base * 5 / 105;
     } else if (detalle.porcentaje_iva === 10) {
-      iva10Total += base * 0.10;
+      iva10Total += base * 10 / 110;
     }
+
 
     subtotalGeneral += base;
   });
 
   const ivaTotal = iva5Total + iva10Total;
   const totalOperacion = subtotalGeneral + ivaTotal;
+  
+  const fechaISO = factura.fecha_emision;
+  const fechaFormateada = new Date(fechaISO).toLocaleString("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true, 
+  });
+
 
   return (
     <>
@@ -198,7 +202,7 @@ const Invoice = () => {
             <div><span>Teléfono:</span> {titular?.telefono || '----------'}</div>
           </div>
           <div className="invoice-details text-start">
-            <div><span>Fecha y hora de emisión:</span> {new Date().toLocaleString()}</div>
+            <div><span>Fecha y hora de emisión:</span> {fechaFormateada || '----------'}</div>
             <div><span>Cond. Venta:</span> {condicion_venta}</div>
             <div><span>Moneda:</span> Guaraní</div>
           </div>
@@ -232,11 +236,11 @@ const Invoice = () => {
                   <td>{detalle.descripcion}</td>
                   <td>UNI</td>
                   <td>{detalle.cantidad}</td>
-                  <td>{detalle.precio_unitario.toLocaleString()}</td>
+                  <td>{detalle.precio_unitario.toLocaleString("de-DE")}</td>
                   <td>{detalle.descuento}</td>
                   <td>0</td>
-                  <td>{iva5 ? iva5.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
-                  <td>{iva10 ? iva10.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
+                  <td>{iva5 ? iva5.toLocaleString("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
+                  <td>{iva10 ? iva10.toLocaleString("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}</td>
                 </tr>
               );
             })}
@@ -247,24 +251,24 @@ const Invoice = () => {
         <div className="totals-section">
           <div className="total-row">
             <div className="total-label">SUBTOTAL:</div>
-            <div>{subtotalGeneral.toLocaleString()}</div>
+            <div>{subtotalGeneral.toLocaleString("de-DE")}</div>
           </div>
           <div className="total-row">
             <div className="total-label">TOTAL DE LA OPERACIÓN:</div>
-            <div>{subtotalGeneral.toLocaleString()}</div>
+            <div>{subtotalGeneral.toLocaleString("de-DE")}</div>
           </div>
           <div className="total-row">
             <div className="total-label">TOTAL EN GUARANÍES:</div>
-            <div>{subtotalGeneral.toLocaleString()}</div>
+            <div>{subtotalGeneral.toLocaleString("de-DE")}</div>
           </div>
           <div className="total-row">
             <div className="total-label">LIQUIDACIÓN IVA:</div>
             <div className="total-label">5%</div>
-            <div>{iva5Total.toLocaleString()}</div>
+            <div>{Math.round(iva5Total).toLocaleString("de-DE")}</div>
             <div className="total-label">10%</div>
-            <div>{iva10Total.toLocaleString()}</div>
+            <div>{Math.round(iva10Total).toLocaleString("de-DE")}</div>
             <div className="total-label">TOTAL IVA</div>
-            <div>{ivaTotal.toLocaleString()}</div>
+            <div>{Math.round(ivaTotal).toLocaleString("de-DE")}</div>
           </div>
         </div>
         {/* Botones */}
