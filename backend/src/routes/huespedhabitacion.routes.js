@@ -6,5 +6,4 @@ const router = Router();
 
 router.get('/:id', authenticate, getAllHuespedHabitacion);
 
-
 export default router;
