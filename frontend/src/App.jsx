@@ -6,7 +6,6 @@ const queryClient = new QueryClient();
 
 import Login from './components/Login'
 import Inicio from './pages/Inicio.jsx'
-import NavBar from './components/navbar.jsx'
 import HuespedesActivosPage from './pages/HuespedesActivosPage.jsx';
 
 import Invoice from "./components/Invoice.jsx"
@@ -43,7 +42,7 @@ function App() {
               />
             }
           />
-          <Route path="*" element={<ErrorComponent code={404} message="Página no encontrada" />} />
+          <Route path="/ErrorPage" element={<ErrorComponent code={404} message="Página no encontrada" />} />
 
           {/* Rutas con NavBar */}
           <Route element={<MainLayout />}>
