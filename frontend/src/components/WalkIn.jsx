@@ -10,11 +10,11 @@ const WalkIn = () => {
 	const hoyUTC = new Date();
 	
 	//Formato ES para mostrar en el formulario de forma amigable
-	const fechaActual = hoyUTC.toLocaleDateString('es-ES', {
+	/*const fechaActual = hoyUTC.toLocaleDateString('es-ES', {
 		day: '2-digit',
 		month: '2-digit',
 		year: 'numeric'
-	});
+	});*/
 
 	//Formato US para mostrar en el formulario de forma amigable
 	const fechaHoy = hoyUTC.toISOString().split("T")[0];
@@ -165,7 +165,7 @@ const WalkIn = () => {
 						<label htmlFor="huespedes" className="form-label">
 							Huéspedes
 						</label>
-						<select className="form-select" id="huespedes" name="huespdes" value={form.huespedes} onChange={handleChange}>
+						<select className="form-select" id="huespedes" name="huespedes" value={form.huespedes} onChange={handleChange}>
 							<option value="1">1 huesped</option>
 							<option value="2">2 huespedes</option>
 							<option value="3">3 huespedes</option>
