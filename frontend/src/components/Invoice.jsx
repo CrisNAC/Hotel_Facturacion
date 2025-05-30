@@ -171,6 +171,7 @@ const Invoice = () => {
   });
 
 
+  
   return (
     <>
       <NavBar className="no-print" />

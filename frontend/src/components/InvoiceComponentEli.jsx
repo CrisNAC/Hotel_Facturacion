@@ -254,6 +254,7 @@ const enviarFactura = async () => {
     obtenerNumeroFactura();
   }, []);
 
+  
   return (
     <div className="invoice" ref={invoiceRef}>     
       <div className="invoice-header">

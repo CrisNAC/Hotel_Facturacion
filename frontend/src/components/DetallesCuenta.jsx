@@ -13,6 +13,7 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
     huespedSeleccionado
   } = useContext(HuespedesActivosContext);
 
+  
   const [consumos, setConsumos] = useState([]);
   const [productos, setProductos] = useState([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
