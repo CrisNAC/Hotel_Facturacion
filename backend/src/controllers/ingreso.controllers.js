@@ -188,6 +188,14 @@ export const createIngreso = async (req, res) => {
             },
         });
 
+		//Actualizamos el estado de la habitacion a no disponible
+		if (fk_habitacion) {
+			await prisma.habitacion.update({
+				where: { id_habitacion: fk_habitacion },
+				data: { estado: false }
+			});
+		}
+
         res.status(201).json(nuevoIngreso);
     } catch (error) {
 		console.error(error);

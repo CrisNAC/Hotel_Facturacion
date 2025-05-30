@@ -17,6 +17,7 @@ const ConfirmarReserva = () => {
 	const { reservaSeleccionada } = useReserva();
 	const { tarifaSeleccionada } = useTarifa();
 	const { habitacionSeleccionada } = useHabitacion();
+	const [loading, setLoading] = useState(false);
 	
 	console.log(reservaSeleccionada);
 	console.log(tarifaSeleccionada);
@@ -84,22 +85,24 @@ const ConfirmarReserva = () => {
 	const precio_tarifa = tarifaSeleccionada ? tarifaSeleccionada.precio : 0;
 	const noches = calcularNoches(check_in, check_out);
 	const costoTotal = precio_tarifa * noches;
-	const maxHuespedes = reservaSeleccionada.huespedes;
-
-	// PAYLOADS
-	const payloadWalkIn = {
-		fk_reserva: null,
-		checkIn: check_in,
-		checkOut: check_out,
-		estado: "Activo",
-		fk_habitacion: habitacionSeleccionada.id_habitacion,
-		fk_tarifa: tarifaSeleccionada.id_tarifa,
-		fk_huesped: listaHuespedes[0].id_huesped,
-		fk_usuario: reservaSeleccionada.id_usuario
-	}
+	const maxHuespedes = reservaSeleccionada ? reservaSeleccionada.huespedes : 0;
 
 	const handleSubmit = async () => {
+
+		// PAYLOADS
+		const payloadWalkIn = {
+			fk_reserva: null,
+			checkIn: check_in,
+			checkOut: check_out,
+			estado: "Activo",
+			fk_habitacion: habitacionSeleccionada.id_habitacion,
+			fk_tarifa: tarifaSeleccionada.id_tarifa,
+			fk_huesped: listaHuespedes[0]?.id_huesped,
+			fk_usuario: reservaSeleccionada.id_usuario
+		}
+
 		try {
+			setLoading(true);
 			const response = await axios.post("/api/ingresos" , payloadWalkIn, {
 				withCredentials: true,
 			});
@@ -108,6 +111,8 @@ const ConfirmarReserva = () => {
 			navigate("/Inicio");
 		} catch(error) {
 			console.error("Error al crear el ingreso: ", error.response.data.error);
+		} finally {
+			setLoading(false);
 		}
 	}
 
@@ -246,8 +251,8 @@ const ConfirmarReserva = () => {
 
 				{/* Button */}
 				<div className="d-flex justify-content-center mt-4">
-					<button type="button" className="btn btn-success" disabled={listaHuespedes.length === 0} onClick={handleSubmit}>
-						Confirmar Ingreso
+					<button type="button" className="btn btn-success btn-lg fw-bold px-4 py-3 shadow" disabled={loading || listaHuespedes.length === 0} onClick={handleSubmit}>
+						{loading ? "Espere..." : "Confirmar Ingreso"}
 					</button>
 				</div>
 
