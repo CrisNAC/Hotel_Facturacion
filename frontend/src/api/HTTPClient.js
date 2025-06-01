@@ -117,6 +117,11 @@ class HTTPClient {
     getProductos() {
         return this.instance.get('/productos');
     }
+
+    /****    ASIENTOS CONTABLES     ****/
+    getAsientos() {
+        return this.instance.get('/asientos');
+    }
 };
 
 export default HTTPClient;

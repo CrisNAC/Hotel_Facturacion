@@ -24,6 +24,8 @@ import ErrorComponent from './components/ErrorComponent.jsx';
 
 import ReportesPage from './pages/ReportesPage.jsx';
 
+import AsientoContable from './components/AsientoContable.jsx';
+
 import MainLayout from './context/navbar/MainLayout.jsx';
 
 function App() {
@@ -62,6 +64,7 @@ function App() {
             <Route path="/FacturasEmitidas" element={<FacturaPage />} />
             <Route path="/Invoice/:id" element={<Invoice />} />
             <Route path="/Reportes" element={<ReportesPage />} />
+            <Route path="/AsientoContable" element={<AsientoContable />} />
           </Route>
         </Routes>
       </Router>

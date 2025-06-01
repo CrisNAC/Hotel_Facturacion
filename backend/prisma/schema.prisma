@@ -78,15 +78,15 @@ model Habitacion {
   created_at         DateTime       @default(now())
   updated_at         DateTime       @updatedAt
   tipoHabitacion     TipoHabitacion @relation(fields: [fk_tipo_habitacion], references: [id_tipo_habitacion])
-  ingresos           Ingreso?
+  ingresos           Ingreso[]
 }
 
 model Reserva {
   id_reserva         Int            @id @default(autoincrement())
   fk_huesped         Int
   fk_tipo_habitacion Int
-  check_in           DateTime
-  check_out          DateTime
+  check_in           DateTime       @db.Timestamptz(6)
+  check_out          DateTime       @db.Timestamptz(6)
   estado             EstadoReserva  @default(Pendiente)
   fk_usuario         Int
   activo             Boolean        @default(true)
@@ -101,7 +101,7 @@ model Reserva {
 model Ingreso {
   id_ingreso            Int                 @id @default(autoincrement())
   fk_reserva            Int?
-  fk_habitacion         Int?                @unique
+  fk_habitacion         Int?
   fk_huesped            Int
   fk_tarifa             Int
   estado                EstadoIngreso       @default(Activo)
@@ -202,6 +202,17 @@ model Productos {
   descripcion     String    @default("Agua")
   porcentaje_iva  Int       @default(10) @db.SmallInt
   Consumo         Consumo[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model AsientoContable {
+  id_asiento Int       @id @default(autoincrement())
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  fecha      DateTime? @db.Date
+  concepto   String?
+  debe       Int?
+  haber      Int?
+  activo     Boolean?  @default(true)
 }
 
 enum DocumentoIdentidad {
