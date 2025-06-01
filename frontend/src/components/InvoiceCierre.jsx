@@ -1,35 +1,110 @@
-import { useContext, useRef, useState, useEffect } from "react";
 import "../styles/InvoiceStyleEli.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { jsPDF } from "jspdf";
-import { HuespedesActivosContext } from "../context/HuespedesActivosContexto.jsx";
+import { useRef, useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import HTTPClient from "../api/HTTPClient.js";
 
-const Invoice = ({ ingresosOriginales, refresh }) => {
+function InvoiceCierre() {
   const client = new HTTPClient();
-  const {
-    setMainPage,
-    setVistaFactura,
-    huespedSeleccionado,
-    datosFacturacion,
-  } = useContext(HuespedesActivosContext);
   const invoiceRef = useRef();
+  /**
+   * Uso de react-router-dom
+   */
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const irADetCuenta = () => {
-    setMainPage(false);
-    setVistaFactura(false);
-  };
+  // Apartado ingreso
+  const [ingreso, setIngreso] = useState({
+    id_ingreso: 0,
+    estado: '',
+    checkIn: '',
+    checkOut: ''
+  });
+  const [huesped, setHuesped] = useState({
+    id_huesped: 0,
+    nombre: '',
+    apellido: '',
+    email: '',
+    nacionalidad: '',
+    ruc: '',
+    telefono: ''
+  });
+  const [habitacion, setHabitacion] = useState({
+    id_habitacion: 0,
+    numero: '',
+    tipoHabitacion: { nombre: '' }
+  });
+  const [tarifa, setTarifa] = useState({
+    descripcion: '',
+    precio: 0
+  });
+  const [cuenta, setCuenta] = useState({
+    id_cuenta: 0,
+    consumos: []
+  });
+  const [usuario, setUsuario] = useState({
+    id_usuario: 0
+  });
 
-  const huesped = huespedSeleccionado?.huesped || {};
-  const cuenta = huespedSeleccionado?.cuenta?.[0] || {};
-  const tarifa = huespedSeleccionado?.tarifa || {};
-  const habitacion = huespedSeleccionado?.habitacion || {};
-  const [error, setError] = useState('');
   const [email, setEmail] = useState(huesped.email || '');
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [sending, setSending] = useState(false);
   const [sendSuccess, setSendSuccess] = useState(false);
   const [pdfBlob, setPdfBlob] = useState(null);
+
+  // Funcionalidad de la pagina
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  /*
+   * Cargar datos del ingreso
+   */
+  useEffect(() => {
+    const cargarIngreso = async () => {
+      try {
+        setLoading(true);
+        const res = await client.getIngresoById(Number(id));
+        const valor = res.data;
+
+        setIngreso({
+          id_ingreso: Number(valor.id_ingreso),
+          estado: valor.estado,
+          checkIn: valor.checkIn,
+          checkOut: valor.checkOut,
+        });
+        setHuesped({
+          id_huesped: Number(valor.huesped.id_huesped),
+          nombre: valor.huesped.nombre,
+          apellido: valor.huesped.apellido,
+          email: valor.huesped.email,
+          nacionalidad: valor.huesped.nacionalidad,
+          ruc: valor.huesped.ruc,
+          telefono: valor.huesped.telefono
+        });
+        setHabitacion({
+          id_habitacion: Number(valor.habitacion.id_habitacion),
+          numero: valor.habitacion.numero,
+          tipoHabitacion: { nombre: valor.habitacion.tipoHabitacion.nombre }
+        });
+        setTarifa({
+          descripcion: valor.tarifa.descripcion,
+          precio: Number(valor.tarifa.precio)
+        });
+        setCuenta({
+          id_cuenta: Number(valor.cuenta?.[0].id_cuenta),
+          consumos: valor.cuenta?.[0].consumos
+        });
+        setUsuario({
+          id_usuario: Number(valor.usuario.id_usuario)
+        });
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    cargarIngreso()
+  }, []);
 
   // Calcular noches de estadía
   const calcularNoches = (checkIn, checkOut) => {
@@ -40,7 +115,7 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
     return Math.round(Math.abs((fechaFin - fechaInicio) / unDia));
   };
 
-  const noches = calcularNoches(huespedSeleccionado.checkIn, huespedSeleccionado.checkOut);
+  const noches = calcularNoches(ingreso.checkIn, ingreso.checkOut);
   const precioHabitacion = tarifa?.precio;
   const totalHabitacion = noches * precioHabitacion;
 
@@ -105,9 +180,9 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
   const iva = calcularIVA(detallesFactura);
 
   const formatToDatabaseFormat = (fechaStr) => {
-		const date = new Date(fechaStr);
-		return date.toISOString();
-	};
+    const date = new Date(fechaStr);
+    return date.toISOString();
+  };
 
   const enviarFactura = async () => {
     console.log(formatToDatabaseFormat(invoiceData.fecha_emision));
@@ -128,9 +203,17 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
     }
   };
 
+    /*
+   * Navegación
+   */
+  // Volver a huesped
   const irAHuespedes = () => {
-    setMainPage(true);
-    setVistaFactura(false);
+    navigate('/Huespedes');
+  };
+
+  // Ir a Detalle Cuenta
+  const irADetCuenta = () => {
+    navigate(`/DetallesCuenta/${id}`);
   };
 
   const generarPDFBlob = async () => {
@@ -419,4 +502,4 @@ const Invoice = ({ ingresosOriginales, refresh }) => {
   );
 };
 
-export default Invoice;
+export default InvoiceCierre;
