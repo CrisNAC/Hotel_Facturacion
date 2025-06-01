@@ -58,6 +58,10 @@ class HTTPClient {
         return this.instance.get("/huesped");
     }
 
+    getHuespedesFrecuentes(fechaDesde, fechaHasta) {
+        return this.instance.get(`huesped/frecuentes/${fechaDesde}/${fechaHasta}`);
+    }
+
     getAHuespedById(id) {
         return this.instance.get(`/huesped/${id}`);
     }
@@ -83,6 +87,10 @@ class HTTPClient {
         return this.instance.get("/facturas");
     }
 
+    getFacturasPorFechas(fechaDesde, fechaHasta) {
+        return this.instance.get(`/facturas/fechas/${fechaDesde}/${fechaHasta}`);
+    }
+
     getFacturaById(id) {
         return this.instance.get(`/facturas/${id}`);
     }
@@ -99,6 +107,10 @@ class HTTPClient {
     }
 
     /****        RESERVAS       ****/
+    getReservasPorFechas(fechaDesde, fechaHasta) {
+        return this.instance.get(`/reserva/fechas/${fechaDesde}/${fechaHasta}`);
+    };
+
     getAReservaById(id) {
         return this.instance.get(`/reserva/${id}`);
     };
