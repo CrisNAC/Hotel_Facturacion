@@ -6,7 +6,10 @@ const queryClient = new QueryClient();
 
 import Login from './components/Login'
 import Inicio from './pages/Inicio.jsx'
-import HuespedesActivosPage from './pages/HuespedesActivosPage.jsx';
+
+import Huespedes from './components/Huespedes.jsx';
+import DetallesCuenta from './components/DetallesCuenta.jsx'
+import InvoiceCierre from './components/InvoiceCierre.jsx'
 
 import Invoice from "./components/Invoice.jsx"
 
@@ -48,8 +51,10 @@ function App() {
           {/* Rutas con NavBar */}
           <Route element={<MainLayout />}>
             <Route path="/Inicio" element={<Inicio />} />
-            <Route path="/Huespedes" element={<HuespedesActivosPage />} />
-
+            <Route path="/Huespedes" element={<Huespedes />} />
+            <Route path="/DetallesCuenta/:id" element={<DetallesCuenta />} />
+            <Route path="/InvoiceCierre/:id" element={<InvoiceCierre />} />
+            
             <Route element={<ReservaLayout></ReservaLayout>}>
               <Route element={<TarifaLayout></TarifaLayout>}>
                 <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
