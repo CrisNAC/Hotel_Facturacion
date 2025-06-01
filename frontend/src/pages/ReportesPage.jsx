@@ -7,8 +7,13 @@ import {
 import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { saveAs } from 'file-saver'; // Importa saveAs
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import HTTPClient from '../api/HTTPClient';
 
+const http = new HTTPClient();
 
 const categorias = [
     { label: "Ingresos", value: "ingresos" },
@@ -23,6 +28,8 @@ export default function ReportesPage() {
     const [categoria, setCategoria] = useState('ingresos');
     const [desde, setDesde] = useState(dayjs().startOf('month').format('YYYY-MM-DD'));
     const [hasta, setHasta] = useState(dayjs().endOf('month').format('YYYY-MM-DD'));
+    const [openAlert, setOpenAlert] = useState(false);
+    const [alertMsg, setAlertMsg] = useState('');
 
     const [datos, setDatos] = useState([]);
     const [resumen, setResumen] = useState(null);
@@ -37,6 +44,15 @@ export default function ReportesPage() {
     };
 
     const handleBuscar = async () => {
+        const fechaDesde = new Date(desde);
+        const fechaHasta = new Date(hasta);
+
+        if (fechaDesde > fechaHasta) {
+            setAlertMsg("La fecha de inicio no puede ser mayor\nque la fecha de fin.");
+            setOpenAlert(true);
+            return;
+        }
+
         if (categoria === 'ingresos') {
             const result = await refetch();
             const data = result?.data;
@@ -146,10 +162,10 @@ export default function ReportesPage() {
             });
 
             setDatos(huespedesParseados);
-            setTop3(ordenado.slice(0, 3));
+            setTop3(ordenado.slice(0, 10));
         }
     }
-
+    
     const handleExportar = () => {
         if (!datos || datos.length === 0) {
             alert('No hay datos para exportar.');
@@ -158,73 +174,64 @@ export default function ReportesPage() {
 
         let headers = [];
         let rows = [];
-        let fileName = `${categoria}_reporte.csv`;
 
         if (categoria === 'ingresos') {
             headers = ["N° de habitación", "Huésped", "Noches", "Tarifa por Noche", "Tarifa Total", "Total Consumos", "Total", "Check-in", "Check-out"];
-            rows = datos.map(row => [
-                row.habitacion,
-                row.huesped,
-                row.noches,
-                row.tarifaPorNoche,
-                row.tarifaTotal,
-                row.totalConsumos,
-                row.total,
-                formatDMY(row.checkIn),
-                formatDMY(row.checkOut)
-            ]);
+            rows = datos.map(row => ({
+                "N° de habitación": row.habitacion,
+                "Huésped": row.huesped,
+                "Noches": row.noches,
+                "Tarifa por Noche": row.tarifaPorNoche,
+                "Tarifa Total": row.tarifaTotal,
+                "Total Consumos": row.totalConsumos,
+                "Total": row.total,
+                "Check-in": formatDMY(row.checkIn),
+                "Check-out": formatDMY(row.checkOut),
+            }));
         } else if (categoria === 'reservas') {
             headers = ["Huésped", "Tipo de habitación", "Estado", "Check-in", "Check-out"];
-            rows = datos.map(row => [
-                row.huesped,
-                row.tipo_habitacion,
-                row.estado,
-                formatDMY(row.checkIn),
-                formatDMY(row.checkOut)
-            ]);
+            rows = datos.map(row => ({
+                "Huésped": row.huesped,
+                "Tipo de habitación": row.tipo_habitacion,
+                "Estado": row.estado,
+                "Check-in": formatDMY(row.checkIn),
+                "Check-out": formatDMY(row.checkOut),
+            }));
         } else if (categoria === 'facturas') {
             headers = ["Número de factura", "Nombre del huésped", "Fecha de emisión", "Concepto", "Monto total", "Condición de venta"];
-            rows = datos.map(row => [
-                row.numero,
-                row.huesped,
-                formatDMY(row.fecha),
-                Array.isArray(row.concepto) ? row.concepto.join('; ') : row.concepto, // Asegura que el concepto sea string
-                row.total,
-                row.condicion
-            ]);
+            rows = datos.map(row => ({
+                "Número de factura": row.numero,
+                "Nombre del huésped": row.huesped,
+                "Fecha de emisión": formatDMY(row.fecha),
+                "Concepto": row.concepto,
+                "Monto total": row.total,
+                "Condición de venta": row.condicion,
+            }));
         } else if (categoria === 'huespedes') {
-            // Para huéspedes, puedes decidir si exportar solo el top3 o todos los "datos"
-            // Aquí estoy exportando todos los "huespedesParseados" que están en 'datos'
             headers = ["Nombre", "Documento", "Teléfono", "Email", "Ingresos", "Reservas", "Último Check-in", "Total Gastado"];
-            rows = datos.map(row => [
-                row.nombre,
-                row.documento,
-                row.telefono,
-                row.email,
-                row.ingresos,
-                row.reservas,
-                formatDMY(row.ultimoCheckIn),
-                row.total
-            ]);
-            // O si quieres exportar el top 3 en un archivo separado:
-            // fileName = `top3_huespedes_frecuentes.csv`;
-            // rows = top3.map(row => [ ... ]);
-        } else {
-            alert('Categoría no soportada para exportación.');
-            return;
+            rows = datos.map(row => ({
+                "Nombre": row.nombre,
+                "Documento": row.documento,
+                "Teléfono": row.telefono,
+                "Email": row.email,
+                "Ingresos": row.ingresos,
+                "Reservas": row.reservas,
+                "Último Check-in": formatDMY(row.ultimoCheckIn),
+                "Total Gastado": row.total
+            }));
         }
 
-        const csvContent = [
-            headers.join(','), // Unir los encabezados con comas
-            ...rows.map(e => e.join(',')) // Unir cada fila con comas
-        ].join('\n'); // Unir todas las líneas con saltos de línea
+        const worksheet = XLSX.utils.json_to_sheet(rows, { header: headers });
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, categoria);
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        saveAs(blob, fileName);
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        saveAs(blob, `${categoria}_reporte.xlsx`);
     };
 
     const fetchIngresos = async () => {
-        const res = await axios.get(`/api/ingresos`, {
+        const res = await http.instance.get("/ingresos", {
             params: {
                 desde,
                 hasta
@@ -234,7 +241,7 @@ export default function ReportesPage() {
     };
 
     const fetchReservas = async () => {
-        const res = await axios.get(`/api/reserva/fechas`, {
+        const res = await http.instance.get(`/reserva/fechas`, {
             params: {
                 desde,
                 hasta
@@ -244,7 +251,7 @@ export default function ReportesPage() {
     };
 
     const fetchFacturas = async () => {
-        const res = await axios.get(`/api/facturas/fechas`, {
+        const res = await http.instance.get(`/facturas/fechas`, {
             params: {
                 desde,
                 hasta
@@ -254,7 +261,7 @@ export default function ReportesPage() {
     };
 
     const fetchHuespedes = async () => {
-        const res = await axios.get(`/api/huesped/frecuentes`, {
+        const res = await http.instance.get(`/huesped/frecuentes`, {
             params: {
                 desde,
                 hasta
@@ -387,7 +394,7 @@ export default function ReportesPage() {
                                 onClick={handleExportar}
                                 disabled={!datos || datos.length === 0 || !['ingresos', 'reservas', 'facturas', 'huespedes'].includes(categoria)}
                             >
-                                Exportar a CSV
+                                Exportar a xlsx
                             </Button>
                         </Grid>
                     </Grid>
@@ -470,7 +477,7 @@ export default function ReportesPage() {
                 {categoria === 'huespedes' && top3.length > 0 && (
                     <Paper sx={{ p: 2, mt: 4 }}>
                         <Typography variant="h6" gutterBottom>
-                            Top 3 huéspedes más frecuentes
+                            Top 10 huéspedes más frecuentes
                         </Typography>
                         <Table>
                             <TableHead sx={{
@@ -543,6 +550,20 @@ export default function ReportesPage() {
                     </Paper>
                 )}
             </Box>
+            <Snackbar
+                open={openAlert}
+                autoHideDuration={3000}
+                onClose={() => setOpenAlert(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                sx={{ mt: 7 }}
+            >
+                <MuiAlert onClose={() => setOpenAlert(false)}
+                    severity="warning"
+                    sx={{ width: '100%', whiteSpace: 'pre-line' }}
+                >
+                    {alertMsg}
+                </MuiAlert>
+            </Snackbar>
         </>
     );
 }

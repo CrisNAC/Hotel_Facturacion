@@ -1,45 +1,126 @@
-import { useContext, useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash, FaSearch, FaTimes } from "react-icons/fa";
-import NavBar from "./navbar";
-import { HuespedesActivosContext } from "../context/HuespedesActivosContexto";
 import HTTPClient from "../api/HTTPClient";
 
-function DetallesCuenta({ ingresosOriginales, refresh }) {
+function DetallesCuenta() {
+  /*
+   * Uso de la api
+   */
   const client = new HTTPClient();
-  const {
-    setMainPage,
-    setVistaFactura,
-    huespedSeleccionado
-  } = useContext(HuespedesActivosContext);
 
-  
+  /**
+   * Uso de react-router-dom
+   */
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  /*
+   * Estados
+   */
+  // Apartado ingreso
+  const [ingreso, setIngreso] = useState({
+    id_ingreso: 0,
+    estado: '',
+    checkIn: '',
+    checkOut: ''
+  });
+  const [huesped, setHuesped] = useState({
+    id_huesped: 0,
+    nombre: '',
+    apellido: '',
+    email: '',
+    nacionalidad: '',
+    ruc: '',
+    telefono: ''
+  });
+  const [habitacion, setHabitacion] = useState({
+    id_habitacion: 0,
+    numero: '',
+    tipoHabitacion: { nombre: '' }
+  });
+  const [tarifa, setTarifa] = useState({
+    descripcion: '',
+    precio: 0
+  });
+  const [cuenta, setCuenta] = useState({
+    id_cuenta: 0,
+    consumos: []
+  });
+  const [usuario, setUsuario] = useState({
+    id_usuario: 0
+  });
+
+  // Apartado consumo
   const [consumos, setConsumos] = useState([]);
   const [productos, setProductos] = useState([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [busqueda, setBusqueda] = useState('');
   const [productosFiltrados, setProductosFiltrados] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [consumoEditando, setConsumoEditando] = useState(null);
   const [nuevaCantidad, setNuevaCantidad] = useState(1);
-
   // Estado para nuevo consumo
   const [nuevoConsumo, setNuevoConsumo] = useState({
     producto: null,
     cantidad: 1,
     monto: 0
   });
+  // Funcionalidad de la pagina
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Extraer datos del huésped
-  const huesped = huespedSeleccionado?.huesped || {};
-  const habitacion = huespedSeleccionado?.habitacion || {};
-  const reserva = huespedSeleccionado?.reserva || {};
-  const tarifa = huespedSeleccionado?.tarifa || {};
-  const cuenta = huespedSeleccionado?.cuenta?.[0] || {};
-  const [recargar, setRecargar] = useState(0);
+  /*
+   * Cargar datos del ingreso
+   */
+  useEffect(() => {
+    const cargarIngreso = async () => {
+      try {
+        setLoading(true);
+        const res = await client.getIngresoById(Number(id));
+        const valor = res.data;
+
+        setIngreso({
+          id_ingreso: Number(valor.id_ingreso),
+          estado: valor.estado,
+          checkIn: valor.checkIn,
+          checkOut: valor.checkOut,
+        });
+        setHuesped({
+          id_huesped: Number(valor.huesped.id_huesped),
+          nombre: valor.huesped.nombre,
+          apellido: valor.huesped.apellido,
+          email: valor.huesped.email,
+          nacionalidad: valor.huesped.nacionalidad,
+          ruc: valor.huesped.ruc,
+          telefono: valor.huesped.telefono
+        });
+        setHabitacion({
+          id_habitacion: Number(valor.habitacion.id_habitacion),
+          numero: valor.habitacion.numero,
+          tipoHabitacion: { nombre: valor.habitacion.tipoHabitacion.nombre }
+        });
+        setTarifa({
+          descripcion: valor.tarifa.descripcion,
+          precio: Number(valor.tarifa.precio)
+        });
+        setCuenta({
+          id_cuenta: Number(valor.cuenta?.[0].id_cuenta),
+          consumos: valor.cuenta?.[0].consumos
+        });
+        setUsuario({
+          id_usuario: Number(valor.usuario.id_usuario)
+        });
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    cargarIngreso()
+  }, []);
 
   // Cargar datos iniciales
   useEffect(() => {
@@ -64,7 +145,7 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
     };
     // Luego en tu useEffect
     cargarDatos();
-  }, [cuenta, ingresosOriginales, recargar]);
+  }, [cuenta]);
 
   // Filtrar productos según búsqueda
   useEffect(() => {
@@ -89,21 +170,24 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
     return Math.round(Math.abs((fechaFin - fechaInicio) / unDia));
   };
 
-  const noches = calcularNoches(huespedSeleccionado.checkIn, huespedSeleccionado.checkOut);
+  // Calculo de la cuenta
+  const noches = calcularNoches(ingreso.checkIn, ingreso.checkOut);
   const precioHabitacion = tarifa.precio || 0;
   const totalHabitacion = noches * precioHabitacion;
   const totalConsumos = consumos.reduce((acc, item) => acc + (Number(item.monto) || 0), 0);
   const totalGeneral = Number(totalHabitacion) + Number(totalConsumos);
 
-  // Navegación
+  /*
+   * Navegación
+   */
+  // Volver a huesped
   const irAHuespedes = () => {
-    setMainPage(true);
-    setVistaFactura(false);
+    navigate('/Huespedes');
   };
 
+  // Ir a factura. Cierre de cuenta
   const irAFactura = () => {
-    setMainPage(false);
-    setVistaFactura(true);
+    navigate(`/InvoiceCierre/${id}`);
   };
 
   // Función para limpiar la selección
@@ -171,7 +255,6 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
       setError('Error al actualizar cantidad: ' + error.message);
     } finally {
       setLoading(false);
-      refresh();
     }
   };
 
@@ -190,8 +273,8 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
         throw new Error('La cantidad debe ser un número mayor a 0');
       }
 
-      const idCuenta = Number(cuenta?.id_cuenta);
-      const idUsuario = Number(huespedSeleccionado?.usuario?.id_usuario);
+      const idCuenta = Number(cuenta.id_cuenta);
+      const idUsuario = Number(usuario.id_usuario);
 
       if (!idCuenta || !idUsuario) {
         throw new Error('No se pudo obtener la cuenta o usuario asociado');
@@ -246,8 +329,8 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
         context: {
           producto: nuevoConsumo.producto,
           cantidad: nuevoConsumo.cantidad,
-          cuenta: cuenta?.id_cuenta,
-          usuario: huespedSeleccionado?.usuario?.id_usuario
+          cuenta: cuenta.id_cuenta,
+          usuario: usuario.id_usuario
         }
       });
 
@@ -266,7 +349,6 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
 
     } finally {
       setLoading(false);
-      refresh(); // Actualizar datos
     }
   };
 
@@ -290,7 +372,6 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
       setError('Error al eliminar consumo: ' + mensaje);
     } finally {
       setLoading(false);
-      refresh();
     }
   };
 
@@ -298,8 +379,8 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
     <div className="container mt-5">
       {/* Encabezado */}
       <h2 className="d-block mt-n3 text-center">Detalles Cuenta</h2>
-
-     <div className="card border-secondary-subtle bg-light p-3 mb-4">
+      {/* Datos del Huésped */}
+      <div className="card border-secondary-subtle bg-light p-3 mb-4">
         <h4 className="card-title mb-3">Datos del Huésped</h4>
         <div className="d-flex flex-wrap gap-4">
           <div className="flex-fill" style={{ minWidth: "160px" }}>
@@ -599,7 +680,6 @@ function DetallesCuenta({ ingresosOriginales, refresh }) {
                   className="btn btn-success"
                   onClick={guardarEdicionCantidad}
                   disabled={loading || nuevaCantidad === consumoEditando.cantidad}
-                  refresh={refresh}
                 >
                   {loading ? 'Guardando...' : 'Guardar Cambios'}
                 </button>

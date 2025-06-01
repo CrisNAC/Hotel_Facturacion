@@ -1,6 +1,6 @@
 import { Container ,Skeleton } from "@mui/material";
 
-function HuespedesActivosSkeleton() {
+function HuespedesSkeleton() {
     return (
         <Container>
             <div className='d-flex justify-content-center' style={{ marginTop: "50px" }}><Skeleton variant='text' animation='wave' width={180} height={60}></Skeleton></div>
@@ -19,4 +19,4 @@ function HuespedesActivosSkeleton() {
     );
 }
 
-export default HuespedesActivosSkeleton;
+export default HuespedesSkeleton;

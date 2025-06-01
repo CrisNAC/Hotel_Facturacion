@@ -31,7 +31,7 @@ class HTTPClient {
         return this.instance.get('/session/user-session');
     }
 
-    /**** INICIO ****/
+    /****    INICIO    ****/
     getDashboard() {
         return this.instance.get('/dashboard');
     }
@@ -41,17 +41,25 @@ class HTTPClient {
         return this.instance.get("/ingresos");
     };
 
+    getIngresoById(id) {
+        return this.instance.get(`/ingresos/${id}`);
+    };
+
+    postIngreso(data) {
+        return this.instance.post("/ingresos", data);
+    }
+
     cancelarIngreso(id) {
         return this.instance.patch(`/ingresos/${id}`);
     }
 
-    getHuespedById(huespedId) {
-        return this.instance.get(`/ingresos/${huespedId}`)
-    };
-
     /****        HUESPEDES        ****/
     getHuespedes() {
         return this.instance.get("/huesped");
+    }
+
+    getHuespedesFrecuentes(fechaDesde, fechaHasta) {
+        return this.instance.get(`huesped/frecuentes/${fechaDesde}/${fechaHasta}`);
     }
 
     getAHuespedById(id) {
@@ -59,7 +67,7 @@ class HTTPClient {
     }
 
     postHuesped(datos) {
-        this.instance.post(`/huesped`, datos);
+        return this.instance.post(`/huesped`, datos);
     };
 
     deleteAHuespedById(id) {
@@ -67,7 +75,7 @@ class HTTPClient {
     }
 
     updateHuesped(id, datos) {
-        this.instance.put(`/huesped/${id}`, datos);
+        return this.instance.put(`/huesped/${id}`, datos);
     };
     /****        HUESPEDES HABITACION       ****/
     getDetalleHabitacion(id) {
@@ -77,6 +85,10 @@ class HTTPClient {
     /****        FACTURAS       ****/
     getFacturas() {
         return this.instance.get("/facturas");
+    }
+
+    getFacturasPorFechas(fechaDesde, fechaHasta) {
+        return this.instance.get(`/facturas/fechas/${fechaDesde}/${fechaHasta}`);
     }
 
     getFacturaById(id) {
@@ -90,12 +102,15 @@ class HTTPClient {
         return this.instance.post('/facturas', data);
     }
 
-    enviarFactura(data){
+    enviarFactura(data) {
         return this.instance.post('/facturas/enviar', data);
     }
 
-
     /****        RESERVAS       ****/
+    getReservasPorFechas(fechaDesde, fechaHasta) {
+        return this.instance.get(`/reserva/fechas/${fechaDesde}/${fechaHasta}`);
+    };
+
     getAReservaById(id) {
         return this.instance.get(`/reserva/${id}`);
     };

@@ -4,7 +4,7 @@ import authenticate from "../../config/jwt.config.js";
 const router = Router();
 
 router.post("/", authenticate, createReserva);
-router.get("/", authenticate, getReservas);
+router.get("/", getReservas);
 router.get("/fechas", authenticate, getReservasPorFechas);
 router.get("/:id_reserva", authenticate, getReservaPorId);
 router.get("/huesped/:id_huesped", authenticate, getReservasPorHuesped);
