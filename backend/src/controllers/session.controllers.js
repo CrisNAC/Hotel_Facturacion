@@ -17,7 +17,7 @@ export const login = async (req, res) => {
     }
 
     try {
-        const user = await prisma.usuario.findUnique({
+        const user = await prisma.usuario.findFirst({
             where: {
                 nombre_usuario,
                 activo: true,
@@ -95,7 +95,7 @@ export const userSession = async (req, res) => {
 
         const token_decodificado = jwt.verify(token, process.env.JWT_SECRET);
 
-        const user = await prisma.usuario.findUnique({
+        const user = await prisma.usuario.findFirst({
             where: {
                 id_usuario: token_decodificado.id_usuario,
                 activo: true,
