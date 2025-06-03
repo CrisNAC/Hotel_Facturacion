@@ -52,7 +52,7 @@ export const login = async (req, res) => {
         );
 
         //Enviar token en cookie o json
-        res.cookie("userToken", token, {httpOnly: true});
+        res.cookie("userToken", token, {httpOnly: true, secure: true, sameSite: "none"});
         res.status(200).json({
             success: true,
             message: "Login exitoso " + token,
