@@ -55,7 +55,7 @@ export const login = async (req, res) => {
         res.cookie('userToken', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
         });
         res.status(200).json({
             success: true,
@@ -78,7 +78,7 @@ export const logout = async (req, res) => {
     res.clearCookie("userToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
     }).json({ message: "Hasta luego!" });
 };
 

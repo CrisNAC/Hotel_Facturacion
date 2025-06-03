@@ -1,7 +1,6 @@
 import { useState } from "react";
 import WalkIn from "./WalkIn";
 import CheckInReserva from "./CheckInReserva";
-import NavBar from "./navbar";
 
 const CheckIn = () => {
 	const [tieneReserva, setTieneReserva] = useState(true);

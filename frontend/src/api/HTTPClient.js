@@ -1,4 +1,5 @@
-import axios from "axios";
+//import axios from "axios";
+import axiosInstance from "./axiosInstance.js";
 
 class HTTPClient {
     constructor() {
@@ -12,10 +13,13 @@ class HTTPClient {
             baseURL = import.meta.env.VITE_PRODUCCION;
         }
 
-        this.instance = axios.create({
+        /*this.instance = axios.create({
             baseURL,
             withCredentials: true
-        });
+        });*/
+		this.instance = axiosInstance;
+		this.instance.defaults.baseURL = baseURL;
+		this.instance.defaults.withCredentials = true;
     }
 
     /****           SESSION - LOGIN         ****/
@@ -132,6 +136,20 @@ class HTTPClient {
     getProductos() {
         return this.instance.get('/productos');
     }
+
+	/****	HABITACIONES ****/
+	getHabitaciones() {
+		return this.instance.get('/habitacion');
+	}
+
+	/****	TARIFAS ****/
+	getTarifas() {
+		return this.instance.get('/tarifa');
+	}
+
+	getTarifaById(id) {
+		return this.instance.get(`/tarifa/${id}`);
+	}
 };
 
 export default HTTPClient;
