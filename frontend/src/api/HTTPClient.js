@@ -77,6 +77,11 @@ class HTTPClient {
     updateHuesped(id, datos) {
         return this.instance.put(`/huesped/${id}`, datos);
     };
+
+    getHuespedPorDocumento(data){
+        return this.instance.get(`/huesped/buscar/${data}`);
+    };
+
     /****        HUESPEDES HABITACION       ****/
     getDetalleHabitacion(id) {
         return this.instance.get(`/huespedHabitacion/${id}`);
