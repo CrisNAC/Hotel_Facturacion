@@ -11,23 +11,6 @@ export default defineConfig({
 		proxy: {	//CONFIGURAR LOS PREFIJOS DE LAS PETICIONES
 			'/api': {
 				target: 'http://localhost:4000',
-				changeOrigin: true,
-				secure: false,
-				selfHandleResponse: false,
-				configure: (proxy, _options) => {
-					proxy.on('proxyRes', (proxyRes, req, res) => {
-						if (proxyRes.statusCode === 401) {
-							console.log('Redirigiendo...');
-							res.writeHead(401, {
-								'Location': '/'
-							});
-							res.end();
-							return;
-						}
-						//continue normally
-						proxyRes.pipe(res);
-					});
-				}
 			},
 		},
 	},

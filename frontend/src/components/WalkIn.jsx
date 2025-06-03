@@ -3,8 +3,10 @@ import React, { useState, useEffect} from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { useReserva } from "../context/Reserva/ReservaContext";
+import HTTPClient from "../api/HTTPClient.js";
 
 const WalkIn = () => {	
+	const client = new HTTPClient();
 	const navigate = useNavigate();
 
 	const hoyUTC = new Date();
@@ -45,9 +47,7 @@ const WalkIn = () => {
 	useEffect(() => {
 		const getUserInSession = async () => {
 			try {
-				const response = await axios.get("/api/session/user-session", {
-					withCredentials: true,
-				});
+				const response = await client.getUser();
 				const dataUser = response.data.user;
 				setForm(prev => ({
 					...prev,
