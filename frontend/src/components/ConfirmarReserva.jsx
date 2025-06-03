@@ -2,7 +2,6 @@ import { useState } from "react";
 import { FaEdit, FaTrash, FaUserPlus } from "react-icons/fa";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
-import axios from "axios";
 import HTTPClient from "../api/HTTPClient";
 import { useReserva } from "../context/Reserva/ReservaContext.jsx";
 import { useTarifa } from "../context/tarifa/TarifaContext.jsx";
@@ -105,9 +104,7 @@ const ConfirmarReserva = () => {
 
 		try {
 			setLoading(true);
-			const response = await axios.post("/api/ingresos" , payloadWalkIn, {
-				withCredentials: true,
-			});
+			const response = await client.postIngreso(payloadWalkIn);
 			const dataPost = response.data.data;
 			console.log(dataPost);
 			navigate("/Inicio");

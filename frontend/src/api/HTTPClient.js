@@ -136,6 +136,20 @@ class HTTPClient {
     getProductos() {
         return this.instance.get('/productos');
     }
+
+	/****	HABITACIONES ****/
+	getHabitaciones() {
+		return this.instance.get('/habitacion');
+	}
+
+	/****	TARIFAS ****/
+	getTarifas() {
+		return this.instance.get('/tarifa');
+	}
+
+	getTarifaById(id) {
+		return this.instance.get(`/tarifa/${id}`);
+	}
 };
 
 export default HTTPClient;
