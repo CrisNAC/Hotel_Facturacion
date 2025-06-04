@@ -85,8 +85,8 @@ model Reserva {
   id_reserva         Int            @id @default(autoincrement())
   fk_huesped         Int
   fk_tipo_habitacion Int
-  check_in           DateTime       @db.Timestamptz(6)
-  check_out          DateTime       @db.Timestamptz(6)
+  checkIn            DateTime       @db.Timestamptz(6)
+  checkOut         	 DateTime       @db.Timestamptz(6)
   estado             EstadoReserva  @default(Pendiente)
   fk_usuario         Int
   activo             Boolean        @default(true)

@@ -47,9 +47,9 @@ const CheckInReserva = () => {
     };
 
     const calcularNoches = () => {
-        if (reserva?.check_in && reserva?.check_out) {
-            const checkIn = new Date(reserva.check_in);
-            const checkOut = new Date(reserva.check_out);
+        if (reserva?.checkIn && reserva?.checkOut) {
+            const checkIn = new Date(reserva.checkIn);
+            const checkOut = new Date(reserva.checkOut);
             const diffTime = Math.abs(checkOut - checkIn);
             return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         }
@@ -135,10 +135,10 @@ const CheckInReserva = () => {
                                     </div>
                                     <div className="row mb-3">
                                         <div className="col-md-6">
-                                            <p><b>Check-in:</b> {reserva.check_in.substring(0, 10)}</p>
+                                            <p><b>Check-in:</b> {reserva.checkIn.substring(0, 10)}</p>
                                         </div>
                                         <div className="col-md-6">
-                                            <p><b>Check-out:</b> {reserva.check_out.substring(0, 10)}</p>
+                                            <p><b>Check-out:</b> {reserva.checkOut.substring(0, 10)}</p>
                                         </div>
                                     </div>
                                     <div className="row">

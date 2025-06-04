@@ -23,7 +23,7 @@ const ConfirmarReserva = () => {
 	console.log(habitacionSeleccionada);
 	console.log(listaHuespedes);
 
-	const calcularNoches = (ingreso, egreso) => {
+	/*const calcularNoches = (ingreso, egreso) => {
         if (ingreso && egreso) {
             const checkInDate = new Date(ingreso);
             const checkOutDate = new Date(egreso);
@@ -32,7 +32,7 @@ const ConfirmarReserva = () => {
             return diffDays;
         }
         return 0;
-    };
+    };*/
 
 	// Función para eliminar huésped
 	const eliminarHuesped = async (id) => {
@@ -82,7 +82,7 @@ const ConfirmarReserva = () => {
 	const capacidad_habitacion = habitacionSeleccionada ? habitacionSeleccionada.tipoHabitacion.capacidad : 0;
 	const descripcion_tarifa = tarifaSeleccionada ? tarifaSeleccionada.descripcion : "";
 	const precio_tarifa = tarifaSeleccionada ? tarifaSeleccionada.precio : 0;
-	const noches = calcularNoches(check_in, check_out);
+	const noches = reservaSeleccionada ? reservaSeleccionada.noches : 0;
 	const costoTotal = precio_tarifa * noches;
 	const maxHuespedes = reservaSeleccionada ? reservaSeleccionada.huespedes : 0;
 	//const companions = listaHuespedes?.filter(h => h.id_huesped !== listaHuespedes[0]?.id_huesped);
