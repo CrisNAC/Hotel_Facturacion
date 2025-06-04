@@ -15,9 +15,6 @@ function Huespedes() {
      * Todos los estados
     */
     const [ingresosOriginales, setIngresosOriginales] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [status, setStatus] = useState(null);
     // Estados del filtro
     const [ingresosFiltrados, setIngresosFiltrados] = useState([]);
     const [filtros, setFiltros] = useState({ huesped: '', habitacion: '', estado: '', fecha: '', checkIn: true });
@@ -31,6 +28,10 @@ function Huespedes() {
     const itemsPerPage = 10;
     const paginatedItems = ingresosFiltrados.slice((page - 1) * itemsPerPage, page * itemsPerPage);
     const totalPages = Math.ceil(ingresosFiltrados.length / itemsPerPage);
+    // Funcionalidad de la pagina
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [status, setStatus] = useState(null);
 
     /**
      * Obtiene todos los ingresos
@@ -83,6 +84,21 @@ function Huespedes() {
         setIngresosFiltrados(filtrado);
         setPage(1);
     }, [debouncedFiltros, ingresosOriginales, filtros]);
+
+    /**
+     * Para el manejo de error
+     */
+    useEffect(() => {
+        if (error) {
+            navigate('/ErrorPage', {
+                state: {
+                    code: status,
+                    message: error
+                },
+                replace: true,
+            });
+        }
+    }, [error, status, navigate]);
 
     /**
      * Para cambiar el formato de la fecha a Dia/Mes/Año
@@ -143,234 +159,223 @@ function Huespedes() {
         <HuespedesActivosSkeleton></HuespedesActivosSkeleton>
     );
 
-    const errorPage = () => (
-        navigate('/ErrorPage', {
-            state: {
-                code: status,
-                message: error
-            },
-            replace: true
-        })
-    );
-
     return (
         <>
-            {loading ? skeletonPage() :
-                error ? errorPage() : (
-                    <>
-                        <h2 className="text-3xl font-bold text-center p-2">Huéspedes</h2>
-                        {/* Filtro */}
-                        <div
-                            className="row border border-gray rounded-2 p-3 d-flex justify-content-center align-items-center"
-                            style={{ margin: "0.5rem 0 1rem 0" }}
-                        >
-                            <div className="col-2 h-100">
-                                <label htmlFor="huesped" name="huesped" className="form-label small">Huesped</label>
-                                <input
-                                    id="huesped"
-                                    type="text"
-                                    className="form-control form-control-sm"
-                                    name="huesped"
-                                    value={filtros.huesped}
-                                    onChange={handleFilterChange}
-                                />
-                            </div>
+            {loading ? skeletonPage() : (
+                <>
+                    <h2 className="text-3xl font-bold text-center p-2">Huéspedes</h2>
+                    {/* Filtro */}
+                    <div
+                        className="row border border-gray rounded-2 p-3 d-flex justify-content-center align-items-center"
+                        style={{ margin: "0.5rem 0 1rem 0" }}
+                    >
+                        <div className="col-2 h-100">
+                            <label htmlFor="huesped" name="huesped" className="form-label small">Huesped</label>
+                            <input
+                                id="huesped"
+                                type="text"
+                                className="form-control form-control-sm"
+                                name="huesped"
+                                value={filtros.huesped}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
 
-                            <div className="col-2 h-100">
-                                <label htmlFor="habitacion" name="habitacion" className="form-label small">Habitacion</label>
-                                <input
-                                    id="habitacion"
-                                    type="text"
-                                    className="form-control form-control-sm"
-                                    name="habitacion"
-                                    value={filtros.habitacion}
-                                    onChange={handleFilterChange}
-                                />
-                            </div>
+                        <div className="col-2 h-100">
+                            <label htmlFor="habitacion" name="habitacion" className="form-label small">Habitacion</label>
+                            <input
+                                id="habitacion"
+                                type="text"
+                                className="form-control form-control-sm"
+                                name="habitacion"
+                                value={filtros.habitacion}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
 
-                            <div className="col-3 h-100">
-                                <label htmlFor="estado" name="estado" className="form-label small">Estado</label>
-                                <select
-                                    id="estado"
-                                    className="form-select form-select-sm"
-                                    name="estado"
-                                    value={filtros.estado}
-                                    onChange={handleFilterChange}
-                                >
-                                    <option value="">Todos los estados</option>  // Opción vacía para limpiar el filtro
-                                    <option value="activo">Activo</option>
-                                    <option value="pendiente">Pendiente</option>
-                                    <option value="cancelado">Cancelado</option>
-                                </select>
-                            </div>
-
-                            {/* Parte fecha y Checks */}
-                            <div
-                                className="col-5 row border border-gray rounded-2 align-items-center p-1"
-                                style={{ margin: 0 }}
+                        <div className="col-3 h-100">
+                            <label htmlFor="estado" name="estado" className="form-label small">Estado</label>
+                            <select
+                                id="estado"
+                                className="form-select form-select-sm"
+                                name="estado"
+                                value={filtros.estado}
+                                onChange={handleFilterChange}
                             >
-                                <div className="col">
-                                    <label htmlFor="fecha" name="fecha" className="form-label small">Fecha</label>
+                                <option value="">Todos los estados</option>  // Opción vacía para limpiar el filtro
+                                <option value="activo">Activo</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="cancelado">Cancelado</option>
+                            </select>
+                        </div>
+
+                        {/* Parte fecha y Checks */}
+                        <div
+                            className="col-5 row border border-gray rounded-2 align-items-center p-1"
+                            style={{ margin: 0 }}
+                        >
+                            <div className="col">
+                                <label htmlFor="fecha" name="fecha" className="form-label small">Fecha</label>
+                                <input
+                                    id="fecha"
+                                    type="date"
+                                    className="form-control form-control-sm"
+                                    name="fecha"
+                                    value={filtros.fecha}
+                                    onChange={handleFilterChange}
+                                />
+                            </div>
+                            {/* Checks */}
+                            <div className='col d-flex row'>
+                                <div className="d-flex justify-content-evenly align-items-center">
+                                    <label htmlFor="checkIn" name="checkIn">Check-in</label>
                                     <input
-                                        id="fecha"
-                                        type="date"
-                                        className="form-control form-control-sm"
-                                        name="fecha"
-                                        value={filtros.fecha}
+                                        id="checkIn"
+                                        type='checkbox'
+                                        name="checkIn"
+                                        checked={filtros.checkIn}
                                         onChange={handleFilterChange}
                                     />
                                 </div>
-                                {/* Checks */}
-                                <div className='col d-flex row'>
-                                    <div className="d-flex justify-content-evenly align-items-center">
-                                        <label htmlFor="checkIn" name="checkIn">Check-in</label>
-                                        <input
-                                            id="checkIn"
-                                            type='checkbox'
-                                            name="checkIn"
-                                            checked={filtros.checkIn}
-                                            onChange={handleFilterChange}
-                                        />
-                                    </div>
-                                    <div className="d-flex justify-content-evenly align-items-center">
-                                        <label htmlFor="checkOut" name="checkOut">Check-out</label>
-                                        <input
-                                            id="checkOut"
-                                            type='checkbox'
-                                            name="checkOut"
-                                            checked={!filtros.checkIn}
-                                            onChange={() => setFiltros(prev => ({ ...prev, checkIn: !prev.checkIn }))}
-                                        />
-                                    </div>
+                                <div className="d-flex justify-content-evenly align-items-center">
+                                    <label htmlFor="checkOut" name="checkOut">Check-out</label>
+                                    <input
+                                        id="checkOut"
+                                        type='checkbox'
+                                        name="checkOut"
+                                        checked={!filtros.checkIn}
+                                        onChange={() => setFiltros(prev => ({ ...prev, checkIn: !prev.checkIn }))}
+                                    />
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Tabla */}
-                        <div>
-                            <table className="table table-sm table-hover">
-                                <thead>
-                                    <tr className='text-center'>
-                                        <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>#</th>
-                                        <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Huésped</th>
-                                        <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Habitación</th>
-                                        <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-in</th>
-                                        <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-out</th>
-                                        <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Estado</th>
-                                        <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Total</th>
-                                        <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Acciones</th>
+                    {/* Tabla */}
+                    <div>
+                        <table className="table table-sm table-hover">
+                            <thead>
+                                <tr className='text-center'>
+                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>#</th>
+                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Huésped</th>
+                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Habitación</th>
+                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-in</th>
+                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-out</th>
+                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Estado</th>
+                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Total</th>
+                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {paginatedItems.map((item, index) => (
+                                    <tr key={item.id_ingreso}>
+                                        <td className='text-center'>{(page - 1) * itemsPerPage + index + 1}</td>
+                                        <td className='text-start'>{`${item.huesped?.nombre || 'N/A'} ${item.huesped?.apellido || ''}`}</td>
+                                        <td className="text-center">{item.habitacion?.numero || '---'}</td>
+                                        <td className="text-center">{formatDMY(item.checkIn) || '---'}</td>
+                                        <td className="text-center">{formatDMY(item.checkOut) || '---'}</td>
+                                        <td className="text-center">
+                                            <span style={{
+                                                padding: '4px 8px',
+                                                borderRadius: '12px',
+                                                fontSize: '14px',
+                                                display: 'inline-block',
+                                                backgroundColor:
+                                                    item.estado === 'Pendiente' ? '#fff3cd' :
+                                                        item.estado === 'Cancelado' ? '#f8d7da' :
+                                                            '#d4edda',
+                                                color:
+                                                    item.estado === 'Pendiente' ? '#856404' :
+                                                        item.estado === 'Cancelado' ? '#721c24' :
+                                                            '#155724'
+                                            }}>
+                                                {item.estado || '—'}
+                                            </span>
+                                        </td>
+                                        <td className="text-center">
+                                            {(() => {
+                                                const noches = calcularNoches(item.checkIn, item.checkOut);
+                                                const costoHabitacion = noches * (item.tarifa?.precio || 0);
+                                                const totalConsumos = item.cuenta?.[0]?.consumos
+                                                    ?.filter(consumo => consumo.activo)
+                                                    ?.reduce((acc, consumo) => acc + (Number(consumo.monto) || 0), 0) || 0;
+                                                const total = costoHabitacion + totalConsumos;
+
+                                                return total > 0 ? `${total.toLocaleString()} Gs` : '—';
+                                            })()}
+                                        </td>
+                                        {/* Botones de la tabla */}
+                                        <td className="text-center">
+                                            {/* Detalles del huésped*/}
+                                            <button
+                                                type='button'
+                                                className='btn rounded-circle mx-1'
+                                                onClick={() => handleShowDetails(item)}>
+                                                <FaEye />
+                                            </button>
+                                            {/* Cancelar el Ingreso */}
+                                            <button
+                                                type='button'
+                                                className='btn rounded-circle mx-1 border-0'
+                                                disabled={item.estado === 'Cancelado'}
+                                                onClick={() => handleShowDelete(item)}>
+                                                <FaRegTrashAlt />
+                                            </button>
+                                            {/* Detalles Cuenta */}
+                                            <button
+                                                type='button'
+                                                className='btn rounded-circle mx-1 border-0'
+                                                disabled={item.estado === 'Cancelado' || item.estado === 'Pendiente'}
+                                                onClick={() => irADetCuenta(item)}>
+                                                <FiFileText />
+                                            </button>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {paginatedItems.map((item, index) => (
-                                        <tr key={item.id_ingreso}>
-                                            <td className='text-center'>{(page - 1) * itemsPerPage + index + 1}</td>
-                                            <td className='text-start'>{`${item.huesped?.nombre || 'N/A'} ${item.huesped?.apellido || ''}`}</td>
-                                            <td className="text-center">{item.habitacion?.numero || '---'}</td>
-                                            <td className="text-center">{formatDMY(item.checkIn) || '---'}</td>
-                                            <td className="text-center">{formatDMY(item.checkOut) || '---'}</td>
-                                            <td className="text-center">
-                                                <span style={{
-                                                    padding: '4px 8px',
-                                                    borderRadius: '12px',
-                                                    fontSize: '14px',
-                                                    display: 'inline-block',
-                                                    backgroundColor:
-                                                        item.estado === 'Pendiente' ? '#fff3cd' :
-                                                            item.estado === 'Cancelado' ? '#f8d7da' :
-                                                                '#d4edda',
-                                                    color:
-                                                        item.estado === 'Pendiente' ? '#856404' :
-                                                            item.estado === 'Cancelado' ? '#721c24' :
-                                                                '#155724'
-                                                }}>
-                                                    {item.estado || '—'}
-                                                </span>
-                                            </td>
-                                            <td className="text-center">
-                                                {(() => {
-                                                    const noches = calcularNoches(item.checkIn, item.checkOut);
-                                                    const costoHabitacion = noches * (item.tarifa?.precio || 0);
-                                                    const totalConsumos = item.cuenta?.[0]?.consumos
-                                                        ?.filter(consumo => consumo.activo)
-                                                        ?.reduce((acc, consumo) => acc + (Number(consumo.monto) || 0), 0) || 0;
-                                                    const total = costoHabitacion + totalConsumos;
-
-                                                    return total > 0 ? `${total.toLocaleString()} Gs` : '—';
-                                                })()}
-                                            </td>
-                                            {/* Botones de la tabla */}
-                                            <td className="text-center">
-                                                {/* Detalles del huésped*/}
-                                                <button
-                                                    type='button'
-                                                    className='btn rounded-circle mx-1'
-                                                    onClick={() => handleShowDetails(item)}>
-                                                    <FaEye />
-                                                </button>
-                                                {/* Cancelar el Ingreso */}
-                                                <button
-                                                    type='button'
-                                                    className='btn rounded-circle mx-1 border-0'
-                                                    disabled={item.estado === 'Cancelado'}
-                                                    onClick={() => handleShowDelete(item)}>
-                                                    <FaRegTrashAlt />
-                                                </button>
-                                                {/* Detalles Cuenta */}
-                                                <button
-                                                    type='button'
-                                                    className='btn rounded-circle mx-1 border-0'
-                                                    disabled={item.estado === 'Cancelado' || item.estado === 'Pendiente'}
-                                                    onClick={() => irADetCuenta(item)}>
-                                                    <FiFileText />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        {/* Paginación */}
-                        <div className="d-flex justify-content-center mt-6 space-x-2">
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    {/* Paginación */}
+                    <div className="d-flex justify-content-center mt-6 space-x-2">
+                        <button
+                            type='button'
+                            className="px-3 py-1 border rounded disabled:opacity-50"
+                            onClick={() => setPage(page - 1)}
+                            disabled={page === 1}
+                        >
+                            Anterior
+                        </button>
+                        {Array.from({ length: totalPages }, (_, i) => (
                             <button
+                                key={i + 1}
                                 type='button'
-                                className="px-3 py-1 border rounded disabled:opacity-50"
-                                onClick={() => setPage(page - 1)}
-                                disabled={page === 1}
+                                className={`px-3 py-1 mx-1 border rounded ${page === i + 1 ? 'bg-secondary' : ''}`}
+                                onClick={() => setPage(i + 1)}
                             >
-                                Anterior
+                                {i + 1}
                             </button>
-                            {Array.from({ length: totalPages }, (_, i) => (
-                                <button
-                                    key={i + 1}
-                                    type='button'
-                                    className={`px-3 py-1 mx-1 border rounded ${page === i + 1 ? 'bg-secondary' : ''}`}
-                                    onClick={() => setPage(i + 1)}
-                                >
-                                    {i + 1}
-                                </button>
-                            ))}
-                            <button
-                                type='button'
-                                className="px-3 py-1 border rounded disabled:opacity-50"
-                                onClick={() => setPage(page + 1)}
-                                disabled={page === totalPages}
-                            >
-                                Siguiente
-                            </button>
-                        </div>
+                        ))}
+                        <button
+                            type='button'
+                            className="px-3 py-1 border rounded disabled:opacity-50"
+                            onClick={() => setPage(page + 1)}
+                            disabled={page === totalPages}
+                        >
+                            Siguiente
+                        </button>
+                    </div>
 
-                        {/* Modal de detalles */}
-                        {showDetailModal && selectedItem && (
-                            <ModalDetails item={selectedItem} setShowDetailModal={setShowDetailModal}></ModalDetails>
-                        )}
+                    {/* Modal de detalles */}
+                    {showDetailModal && selectedItem && (
+                        <ModalDetails item={selectedItem} setShowDetailModal={setShowDetailModal}></ModalDetails>
+                    )}
 
-                        {/* Modal de cancelar ingreso */}
-                        {showDeleteModal && selectedItem && (
-                            <ModalDelete item={selectedItem} setShowDeleteModal={setShowDeleteModal}></ModalDelete>
-                        )}
-                    </>
-                )}
+                    {/* Modal de cancelar ingreso */}
+                    {showDeleteModal && selectedItem && (
+                        <ModalDelete item={selectedItem} setShowDeleteModal={setShowDeleteModal}></ModalDelete>
+                    )}
+                </>
+            )}
         </>
     );
 }

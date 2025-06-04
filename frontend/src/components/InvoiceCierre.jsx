@@ -55,8 +55,9 @@ function InvoiceCierre() {
 
 
   // Funcionalidad de la pagina
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [status, setStatus] = useState(null);
 
   /*
    * Cargar datos del ingreso
@@ -101,12 +102,28 @@ function InvoiceCierre() {
         });
       } catch (error) {
         setError(error.message);
+        setStatus(error.response.status);
       } finally {
         setLoading(false);
       }
     }
     cargarIngreso()
   }, []);
+
+  /**
+   * Para el manejo de error
+   */
+  useEffect(() => {
+    if (error) {
+      navigate('/ErrorPage', {
+        state: {
+          code: status,
+          message: error
+        },
+        replace: true,
+      });
+    }
+  }, [error, status, navigate]);
 
   // Calcular noches de estadía
   const calcularNoches = (checkIn, checkOut) => {
@@ -206,9 +223,9 @@ function InvoiceCierre() {
     }
   };
 
-    /*
-   * Navegación
-   */
+  /*
+ * Navegación
+ */
   // Volver a huesped
   const irAHuespedes = () => {
     navigate('/Huespedes');
@@ -316,7 +333,7 @@ function InvoiceCierre() {
       // 2. Guardar la factura en el sistema
       const facturaGuardada = await enviarFactura();
 
-      setShowAsientoModal(true);      
+      setShowAsientoModal(true);
       setSendSuccess(false);
 
       return facturaGuardada;
@@ -331,7 +348,7 @@ function InvoiceCierre() {
   useEffect(() => {
     obtenerNumeroFactura();
   }, []);
-  
+
   const [medioPago, setMedioPago] = useState('');
 
   const crearAsientoContable = async () => {
@@ -339,7 +356,7 @@ function InvoiceCierre() {
       setLoading(true);
       setError('');
 
-      let asientoData = []; 
+      let asientoData = [];
 
       if (condicionVenta === "Credito") {
         asientoData = [
@@ -412,10 +429,10 @@ function InvoiceCierre() {
     }
   };
   useEffect(() => {
-  if (showEmailModal && huesped?.email) {
-    setEmail(huesped.email);
-  }
-}, [showEmailModal, huesped]);
+    if (showEmailModal && huesped?.email) {
+      setEmail(huesped.email);
+    }
+  }, [showEmailModal, huesped]);
 
 
   return (
@@ -449,29 +466,29 @@ function InvoiceCierre() {
         </div>
         <div className="invoice-details text-start">
           <div><span>Fecha y hora de emisión: </span>{invoiceData.fecha_emision.toLocaleString("es-PY")}</div>
-        <div>
-          <span>Cond. Venta: </span>
-          <label>
-            <input
-              type="radio"
-              name="cond_venta"
-              value="Contado"
-              checked={condicionVenta === "Contado"}
-              onChange={(e) => setCondicionVenta(e.target.value)}
-            />
-            Contado
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="cond_venta"
-              value="Credito"
-              checked={condicionVenta === "Credito"}
-              onChange={(e) => setCondicionVenta(e.target.value)}
-            />
-            Crédito
-          </label>
-        </div>
+          <div>
+            <span>Cond. Venta: </span>
+            <label>
+              <input
+                type="radio"
+                name="cond_venta"
+                value="Contado"
+                checked={condicionVenta === "Contado"}
+                onChange={(e) => setCondicionVenta(e.target.value)}
+              />
+              Contado
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="cond_venta"
+                value="Credito"
+                checked={condicionVenta === "Credito"}
+                onChange={(e) => setCondicionVenta(e.target.value)}
+              />
+              Crédito
+            </label>
+          </div>
           <div><span>Moneda: </span>Guarani</div>
         </div>
       </div>
@@ -557,48 +574,48 @@ function InvoiceCierre() {
       </div>
       {/*Modal para crear asiento*/}
       {showAsientoModal && (
-         <div className={`modal-overlay ${showAsientoModal? 'active' : ''}`}>
+        <div className={`modal-overlay ${showAsientoModal ? 'active' : ''}`}>
           <div className="modal-content p-4 bg-white rounded">
             <h4>Metodo de pago</h4>
-              <div className="mb-3">
-                <label htmlFor="medioPago" className="form-label">Medio de Pago:</label>
-                <select
-                  id="medioPago"
-                  className="form-select"
-                  value={medioPago}
-                  onChange={(e) => setMedioPago(e.target.value)}
-                >
-                  <option value="" disabled>Seleccionar método</option>
-                  <option value="Efectivo">Efectivo</option>
-                  <option value="Transferencia">Banco</option>
-                </select>
-              </div>
-               {error && <div className="alert alert-danger">{error}</div>}
-                <div className="d-flex justify-content-end gap-2 mt-3">
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => {
-                      setShowAsientoModal(false);
-                      setError('');
-                    }}
-                    disabled={loading}
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    className="btn btn-primary"
-                    onClick={crearAsientoContable}
-                    disabled={loading || !medioPago}
-                  >
-                    {loading ? 'Procesando...' : 'Continuar'}
-                  </button>
-                </div>
+            <div className="mb-3">
+              <label htmlFor="medioPago" className="form-label">Medio de Pago:</label>
+              <select
+                id="medioPago"
+                className="form-select"
+                value={medioPago}
+                onChange={(e) => setMedioPago(e.target.value)}
+              >
+                <option value="" disabled>Seleccionar método</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transferencia">Banco</option>
+              </select>
+            </div>
+            {error && <div className="alert alert-danger">{error}</div>}
+            <div className="d-flex justify-content-end gap-2 mt-3">
+              <button
+                className="btn btn-secondary"
+                onClick={() => {
+                  setShowAsientoModal(false);
+                  setError('');
+                }}
+                disabled={loading}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={crearAsientoContable}
+                disabled={loading || !medioPago}
+              >
+                {loading ? 'Procesando...' : 'Continuar'}
+              </button>
             </div>
           </div>
-          )}
+        </div>
+      )}
 
       {/* Modal para enviar por correo */}
-       {showEmailModal && (
+      {showEmailModal && (
         <div className={`modal-overlay ${showEmailModal ? 'active' : ''}`}>
           <div className="modal-content p-4 bg-white rounded">
             <h4>Enviar Factura por Correo</h4>

@@ -69,8 +69,9 @@ function DetallesCuenta() {
     monto: 0
   });
   // Funcionalidad de la pagina
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [status, setStatus] = useState(null);
 
   /*
    * Cargar datos del ingreso
@@ -115,6 +116,7 @@ function DetallesCuenta() {
         });
       } catch (error) {
         setError(error.message);
+        setStatus(error.response.status);
       } finally {
         setLoading(false);
       }
@@ -139,6 +141,7 @@ function DetallesCuenta() {
       } catch (error) {
         console.error('Error al cargar datos:', error);
         setError(error.message);
+        setStatus(error.response.status);
       } finally {
         setLoading(false);
       }
@@ -160,6 +163,21 @@ function DetallesCuenta() {
       setShowDropdown(false);
     }
   }, [busqueda, productos]);
+
+  /**
+     * Para el manejo de error
+     */
+  useEffect(() => {
+    if (error) {
+      navigate('/ErrorPage', {
+        state: {
+          code: status,
+          message: error
+        },
+        replace: true,
+      });
+    }
+  }, [error, status, navigate]);
 
   // Calcular noches de estadía
   const calcularNoches = (checkIn, checkOut) => {

@@ -1,8 +1,9 @@
 import HTTPClient from "../api/HTTPClient.js";
-import ErrorComponent from "../components/ErrorComponent.jsx";
+import { useState } from "react";
 
 function ModalDelete({ item, setShowDeleteModal, refresh }) {
     const client = new HTTPClient();
+    const [error, setError] = useState(null);
 
     /**
      * Para cambiar el formato de la fecha a Dia/Mes/Año
@@ -27,7 +28,7 @@ function ModalDelete({ item, setShowDeleteModal, refresh }) {
             try {
                 await client.cancelarIngreso(item.id_ingreso);
             } catch (err) {
-                console.error(err.message);
+                setError(err.message);
             } finally {
                 setShowDeleteModal(false);
                 refresh();
@@ -46,7 +47,7 @@ function ModalDelete({ item, setShowDeleteModal, refresh }) {
                     {/* Presentacion del contenido */}
                     <div className="modal-body row row-cols-2 text-start py-5">
                         <p><strong>Nombre:</strong> {item.huesped.nombre}</p>
-                        <p><strong>Habitación:</strong> {item.habitacion? item.habitacion.numero : "Sin asignar"}</p>
+                        <p><strong>Habitación:</strong> {item.habitacion ? item.habitacion.numero : "Sin asignar"}</p>
                         <p><strong>Check-in:</strong> {formatDMY(item.checkIn)}</p>
                         <p><strong>Check-out:</strong> {formatDMY(item.checkOut)}</p>
                         <p><strong>Estado ingreso:</strong> {item.estado}</p>
