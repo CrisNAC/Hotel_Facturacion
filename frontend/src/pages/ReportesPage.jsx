@@ -6,7 +6,6 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Snackbar from '@mui/material/Snackbar';

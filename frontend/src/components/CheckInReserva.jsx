@@ -14,7 +14,7 @@ const CheckInReserva = () => {
     const navigate = useNavigate();
     const { setReservaSeleccionada } = useReserva();
     /**
-     * Para tener los datos del usuario en seccion
+     * Para tener los datos del usuario en sesion
      * @returns Retorna los datos en caso de exito, si no null
      */
     const getUserInSession = async () => {

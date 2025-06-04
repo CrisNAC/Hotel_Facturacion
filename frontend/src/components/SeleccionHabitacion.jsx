@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { FaWifi, FaSnowflake, FaTv, FaBath, FaCouch } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
-import NavBar from "../components/navbar.jsx";
 import { useReserva } from "../context/Reserva/ReservaContext.jsx";
 import { useTarifa } from "../context/tarifa/TarifaContext.jsx";
 import { useHabitacion } from "../context/habitacion/HabitacionContext.jsx";
-import axios from "axios";
+import HTTPClient from "../api/HTTPClient.js";
 
 const SeleccionHabitacion = () => {
+	const client = new HTTPClient();
 
 	const { reservaSeleccionada } = useReserva();
 	const { setTarifaSeleccionada } = useTarifa();
@@ -30,7 +30,7 @@ const SeleccionHabitacion = () => {
 
 	const fetchHabitaciones = async () => {
         try {
-            const res = await axios.get("/api/habitacion");
+            const res = await client.getHabitaciones();
             const allHabitaciones = res.data;
 
             const filtradas = allHabitaciones.filter(
@@ -45,7 +45,7 @@ const SeleccionHabitacion = () => {
 
 	const fetchHabitacionesPorId = async (tipoHabitacionId) => {
 		try {
-			const res = await axios.get("/api/habitacion");
+			const res = await client.getHabitaciones();
 			const allHabitaciones = res.data;
 			const filtradas = allHabitaciones.filter(hab => hab.tipoHabitacion.id_tipo_habitacion === parseInt(tipoHabitacionId));
 			setHabitacionesDisponibles(filtradas);
@@ -59,7 +59,7 @@ const SeleccionHabitacion = () => {
 
 	const fetchTarifasPorId = async (tipoHabitacionId) => {
 		try {
-			const res = await axios.get("/api/tarifa");
+			const res = await client.getTarifas();
 			const allTarifas = res.data;
 			const filtradas = allTarifas.filter(tar => tar.tipoHabitacion.id_tipo_habitacion === parseInt(tipoHabitacionId));
 			setTarifasDisponibles(filtradas);
@@ -73,7 +73,7 @@ const SeleccionHabitacion = () => {
 
 	const fetchTarifas = async () => {
 		try {
-			const res = await axios.get("/api/tarifa");
+			const res = await client.getTarifas();
 			const allTarifas = res.data;
 
 			const filtradas = allTarifas.filter(
