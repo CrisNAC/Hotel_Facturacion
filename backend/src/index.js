@@ -19,6 +19,7 @@ import facturaRoutes from "./routes/factura.routes.js";
 import detallefacturaRoutes from "./routes/detallefactura.routes.js";
 import productos from "./routes/productos.routes.js";
 import dashboard from "./routes/dashboard.routes.js";
+import asientos from "./routes/asientocontable.route.js"
 
 dotenv.config();
 const app = express();
@@ -53,6 +54,7 @@ app.use('/api/facturas', facturaRoutes);						//Jazmín
 app.use('/api/detallefactura', detallefacturaRoutes);           //Jazmín
 app.use('/api/productos', productos);          
 app.use('/api/dashboard', dashboard); 
+app.use('/api/asientos', asientos); 
 
 app.listen(PORT, () => {
 	console.log(`Servidor corriendo en http://localhost:${PORT}`);
