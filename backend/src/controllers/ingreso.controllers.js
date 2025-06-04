@@ -24,8 +24,8 @@ export const getAllIngresos = async (req, res) => {
                 reserva: {
                     select: {
                         id_reserva: true,
-                        check_in: true,
-                        check_out: true,
+                        checkIn: true,
+                        checkOut: true,
                     },
                 },
                 huesped: {
@@ -121,8 +121,8 @@ export const getIngresoById = async (req, res) => {
                 reserva: {
                     select: {
                         id_reserva: true,
-                        check_in: true,
-                        check_out: true,
+                        checkIn: true,
+                        checkOut: true,
                     },
                 },
                 huesped: {
@@ -241,8 +241,8 @@ export const createIngreso = async (req, res) => {
                 reserva: {
                     select: {
                         id_reserva: true,
-                        check_in: true,
-                        check_out: true,
+                        checkIn: true,
+                        checkOut: true,
                     },
                 },
                 habitacion: {
