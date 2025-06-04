@@ -81,6 +81,11 @@ class HTTPClient {
     updateHuesped(id, datos) {
         return this.instance.put(`/huesped/${id}`, datos);
     };
+
+    getHuespedPorDocumento(data){
+        return this.instance.get(`/huesped/buscar/${data}`);
+    };
+
     /****        HUESPEDES HABITACION       ****/
     getDetalleHabitacion(id) {
         return this.instance.get(`/huespedHabitacion/${id}`);
@@ -150,6 +155,11 @@ class HTTPClient {
 	getTarifaById(id) {
 		return this.instance.get(`/tarifa/${id}`);
 	}
+
+    /****    ASIENTOS CONTABLES     ****/
+    getAsientos() {
+        return this.instance.get('/asientos');
+    }
 };
 
 export default HTTPClient;

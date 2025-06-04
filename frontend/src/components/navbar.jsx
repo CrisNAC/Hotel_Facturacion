@@ -48,6 +48,10 @@ export const NavBar = ({ className = "" }) => {
     navigate('/Reportes');
   };
 
+  const irAsientosContables = () => {
+    navigate('/AsientoContable');
+  };
+
 
   /*** Funciones que tocan la base de datos ***/
 
@@ -144,6 +148,7 @@ export const NavBar = ({ className = "" }) => {
           <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAIngresoHuesped}>Ingreso de huésped</button>
           <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAFacturasEmitidas}>Facturas emitidas</button>
           <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAReportes}>Reportes</button>
+          <button className="btn btn-link text-white fw-normal text-decoration-none" onClick={irAsientosContables}>Asientos Contables</button>
         </div >
 
         {/* Auth section */}

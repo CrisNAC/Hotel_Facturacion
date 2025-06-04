@@ -124,6 +124,22 @@ const getHuesped = async (req, res) => {
     }
 };
 
+const getHuespedDocumento = async (req, res) => {
+    try {
+        const { dato } = req.params;
+        const response = await prisma.huesped.findFirst({
+            where: {
+                numero_documento: dato,
+                activo: true
+            }
+        });
+        if (!response) return res.status(404).json({ error: "Huésped no encontrado" });
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener huésped" });
+    }
+};
+
 const postHuesped = async (req, res) => {
     try {
         const {
@@ -290,6 +306,7 @@ export default {
     getAllHuespedes,
     getHuespedesFrecuentes,
     getHuesped,
+    getHuespedDocumento,
     postHuesped,
     deleteHuesped,
     putHuesped,
