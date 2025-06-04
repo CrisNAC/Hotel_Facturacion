@@ -26,13 +26,15 @@ import ErrorComponent from './components/ErrorComponent.jsx';
 
 import ReportesPage from './pages/ReportesPage.jsx';
 
+import AsientoContable from './components/AsientoContable.jsx';
+
 import MainLayout from './context/navbar/MainLayout.jsx';
 import AppWrapper from './components/AppWrapper.jsx';
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
+	return (
+		<QueryClientProvider client={queryClient}>
+			<Router>
 				<AppWrapper>
 					<Routes>
 						{/* Rutas sin NavBar */}
@@ -56,7 +58,7 @@ function App() {
 							<Route path="/Huespedes" element={<Huespedes />} />
 							<Route path="/DetallesCuenta/:id" element={<DetallesCuenta />} />
 							<Route path="/InvoiceCierre/:id" element={<InvoiceCierre />} />
-							
+
 							<Route element={<ReservaLayout></ReservaLayout>}>
 								<Route element={<TarifaLayout></TarifaLayout>}>
 									<Route path="/IngresoHuesped" element={<CheckIn />}></Route>
@@ -68,12 +70,13 @@ function App() {
 
 							<Route path="/FacturasEmitidas" element={<FacturaPage />} />
 							<Route path="/Reportes" element={<ReportesPage />} />
+							<Route path="/AsientoContable" element={<AsientoContable />} />
 						</Route>
 					</Routes>
 				</AppWrapper>
-      </Router>
-    </QueryClientProvider>
-  );
+			</Router>
+		</QueryClientProvider>
+	);
 }
 
 export default App
