@@ -3,13 +3,13 @@ const prisma = new PrismaClient();
 
 // Crear una reserva
 export const createReserva = async (req, res) => {
-	const { fk_huesped, fk_tipo_habitacion, fk_usuario, check_in, check_out, estado } = req.body;
+	const { fk_huesped, fk_tipo_habitacion, fk_usuario, checkIn, checkOut, estado } = req.body;
 
-	if (!fk_huesped || !fk_tipo_habitacion || !fk_usuario || !check_in || !check_out || !estado) {
+	if (!fk_huesped || !fk_tipo_habitacion || !fk_usuario || !checkIn || !checkOut || !estado) {
 		return res.status(400).json({ error: "Faltan campos obligatorios" });
 	}
 
-	if (new Date(check_in) >= new Date(check_out)) {
+	if (new Date(checkIn) >= new Date(checkOut)) {
 		return res.status(400).json({ error: "La fecha de check-in debe ser anterior a la de check-out" });
 	}
 
@@ -28,8 +28,8 @@ export const createReserva = async (req, res) => {
 				fk_huesped: Number(fk_huesped),
 				fk_tipo_habitacion: Number(fk_tipo_habitacion),
 				fk_usuario: Number(fk_usuario),
-				check_in: new Date(check_in),
-				check_out: new Date(check_out),
+				checkIn: new Date(checkIn),
+				checkOut: new Date(checkOut),
 				estado,
 			}
 		});
@@ -92,8 +92,8 @@ export const getReservasPorFechas = async (req, res) => {
 
         const reservas = await prisma.reserva.findMany({
             where: {
-                check_in: { gte: new Date(desde) },
-                check_out: { lte: new Date(hasta) },
+                checkIn: { gte: new Date(desde) },
+                checkOut: { lte: new Date(hasta) },
                 activo: true,
             },
             include: {
@@ -101,7 +101,7 @@ export const getReservasPorFechas = async (req, res) => {
                 tipoHabitacion: true,
             },
             orderBy: {
-                check_in: 'asc',
+                checkIn: 'asc',
             }
         });
 
