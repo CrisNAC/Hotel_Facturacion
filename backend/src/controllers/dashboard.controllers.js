@@ -32,7 +32,7 @@ export const dashboard = async (req, res) => {
 
         const ingresosHoy = await prisma.reserva.findMany({
             where: {
-                check_in: {
+                checkIn: {
                     gte: fechaInicio,
                     lte: fechaFin,
                 }, activo: true
@@ -63,7 +63,7 @@ export const dashboard = async (req, res) => {
                 id: reserva.id_reserva,
                 nombre: reserva.huesped.nombre,
                 apellido: reserva.huesped.apellido,
-                hora: reserva.check_in.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+                hora: reserva.checkIn.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
             })),
             egresosHoy: egresosHoy.map(ingreso => ({
                 id: ingreso.id_ingreso,

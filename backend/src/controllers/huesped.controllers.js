@@ -57,8 +57,8 @@ const getHuespedesFrecuentes = async (req, res) => {
                 reservas: {
                     where: {
                         AND: [
-                            fechaDesde ? { check_in: { gte: fechaDesde } } : {},
-                            fechaHasta ? { check_in: { lte: fechaHasta } } : {},
+                            fechaDesde ? { checkIn: { gte: fechaDesde } } : {},
+                            fechaHasta ? { checkIn: { lte: fechaHasta } } : {},
                         ],
                     },
                     select: { id_reserva: true },
