@@ -155,6 +155,11 @@ class HTTPClient {
 	getTarifaById(id) {
 		return this.instance.get(`/tarifa/${id}`);
 	}
+
+    /****    ASIENTOS CONTABLES     ****/
+    getAsientos() {
+        return this.instance.get('/asientos');
+    }
 };
 
 export default HTTPClient;
