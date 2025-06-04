@@ -399,10 +399,6 @@ function DetallesCuenta() {
             <small className="text-muted">Teléfono</small>
             <div className="fw-semibold">{huesped.telefono || '-'}</div>
           </div>
-          <div className="flex-fill" style={{ minWidth: "160px" }}>
-            <small className="text-muted">Condición de venta</small>
-            <div className="fw-semibold">Contado</div>
-          </div>
         </div>
       </div>
 

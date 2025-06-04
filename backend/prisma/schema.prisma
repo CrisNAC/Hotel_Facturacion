@@ -215,6 +215,14 @@ model AsientoContable {
   activo     Boolean?  @default(true)
 }
 
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model MedioPago {
+  id         Int      @id @default(autoincrement()) @db.SmallInt
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  metodo     String?
+  lugar      String?
+}
+
 enum DocumentoIdentidad {
   DNI
   PASAPORTE
