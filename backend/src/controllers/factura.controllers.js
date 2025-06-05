@@ -144,7 +144,7 @@ export const createFactura = async (req, res) => {
         return factura;
       },
       {
-        timeout: 10000 
+        timeout: 20000 
       }
     );
 
