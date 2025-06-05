@@ -5,59 +5,49 @@ import HTTPClient from '../api/HTTPClient.js';
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Card, Container, Row, Col, Table } from 'react-bootstrap';
-import NavBar from '../components/navbar.jsx';
-import ErrorComponent from "../components/ErrorComponent.jsx";
+import InicioSkeleton from "../skeleton/Inicio.skeleton.jsx";
 
 const Inicio = () => {
-  const client = new HTTPClient();
-  const navigate = useNavigate();
+	const client = new HTTPClient();
+	const navigate = useNavigate();
 
-  // Estados
-  const [datos, setDatos] = useState({
-    libres: 0,
-    reservadas: 0,
-    ocupadas: 0,
-    huespedesActivos: 0,
-    ingresosHoy: [],
-    egresosHoy: []
-  });
+	// Estados
+	const [datos, setDatos] = useState({
+		libres: 0,
+		reservadas: 0,
+		ocupadas: 0,
+		huespedesActivos: 0,
+		ingresosHoy: [],
+		egresosHoy: []
+	});
+	// Funcionalidad de la pagina
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState('');
+	const [status, setStatus] = useState(null);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [status, setStatus] = useState(null);
-
-	/*const errorPage = (error) => (
-    navigate('/ErrorPage', {
-      state: {
-        code: status,
-        message: error
-      },
-      replace: true
-    })
-  );*/
-
-  // Función para obtener datos del dashboard
-  const fetchDatos = async () => {
-    try {
-      setLoading(true);
-      const response = await client.getDashboard();
-      setDatos(response.data);
-      console.log(response.data);
-    } catch (err) {
-      setError(err.response.data?.error || err.message);
-      setStatus(err.response.status);
-      console.error(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+	// Función para obtener datos del dashboard
+	const fetchDatos = async () => {
+		try {
+			setLoading(true);
+			const response = await client.getDashboard();
+			setDatos(response.data);
+		} catch (err) {
+			setError(err.response.data?.error || err.message);
+			setStatus(err.response.status);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	useEffect(() => {
 		fetchDatos();
 	}, []);
 
-  useEffect(() => {
-    if (error) {
+	/**
+	 * Para el manejo de error
+	 */
+	useEffect(() => {
+		if (error) {
 			navigate('/ErrorPage', {
 				state: {
 					code: status,
@@ -66,25 +56,26 @@ const Inicio = () => {
 				replace: true,
 			});
 		}
-  }, [error, status, navigate]);
+	}, [error, status, navigate]);
 
-  // Fecha actual en formato legible
-  const fechaActual = new Date().toLocaleDateString('es-ES', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+	// Fecha actual en formato legible
+	const fechaActual = new Date().toLocaleDateString('es-ES', {
+		day: '2-digit',
+		month: '2-digit',
+		year: 'numeric',
+	});
 
-  const cards = [
-    { color: '#B3F2B4', value: datos.libres, label: 'Habitaciones Libres' },
-    { color: '#D0EFFF', value: datos.reservadas, label: 'Habitaciones Reservadas' },
-    { color: '#FFCCBC', value: datos.ocupadas, label: 'Habitaciones Ocupadas' },
-    { color: '#FFF9C4', value: datos.huespedesActivos, label: 'Huéspedes Activos' },
-  ];
+	const cards = [
+		{ color: '#B3F2B4', value: datos.libres, label: 'Habitaciones Libres' },
+		{ color: '#D0EFFF', value: datos.reservadas, label: 'Habitaciones Reservadas' },
+		{ color: '#FFCCBC', value: datos.ocupadas, label: 'Habitaciones Ocupadas' },
+		{ color: '#FFF9C4', value: datos.huespedesActivos, label: 'Huéspedes Activos' },
+	];
 
-  return (
-    <>
-			<>
+	return (
+		<>
+			{loading ? <InicioSkeleton></InicioSkeleton> : (
+
 				<Container className="pt-5 mt-3">
 					{/* Tarjetas */}
 					<Row className="mb-5">
@@ -178,9 +169,9 @@ const Inicio = () => {
 						</Col>
 					</Row>
 				</Container>
-			</>
-    </>
-  );
+			)}
+		</>
+	);
 };
 
 export default Inicio;
