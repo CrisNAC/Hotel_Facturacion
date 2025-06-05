@@ -142,7 +142,7 @@ const FacturaTable = ({
                 </thead>
                 <tbody>
                     {loading ? (
-                        [...Array(5)].map((_, i) => (
+                        [...Array(15)].map((_, i) => (
                             <tr key={i}>
                                 <td className="text-center">
                                     <div className="d-flex justify-content-center">
