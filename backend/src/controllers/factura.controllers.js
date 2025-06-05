@@ -88,7 +88,7 @@ export const createFactura = async (req, res) => {
         if (ingreso.fk_habitacion) {
           await tx.habitacion.update({
             where: { id_habitacion: ingreso.fk_habitacion },
-            data: { estado: true , activo: true }
+            data: { estado: true, activo: true }
           });
         }
 
@@ -103,7 +103,7 @@ export const createFactura = async (req, res) => {
         );
 
         // Desactivar los huéspedes involucrados
-        const huespedIds = ingreso.huespedesHabitaciones.map(rel => rel.fk_huesped);
+        /* const huespedIds = ingreso.huespedesHabitaciones.map(rel => rel.fk_huesped);
         await Promise.all(
           huespedIds.map(id =>
             tx.huesped.update({
@@ -111,7 +111,7 @@ export const createFactura = async (req, res) => {
               data: { activo: false }
             })
           )
-        );
+        ); */
 
         // Desactivar cuenta
         await tx.cuenta.update({
@@ -144,7 +144,7 @@ export const createFactura = async (req, res) => {
         return factura;
       },
       {
-        timeout: 20000 
+        timeout: 20000
       }
     );
 
@@ -280,7 +280,7 @@ export const enviarFacturaDesdeArchivo = async (req, res) => {
     }
 
     // Configuración mejorada del transporter
-	dotenv.config();
+    dotenv.config();
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
@@ -317,13 +317,13 @@ export const enviarFacturaDesdeArchivo = async (req, res) => {
       stack: error.stack,
       code: error.code
     });
-    
+
     let mensajeError = "Error al enviar la factura por correo";
     if (error.code === 'EAUTH') {
       mensajeError = "Error de autenticación con el servidor de correo. Verifique las credenciales.";
     }
-    
-    res.status(500).json({ 
+
+    res.status(500).json({
       error: mensajeError,
       detalle: error.message
     });
