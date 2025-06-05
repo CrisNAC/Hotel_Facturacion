@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaRegTrashAlt, FaEye } from "react-icons/fa";
 import { FiFileText } from "react-icons/fi";
 import HTTPClient from '../api/HTTPClient.js';
-import HuespedesActivosSkeleton from '../skeleton/Huespedes.skeleton.jsx';
+import HuespedesSkeleton from '../skeleton/Huespedes.skeleton.jsx';
 import ModalDetails from "./ModalDetails.jsx";
 import ModalDelete from './ModalDelete.jsx';
 
@@ -156,9 +156,10 @@ function Huespedes() {
     };
 
     const skeletonPage = () => (
-        <HuespedesActivosSkeleton></HuespedesActivosSkeleton>
+        <HuespedesSkeleton></HuespedesSkeleton>
     );
 
+    const styles = { backgroundColor: "#E6E6E6", color: "#2E2E2E" };
     return (
         <>
             {loading ? skeletonPage() : (
@@ -256,14 +257,14 @@ function Huespedes() {
                         <table className="table table-sm table-hover">
                             <thead>
                                 <tr className='text-center'>
-                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>#</th>
-                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Huésped</th>
-                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Habitación</th>
-                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-in</th>
-                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Check-out</th>
-                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Estado</th>
-                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Total</th>
-                                    <th scope='col' style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Acciones</th>
+                                    <th scope='col' style={styles}>#</th>
+                                    <th scope='col' style={styles}>Huésped</th>
+                                    <th scope='col' style={styles}>Habitación</th>
+                                    <th scope='col' style={styles}>Check-in</th>
+                                    <th scope='col' style={styles}>Check-out</th>
+                                    <th scope='col' style={styles}>Estado</th>
+                                    <th scope='col' style={styles}>Total</th>
+                                    <th scope='col' style={styles}>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -3,15 +3,15 @@ import { Skeleton } from "@mui/material";
 
 const InicioSkeleton = () => {
     return (
-        <Container className="pt-5 mt-3">
+        <Container className="pt-4 mt-3">
             {/* Skeleton de tarjetas */}
             <Row className="mb-5">
                 {Array(4).fill(null).map((_, i) => (
                     <Col key={i} md={6} lg={3}>
                         <Card className="mb-3 shadow" style={{ height: "180px", backgroundColor: "#f0f0f0" }}>
                             <Card.Body className="d-flex flex-column justify-content-center">
-                                <div>
-                                    <Skeleton variant="text" animation="wave" width="20%" height="32px" />
+                                <div className="d-flex flex-column justify-content-center align-items-center">
+                                    <Skeleton variant="text" animation="wave" width="20%" height="50px" />
                                     <Skeleton variant="text" animation="wave" width="60%" height="32px" />
                                 </div>
                             </Card.Body>
@@ -21,9 +21,10 @@ const InicioSkeleton = () => {
             </Row>
 
             {/* Skeleton de tablas */}
-            <h4 className="text-center mb-4">
-                Ingresos y Egresos del día: <div><Skeleton variant="text" animation="wave" width="15%" height="32px" /></div>
-            </h4>
+            <div className="d-flex flex-row justify-content-center">
+                <h4 className="text-center mb-4">Ingresos y Egresos del día:</h4>
+                <Skeleton className="mx-2" variant="text" animation="wave" width="15%" height="32px" />
+            </div>
             <Row>
                 {["Check-in", "Check-out"].map((titulo, i) => (
                     <Col md={6} key={i}>

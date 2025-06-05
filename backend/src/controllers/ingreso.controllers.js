@@ -351,3 +351,137 @@ export const cancelarIngreso = async (req, res) => {
         res.status(500).json({ error: "Error al cancelar el ingreso" });
     }
 };
+
+export const updateIngresoConReserva = async (req, res) => {
+	try {
+		const id_ingreso = parseInt(req.params.id);
+
+		const {
+			fk_reserva,
+			fk_habitacion,
+			fk_huesped,
+			fk_tarifa,
+			fk_usuario,
+			checkIn,
+			checkOut,
+			companions
+		} = req.body;
+
+		const ingresoActualizado = await prisma.ingreso.update({
+			where: { id_ingreso },
+			data: {
+				fk_reserva,
+				fk_habitacion,
+				fk_huesped,
+				fk_tarifa,
+				fk_usuario,
+				checkIn,
+				checkOut,
+				estado: "Activo",
+				updated_at: new Date(),
+				huespedesHabitaciones: {
+					create: [
+						{ fk_huesped },
+						...companions.map(h => ({ fk_huesped: h.id_huesped }))
+					]
+				}
+			},
+			include: {
+                reserva: {
+                    select: {
+                        id_reserva: true,
+                        checkIn: true,
+                        checkOut: true,
+                    },
+                },
+                habitacion: {
+                    select: {
+                        id_habitacion: true,
+                        numero: true,
+                        tipoHabitacion: {
+                            select: {
+                                nombre: true,
+                            }
+                        },
+                    },
+                },
+                tarifa: {
+                    select: {
+                        descripcion: true,
+                        precio: true,
+                    },
+                },
+                huesped: {
+                    select: {
+                        id_huesped: true,
+                        nombre: true,
+                        apellido: true,
+                        nacionalidad: true,
+                        telefono: true,
+                        email: true,
+                        ruc: true
+                    },
+                },
+                cuenta: {
+                    include: {
+                        consumos: {
+                            include: {
+                                Productos: {
+                                    select: {
+                                        descripcion: true,
+                                        precio_unitario: true,
+                                        porcentaje_iva: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                usuario: {
+                    select: {
+                        id_usuario: true,
+                        nombre_usuario: true,
+                    },
+                },
+            },
+		});
+
+		//La cuenta no deberia existir sin un ingreso, pero en caso de existir incluimos sus datos
+		const cuentaExistente = await prisma.cuenta.findFirst({
+			where: {
+				fk_ingreso: id_ingreso
+			}
+		});
+
+		if (!cuentaExistente) {
+			await prisma.cuenta.create({
+				data: {
+					fk_ingreso: id_ingreso
+				}
+			});
+		}
+
+		//Actualizamos el estado de la habitacion a no disponible
+        if (fk_habitacion) {
+            await prisma.habitacion.update({
+                where: { id_habitacion: fk_habitacion },
+                data: { estado: false }
+            });
+        }
+
+		if (fk_reserva) {
+            await prisma.reserva.update({
+                where: { id_reserva: fk_reserva },
+                data: { estado: "Confirmada" }
+            });
+        }
+
+		res.status(200).json(ingresoActualizado);
+
+	} catch(error) {
+		console.error(error);
+        res.status(500).json({
+            error: "Internal Server Error: Error al actualizar el ingreso",
+        });
+	}
+};

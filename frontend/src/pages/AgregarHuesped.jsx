@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-// import { Alert } from "@mui/material";
+import Alert from '@mui/material/Alert';
 import HTTPClient from "../api/HTTPClient.js";
 
 const AgregarHuesped = () => {
@@ -115,8 +115,9 @@ const AgregarHuesped = () => {
 				});
 			}
 		} catch (error) {
-			console.error("Error al guardar huésped:", error.response?.data || error.message);
-			alert(error.response?.data?.error || "Error al guardar huésped");
+			<Alert severity="error" onClose={() => { }}>
+				{error.response?.data?.error || "Error al guardar huésped"}
+			</Alert>
 		} finally {
 			setCargando(false);
 		}
@@ -134,7 +135,9 @@ const AgregarHuesped = () => {
 	const buscarHuespedPorDocumento = async () => {
 		try {
 			if (!formData.numero_documento.trim()) {
-				alert("Debe ingresar un número de documento.");
+				<Alert severity="info" onClose={() => { }}>
+					Debe ingresar un número de documento.
+				</Alert>
 				return;
 			}
 
@@ -164,13 +167,14 @@ const AgregarHuesped = () => {
 		} catch (error) {
 			if (error.response?.status === 404) {
 				setHuespedExistente(false);
-				// <Alert severity="info">No se encontró ningún huésped con ese documento.</Alert>
-				alert("No se encontró ningún huésped con ese documento.");
+				<Alert severity="info" onClose={() => { }}>
+					No se encontró ningún huésped con ese documento.
+				</Alert>
 				clearData();
 			} else {
-				console.error(error);
-				// <Alert severity="error">Ocurrió un error inesperado al buscar el huésped.</Alert>
-				alert("Ocurrió un error inesperado al buscar el huésped.");
+				<Alert severity="error" onClose={() => { }}>
+					Ocurrió un error inesperado al buscar el huésped.
+				</Alert>
 			}
 		} finally {
 			setCargandoBusqueda(false);
