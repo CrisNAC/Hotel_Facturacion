@@ -23,17 +23,6 @@ const ConfirmarReserva = () => {
 	console.log(habitacionSeleccionada);
 	console.log(listaHuespedes);
 
-	/*const calcularNoches = (ingreso, egreso) => {
-        if (ingreso && egreso) {
-            const checkInDate = new Date(ingreso);
-            const checkOutDate = new Date(egreso);
-            const diffTime = Math.abs(checkOutDate - checkInDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays;
-        }
-        return 0;
-    };*/
-
 	// Función para eliminar huésped
 	const eliminarHuesped = async (id) => {
 		try {
@@ -52,21 +41,6 @@ const ConfirmarReserva = () => {
 		}
 	};
 
-	/**
-		 * Para cambiar el formato de la fecha a Dia/Mes/Año
-		 * @param {*} dateString Se le pasa el una fecha
-		 * @returns Retorna la fecha modifica en caso de exito o si no en caso de fracaso -
-		 */
-	/*const formatDMY = (dateString) => {
-		if (!dateString) return '--/--/----';
-		try {
-			const date = new Date(dateString);
-			return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
-		} catch {
-			return '—';
-		}
-	};*/
-
 	const formatDMY = (fecha) => {
 		const fechaCompletaSplit = fecha.split("T")[0];
 		const [year, month , day] = fechaCompletaSplit.split("-");
@@ -74,6 +48,8 @@ const ConfirmarReserva = () => {
 		return fechaFormateada;
 	};
 
+	const id_ingreso = reservaSeleccionada ? reservaSeleccionada.id_ingreso : null;
+	const fk_reserva = reservaSeleccionada ? reservaSeleccionada.fk_reserva : null;
 	const check_in = reservaSeleccionada ? reservaSeleccionada.check_in : "";
 	const check_out = reservaSeleccionada ? reservaSeleccionada.check_out : "";
 	const numero_habitacion = habitacionSeleccionada ? habitacionSeleccionada.numero : 0;
@@ -89,22 +65,46 @@ const ConfirmarReserva = () => {
 
 	const handleSubmit = async () => {
 
-		// PAYLOADS
-		const payloadWalkIn = {
-			fk_reserva: null,
+		if (!reservaSeleccionada.id_ingreso) {
+			const payloadWalkIn = {
+				fk_reserva: null,
+				checkIn: check_in,
+				checkOut: check_out,
+				fk_habitacion: habitacionSeleccionada.id_habitacion,
+				fk_tarifa: tarifaSeleccionada.id_tarifa,
+				fk_huesped: listaHuespedes[0]?.id_huesped,
+				fk_usuario: reservaSeleccionada.id_usuario,
+				companions: listaHuespedes?.filter(h => h.id_huesped !== listaHuespedes[0]?.id_huesped)
+			}
+
+			try {
+				setLoading(true);
+				const response = await client.postIngreso(payloadWalkIn);
+				const dataPost = response.data.data;
+				console.log(dataPost);
+				navigate("/Inicio");
+			} catch(error) {
+				console.error("Error al crear el ingreso: ", error.response.data.error);
+			} finally {
+				setLoading(false);
+			}
+		}
+
+		const payloadReserva = {
+			id_ingreso: id_ingreso,
+			fk_reserva: fk_reserva,
 			checkIn: check_in,
 			checkOut: check_out,
-			estado: "Activo",
 			fk_habitacion: habitacionSeleccionada.id_habitacion,
 			fk_tarifa: tarifaSeleccionada.id_tarifa,
 			fk_huesped: listaHuespedes[0]?.id_huesped,
-			fk_usuario: reservaSeleccionada.id_usuario,
+			fk_usuario: reservaSeleccionada.fk_usuario,
 			companions: listaHuespedes?.filter(h => h.id_huesped !== listaHuespedes[0]?.id_huesped)
 		}
 
 		try {
 			setLoading(true);
-			const response = await client.postIngreso(payloadWalkIn);
+			const response = await client.updateIngreso(id_ingreso, payloadReserva);
 			const dataPost = response.data.data;
 			console.log(dataPost);
 			navigate("/Inicio");
@@ -215,20 +215,20 @@ const ConfirmarReserva = () => {
 				<div className="row g-4" style={{ marginTop: '50px' }}>
 
 					{/* Comentarios */}
-					<div className="col-md-6">
+					{/*<div className="col-md-6">
 						<div className="shadow p-4 rounded">
 							<h5 className="fw-bold">Preparar Estancia</h5>
 							<p className="mt-3"><strong>¿Tiene algún tipo de solicitud especial para el hotel?</strong></p>
 							<label htmlFor="comentarios" className="form-label">Comentarios</label>
 							<textarea id="comentarios" className="form-control" rows="5" placeholder="Agregar cama sencilla a la habitación"></textarea>
 						</div>
-					</div>
+					</div>*/}
 
 					{/* Resumen Reserva*/}
-					<div className="col-md-6">
+					<div className="col-md-6 mx-auto">
 						<div className="shadow p-4 rounded">
 
-							<h4 className="fw-bold mb-3">Resumen</h4>
+							<h4 className="fw-bold mb-3 text-center">Resumen</h4>
 
 							<p className="mb-1"><span className="fw-semibold">Check in:</span> {formatDMY(check_in)}</p>
 							<p className="mb-1"><span className="fw-semibold">Check out:</span> {formatDMY(check_out)}</p>

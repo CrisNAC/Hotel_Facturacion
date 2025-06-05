@@ -86,7 +86,7 @@ model Reserva {
   fk_huesped         Int
   fk_tipo_habitacion Int
   checkIn            DateTime       @db.Timestamptz(6)
-  checkOut         	 DateTime       @db.Timestamptz(6)
+  checkOut           DateTime       @db.Timestamptz(6)
   estado             EstadoReserva  @default(Pendiente)
   fk_usuario         Int
   activo             Boolean        @default(true)
@@ -213,6 +213,14 @@ model AsientoContable {
   debe       Int?
   haber      Int?
   activo     Boolean?  @default(true)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model MedioPago {
+  id         Int      @id @default(autoincrement()) @db.SmallInt
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  metodo     String?
+  lugar      String?
 }
 
 enum DocumentoIdentidad {

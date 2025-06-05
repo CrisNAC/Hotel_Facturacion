@@ -95,7 +95,7 @@ const WalkIn = () => {
 			check_out: checkOutCompleto
 		};
 
-		console.log(payload);
+		//console.log(payload);
 		setForm(initialState);
 		setReservaSeleccionada(payload);
 		navigate('/SeleccionHabitacion');

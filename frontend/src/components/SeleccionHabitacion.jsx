@@ -13,7 +13,7 @@ const SeleccionHabitacion = () => {
 	const { setTarifaSeleccionada } = useTarifa();
 	const { setHabitacionSeleccionada } = useHabitacion();
 
-	//console.log(reservaSeleccionada);
+	console.log(reservaSeleccionada);
 
 	const navigate = useNavigate();
 
@@ -28,7 +28,7 @@ const SeleccionHabitacion = () => {
 		navigate("/ConfirmarReserva");
 	}
 
-	const fetchHabitaciones = async () => {
+	/*const fetchHabitaciones = async () => {
         try {
             const res = await client.getHabitaciones();
             const allHabitaciones = res.data;
@@ -41,7 +41,7 @@ const SeleccionHabitacion = () => {
         } finally {
             setCargando(false);
         }
-    };
+    };*/
 
 	const fetchHabitacionesPorId = async (tipoHabitacionId) => {
 		try {
@@ -65,13 +65,26 @@ const SeleccionHabitacion = () => {
 			setTarifasDisponibles(filtradas);
 			console.log(filtradas);
 		} catch (error) {
-			console.error("Error al obtener las habitaciones por Id: ", error);
+			console.error("Error al obtener las tarifas por Id: ", error);
 		} finally {
 			setCargando(false);
 		}
 	};
 
-	const fetchTarifas = async () => {
+	const fetchTarifasPorIdEnReserva = async (tarifaId) => {
+		try {
+			const res = await client.getTarifas();
+			const allTarifas = res.data;
+			const filtradas = allTarifas.filter(tar => tar.id_tarifa === parseInt(tarifaId));
+			setTarifasDisponibles(filtradas);
+		} catch (error) {
+			console.error("Error al obtener las tarifas por Id: ", error);
+		} finally {
+			setCargando(false);
+		}
+	}
+
+	/*const fetchTarifas = async () => {
 		try {
 			const res = await client.getTarifas();
 			const allTarifas = res.data;
@@ -82,17 +95,20 @@ const SeleccionHabitacion = () => {
 		} catch (error) {
 			console.error("Error al obtener las tarifas: ", error);
 		}
-	};
+	};*/
 
 	useEffect(() => {
 		if(reservaSeleccionada) {
-			if (reservaSeleccionada.tipoHabitacion) {
-				fetchHabitaciones();
-				fetchTarifas();
-			} else if (reservaSeleccionada.tipo_habitacion) {
+
+			if (!reservaSeleccionada.id_ingreso) {
 				fetchHabitacionesPorId(reservaSeleccionada.tipo_habitacion);
 				fetchTarifasPorId(reservaSeleccionada.tipo_habitacion);
+				fetchHabitacionesPorId(reservaSeleccionada.tipo_habitacion);
+				fetchTarifasPorIdEnReserva(reservaSeleccionada.fk_tarifa);
 			}
+			fetchHabitacionesPorId(reservaSeleccionada.tipo_habitacion);
+			fetchTarifasPorIdEnReserva(reservaSeleccionada.fk_tarifa);
+			
 		} else {
 			setHabitacionesDisponibles([]);
 			setTarifasDisponibles([]);
@@ -101,11 +117,13 @@ const SeleccionHabitacion = () => {
 	}, []);
 
 	useEffect(() => {
-		if (tarifasDisponibles.length > 0) {
-			const tarifaEconomica = tarifasDisponibles.reduce((min, actual) => 
-				actual.precio < min.precio ? actual : min
-			);
-			setTarifaMasBarata(tarifaEconomica.id_tarifa);
+		if (!reservaSeleccionada.id_ingreso) {
+			if (tarifasDisponibles.length > 0) {
+				const tarifaEconomica = tarifasDisponibles.reduce((min, actual) => 
+					actual.precio < min.precio ? actual : min
+				);
+				setTarifaMasBarata(tarifaEconomica.id_tarifa);
+			}
 		}
 	}, [tarifasDisponibles]);
 

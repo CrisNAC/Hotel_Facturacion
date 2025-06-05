@@ -57,6 +57,10 @@ class HTTPClient {
         return this.instance.patch(`/ingresos/${id}`);
     }
 
+	updateIngreso(id, data) {
+		return this.instance.put(`/ingresos/${id}`, data);
+	}
+
     /****        HUESPEDES        ****/
     getHuespedes() {
         return this.instance.get("/huesped");
