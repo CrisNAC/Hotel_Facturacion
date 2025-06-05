@@ -75,8 +75,7 @@ const Inicio = () => {
 	return (
 		<>
 			{loading ? <InicioSkeleton></InicioSkeleton> : (
-
-				<Container className="pt-5 mt-3">
+				<Container className="pt-4 mt-3">
 					{/* Tarjetas */}
 					<Row className="mb-5">
 						{cards.map((card, i) => (
@@ -135,7 +134,7 @@ const Inicio = () => {
 								</Card.Body>
 							</Card>
 						</Col>
-
+						{/* Tabla de Check-out */}
 						<Col md={6}>
 							<Card className="mb-4 shadow-sm" style={{ backgroundColor: '#DDE7EA' }}>
 								<Card.Body>
