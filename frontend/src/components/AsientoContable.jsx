@@ -162,10 +162,9 @@ const AsientoContable = () => {
 
       </div>
 
-      <div className="table-responsive">
+      <div className="table-responsive" style={{ maxHeight: '500px', overflowY: 'auto' }}>
         <table className="table table-sm table-hover table-bordered text-center">
-
-          <thead >
+          <thead>
             <tr>
               <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Fecha</th>
               <th className="text-start" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Concepto</th>
@@ -184,17 +183,17 @@ const AsientoContable = () => {
                 <td className="text-end">{formatoGs(a.saldo)}</td>
               </tr>
             ))}
-            {asientosConSaldo.length > 0 && (
-              <tr className="table-success fw-bold">
-                <td colSpan="2">Totales</td>
-                <td className="text-end">{formatoGs(totalDebe)}</td>
-                <td className="text-end">{formatoGs(totalHaber)}</td>
-                <td className="text-end">{formatoGs(saldo)}</td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
+      <div className="total-row d-flex justify-content-between" style={{ backgroundColor: '#C6EAD6', borderRadius: '8px' }}>
+          <div className="p-3 mt-3 d-flex justify-content-between w-100">
+            <span><strong>Totales:</strong></span>
+            <span><strong>Debe: </strong>{formatoGs(totalDebe) }  Gs.</span>
+            <span><strong>Haber: </strong> {formatoGs(totalHaber)} Gs.</span>
+            <span><strong>Saldo: </strong> {formatoGs(saldo)}</span>
+          </div>
+        </div>
     </div>
   );
 };

@@ -1,11 +1,9 @@
 import { Router } from "express";
-import { getAllAsientos} from "../controllers/asientocontable.controllers.js"
+import { crearAsiento, getAllAsientos} from "../controllers/asientocontable.controllers.js"
 import authenticate from "../../config/jwt.config.js";
 const router = Router();
 
 router.get('/', getAllAsientos);
-//router.post('/', authenticate, postConsumo);
-//router.put('/:id', authenticate, deleteConsumo);
-//router.patch('/:id', authenticate, actualizarCantidadConsumo);
+router.post('/', crearAsiento);
 
 export default router;

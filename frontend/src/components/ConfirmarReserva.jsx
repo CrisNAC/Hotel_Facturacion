@@ -17,7 +17,7 @@ const ConfirmarReserva = () => {
 	const { tarifaSeleccionada } = useTarifa();
 	const { habitacionSeleccionada } = useHabitacion();
 	const [loading, setLoading] = useState(false);
-	
+
 	console.log(reservaSeleccionada);
 	console.log(tarifaSeleccionada);
 	console.log(habitacionSeleccionada);
@@ -25,25 +25,13 @@ const ConfirmarReserva = () => {
 
 	// Función para eliminar huésped
 	const eliminarHuesped = async (id) => {
-		try {
-			const response = await client.deleteAHuespedById(id);
-			const data = response.data;
-
-			if (response.status === 200) {
-				alert(data.message || "Huésped eliminado con éxito");
-				setListaHuespedes(prev => prev.filter(h => h.id_huesped !== id));
-			} else {
-				alert(data.error || "Error al eliminar huésped");
-			}
-		} catch (error) {
-			console.log(error.message);
-			alert("Error de conexión con el servidor");
-		}
+		alert("Huésped eliminado con éxito");
+		setListaHuespedes(prev => prev.filter(h => h.id_huesped !== id));
 	};
 
 	const formatDMY = (fecha) => {
 		const fechaCompletaSplit = fecha.split("T")[0];
-		const [year, month , day] = fechaCompletaSplit.split("-");
+		const [year, month, day] = fechaCompletaSplit.split("-");
 		const fechaFormateada = `${day}/${month}/${year}`;
 		return fechaFormateada;
 	};
@@ -262,8 +250,8 @@ const ConfirmarReserva = () => {
 };
 
 const thStyle = {
-    backgroundColor: "#E6E6E6",
-    color: "#2E2E2E"
+	backgroundColor: "#E6E6E6",
+	color: "#2E2E2E"
 };
 
 export default ConfirmarReserva;
