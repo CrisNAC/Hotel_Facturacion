@@ -83,6 +83,12 @@ const CheckInReserva = () => {
     };
 
 	const handleSubmit = () => {
+
+		if (reserva.estado === "Confirmada"  || reserva.estado === "Finalizada") {
+			setMensaje("La reserva ya fue confirmada o finalizada. No es posible hacer el check-in nuevamente");
+			return;
+		}
+
 		const payload = {
 			// Ingreso anteriormente creado
 			id_ingreso: reserva.ingreso[0].id_ingreso,

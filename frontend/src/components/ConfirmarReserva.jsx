@@ -36,6 +36,21 @@ const ConfirmarReserva = () => {
 		return fechaFormateada;
 	};
 
+	const verificarOcupacion = async (idHuesped) => {
+		try {
+			const res = await client.getHuespedEnHabitacion(idHuesped);
+			return res.data.ocupado;
+		} catch (error) {
+			console.error("Error verificando ocupación", error);
+			return false;
+		}
+	}
+
+	const handleCancelar = () => {
+		setListaHuespedes([]);
+		navigate('/Inicio');
+	}
+
 	const id_ingreso = reservaSeleccionada ? reservaSeleccionada.id_ingreso : null;
 	const fk_reserva = reservaSeleccionada ? reservaSeleccionada.fk_reserva : null;
 	const check_in = reservaSeleccionada ? reservaSeleccionada.check_in : "";
@@ -53,7 +68,23 @@ const ConfirmarReserva = () => {
 
 	const handleSubmit = async () => {
 
-		if (!reservaSeleccionada.id_ingreso) {
+		for (const huesped of listaHuespedes) {
+			const ocupied = await verificarOcupacion(huesped.id_huesped);
+			if (ocupied) {
+				toast.error(`El huesped ${huesped.nombre} ya se encuentra en el hotel`, {
+					position: "top-right",
+					autoClose: 3000,
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+					progress: undefined,
+				});
+				return;
+			}
+		}
+
+		if (!reservaSeleccionada?.id_ingreso) {
 			const payloadWalkIn = {
 				fk_reserva: null,
 				checkIn: check_in,
@@ -77,29 +108,31 @@ const ConfirmarReserva = () => {
 				setLoading(false);
 			}
 		}
+		else {
 
-		const payloadReserva = {
-			id_ingreso: id_ingreso,
-			fk_reserva: fk_reserva,
-			checkIn: check_in,
-			checkOut: check_out,
-			fk_habitacion: habitacionSeleccionada.id_habitacion,
-			fk_tarifa: tarifaSeleccionada.id_tarifa,
-			fk_huesped: listaHuespedes[0]?.id_huesped,
-			fk_usuario: reservaSeleccionada.fk_usuario,
-			companions: listaHuespedes?.filter(h => h.id_huesped !== listaHuespedes[0]?.id_huesped)
-		}
+			const payloadReserva = {
+				id_ingreso: id_ingreso,
+				fk_reserva: fk_reserva,
+				checkIn: check_in,
+				checkOut: check_out,
+				fk_habitacion: habitacionSeleccionada.id_habitacion,
+				fk_tarifa: tarifaSeleccionada.id_tarifa,
+				fk_huesped: listaHuespedes[0]?.id_huesped,
+				fk_usuario: reservaSeleccionada.fk_usuario,
+				companions: listaHuespedes?.filter(h => h.id_huesped !== listaHuespedes[0]?.id_huesped)
+			}
 
-		try {
-			setLoading(true);
-			const response = await client.updateIngreso(id_ingreso, payloadReserva);
-			const dataPost = response.data.data;
-			console.log(dataPost);
-			navigate("/Inicio");
-		} catch(error) {
-			console.error("Error al crear el ingreso: ", error.response.data.error);
-		} finally {
-			setLoading(false);
+			try {
+				setLoading(true);
+				const response = await client.updateIngreso(id_ingreso, payloadReserva);
+				const dataPost = response.data.data;
+				console.log(dataPost);
+				navigate("/Inicio");
+			} catch(error) {
+				console.error("Error al crear el ingreso: ", error.response.data.error);
+			} finally {
+				setLoading(false);
+			}
 		}
 	}
 
@@ -237,10 +270,16 @@ const ConfirmarReserva = () => {
 				</div>
 
 				{/* Button */}
-				<div className="d-flex justify-content-center mt-4">
-					<button type="button" className="btn btn-success btn-lg fw-bold px-4 py-3 shadow" disabled={loading || listaHuespedes.length === 0} onClick={handleSubmit}>
+				<div className="d-flex justify-content-center gap-5 mt-5">
+
+					<button type="button" className="btn btn-success fw-bold px-4 py-3" disabled={loading || listaHuespedes.length === 0} onClick={handleSubmit}>
 						{loading ? "Espere..." : "Confirmar Ingreso"}
 					</button>
+
+					<button type="button" className="btn btn-secondary fw-bold px-4 py-3" onClick={handleCancelar}>
+						Cancelar
+					</button>
+
 				</div>
 
 			</div>

@@ -95,6 +95,10 @@ class HTTPClient {
         return this.instance.get(`/huespedHabitacion/${id}`);
     };
 
+	getHuespedEnHabitacion(id) {
+		return this.instance.get(`huespedHabitacion/${id}/ocupacion`);
+	};
+
     /****        FACTURAS       ****/
     getFacturas() {
         return this.instance.get("/facturas");

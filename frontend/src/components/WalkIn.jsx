@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useReserva } from "../context/Reserva/ReservaContext";
 import HTTPClient from "../api/HTTPClient.js";
 import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -201,8 +201,8 @@ const WalkIn = () => {
 
 				</div>
 
-				<div className="text-center" style={{ marginTop: '60px'}}>
-					<button type="button" className="btn btn-success" onClick={handleSubmit}>
+				<div className="text-center" style={{ marginTop: '40px'}}>
+					<button type="button" className="btn btn-success fw-bold py-2" onClick={handleSubmit}>
 						Verificar Disponibilidad
 					</button>
 				</div>

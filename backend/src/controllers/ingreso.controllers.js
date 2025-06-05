@@ -469,6 +469,13 @@ export const updateIngresoConReserva = async (req, res) => {
             });
         }
 
+		if (fk_reserva) {
+            await prisma.reserva.update({
+                where: { id_reserva: fk_reserva },
+                data: { estado: "Confirmada" }
+            });
+        }
+
 		res.status(200).json(ingresoActualizado);
 
 	} catch(error) {

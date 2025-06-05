@@ -103,11 +103,10 @@ const SeleccionHabitacion = () => {
 			if (!reservaSeleccionada.id_ingreso) {
 				fetchHabitacionesPorId(reservaSeleccionada.tipo_habitacion);
 				fetchTarifasPorId(reservaSeleccionada.tipo_habitacion);
-				fetchHabitacionesPorId(reservaSeleccionada.tipo_habitacion);
-				fetchTarifasPorIdEnReserva(reservaSeleccionada.fk_tarifa);
-			}
+			} else {
 			fetchHabitacionesPorId(reservaSeleccionada.tipo_habitacion);
 			fetchTarifasPorIdEnReserva(reservaSeleccionada.fk_tarifa);
+			}
 			
 		} else {
 			setHabitacionesDisponibles([]);
