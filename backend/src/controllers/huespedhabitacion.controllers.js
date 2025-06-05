@@ -21,3 +21,34 @@ export const getAllHuespedHabitacion = async (req, res) => {
         res.status(500).json({ error: "Error al obtener huesped habitacion" });
     }
 };
+
+export const huespedEnHabitacion = async (req, res) => {
+	const { id } = req.params;
+	try {
+		const huespedActivo = await prisma.huespedHabitacion.findFirst({
+			where: {
+				fk_huesped: parseInt(id),
+				activo: true,
+				ingreso: {
+					estado: 'Activo'
+				}
+			},
+			include: {
+				ingreso: true,
+			}
+		});
+
+		if(huespedActivo) {
+			return res.status(200).json({
+				ocupado: true,
+				habitacion: huespedActivo.ingreso.fk_habitacion,
+				ingresoId: huespedActivo.fk_ingreso,
+			});
+		} else {
+			return res.status(200).json({ ocupado: false });
+		}
+	} catch (error) {
+		console.error("Error al verificar ocupación:", error);
+		return res.status(500).json({ error: "Error al verificar ocupación del huésped." });
+	}
+};

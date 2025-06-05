@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { getAllHuespedHabitacion } from '../controllers/huespedhabitacion.controllers.js';
+import { getAllHuespedHabitacion, huespedEnHabitacion } from '../controllers/huespedhabitacion.controllers.js';
 import authenticate from "../../config/jwt.config.js";
 
 const router = Router();
 
 router.get('/:id', authenticate, getAllHuespedHabitacion);
+router.get('/:id/ocupacion', authenticate, huespedEnHabitacion);
 
 export default router;
