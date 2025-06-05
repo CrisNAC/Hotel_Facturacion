@@ -6,6 +6,7 @@ import HTTPClient from "../api/HTTPClient";
 import { useReserva } from "../context/Reserva/ReservaContext.jsx";
 import { useTarifa } from "../context/tarifa/TarifaContext.jsx";
 import { useHabitacion } from "../context/habitacion/HabitacionContext.jsx";
+import dayjs from "dayjs";
 
 const ConfirmarReserva = () => {
 	const client = new HTTPClient();
@@ -84,7 +85,7 @@ const ConfirmarReserva = () => {
 			}
 		}
 
-		if (!reservaSeleccionada?.id_ingreso) {
+		if (!reservaSeleccionada.id_ingreso) {
 			const payloadWalkIn = {
 				fk_reserva: null,
 				checkIn: check_in,
@@ -113,8 +114,8 @@ const ConfirmarReserva = () => {
 			const payloadReserva = {
 				id_ingreso: id_ingreso,
 				fk_reserva: fk_reserva,
-				checkIn: check_in,
-				checkOut: check_out,
+				checkIn: dayjs(check_in).toDate(),
+				checkOut: dayjs(check_out).toDate(),
 				fk_habitacion: habitacionSeleccionada.id_habitacion,
 				fk_tarifa: tarifaSeleccionada.id_tarifa,
 				fk_huesped: listaHuespedes[0]?.id_huesped,
@@ -234,16 +235,6 @@ const ConfirmarReserva = () => {
 				</table>
 
 				<div className="row g-4" style={{ marginTop: '50px' }}>
-
-					{/* Comentarios */}
-					{/*<div className="col-md-6">
-						<div className="shadow p-4 rounded">
-							<h5 className="fw-bold">Preparar Estancia</h5>
-							<p className="mt-3"><strong>¿Tiene algún tipo de solicitud especial para el hotel?</strong></p>
-							<label htmlFor="comentarios" className="form-label">Comentarios</label>
-							<textarea id="comentarios" className="form-control" rows="5" placeholder="Agregar cama sencilla a la habitación"></textarea>
-						</div>
-					</div>*/}
 
 					{/* Resumen Reserva*/}
 					<div className="col-md-6 mx-auto">
