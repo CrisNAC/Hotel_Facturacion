@@ -37,6 +37,17 @@ function ModalDelete({ item, setShowDeleteModal, refresh }) {
         cancelarIngreso();
     };
 
+    const calcularNoches = (checkIn, checkOut) => {
+        if (!checkIn || !checkOut) return 0;
+
+        const unDia = 24 * 60 * 60 * 1000; // milisegundos en un día
+        const fechaInicio = new Date(checkIn);
+        const fechaFin = new Date(checkOut);
+
+        // Redondear hacia arriba para contar noches completas
+        return Math.round(Math.abs((fechaFin - fechaInicio) / unDia));
+    };
+
     return (
         <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <div className="modal-dialog" role="document">
@@ -51,11 +62,16 @@ function ModalDelete({ item, setShowDeleteModal, refresh }) {
                         <p><strong>Check-in:</strong> {formatDMY(item.checkIn)}</p>
                         <p><strong>Check-out:</strong> {formatDMY(item.checkOut)}</p>
                         <p><strong>Estado ingreso:</strong> {item.estado}</p>
-                        <p><strong>Total:</strong> {
-                            item.cuenta[0]?.consumos[0]
-                                ? (item.cuenta[0].consumos[0].cantidad * item.cuenta[0].consumos[0].monto).toLocaleString()
-                                : '0'
-                        } Gs</p>
+                        <p><strong>Total:</strong> {(() => {
+                            const noches = calcularNoches(item.checkIn, item.checkOut);
+                            const costoHabitacion = noches * (item.tarifa?.precio || 0);
+                            const totalConsumos = item.cuenta?.[0]?.consumos
+                                ?.filter(consumo => consumo.activo)
+                                ?.reduce((acc, consumo) => acc + (Number(consumo.monto) || 0), 0) || 0;
+                            const total = costoHabitacion + totalConsumos;
+
+                            return total > 0 ? `${total.toLocaleString()} Gs` : '—';
+                        })()} Gs</p>
                     </div>
                     {/* Botones */}
                     <div className="modal-footer d-flex justify-content-center">

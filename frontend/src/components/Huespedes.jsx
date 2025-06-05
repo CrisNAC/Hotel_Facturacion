@@ -36,28 +36,28 @@ function Huespedes() {
     /**
      * Obtiene todos los ingresos
      */
-    useEffect(() => {
-        const fetchIngresos = async () => {
-            try {
-                setLoading(true);
-                const response = await client.getIngresos();
-                setIngresosOriginales(response.data);
-            } catch (err) {
-                // Si hay respuesta del servidor
-                if (err.response) {
-                    setError(err.response.data?.error || err.message);
-                    setStatus(err.response.status);
-                    console.error('Error al obtener ingresos:', err.response.status, err.response.data);
-                } else {
-                    // Errores de red u otros
-                    setError(err.message);
-                    setStatus(500);
-                    console.error('Error de red o sin respuesta:', err.message);
-                }
-            } finally {
-                setLoading(false);
+    const fetchIngresos = async () => {
+        try {
+            setLoading(true);
+            const response = await client.getIngresos();
+            setIngresosOriginales(response.data);
+        } catch (err) {
+            // Si hay respuesta del servidor
+            if (err.response) {
+                setError(err.response.data?.error || err.message);
+                setStatus(err.response.status);
+                console.error('Error al obtener ingresos:', err.response.status, err.response.data);
+            } else {
+                // Errores de red u otros
+                setError(err.message);
+                setStatus(500);
+                console.error('Error de red o sin respuesta:', err.message);
             }
-        };
+        } finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
         fetchIngresos();
     }, []);
 
@@ -372,7 +372,7 @@ function Huespedes() {
 
                     {/* Modal de cancelar ingreso */}
                     {showDeleteModal && selectedItem && (
-                        <ModalDelete item={selectedItem} setShowDeleteModal={setShowDeleteModal}></ModalDelete>
+                        <ModalDelete item={selectedItem} setShowDeleteModal={setShowDeleteModal} refresh={fetchIngresos}></ModalDelete>
                     )}
                 </>
             )}

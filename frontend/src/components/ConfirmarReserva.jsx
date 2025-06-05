@@ -17,39 +17,27 @@ const ConfirmarReserva = () => {
 	const { tarifaSeleccionada } = useTarifa();
 	const { habitacionSeleccionada } = useHabitacion();
 	const [loading, setLoading] = useState(false);
-	
+
 	console.log(reservaSeleccionada);
 	console.log(tarifaSeleccionada);
 	console.log(habitacionSeleccionada);
 	console.log(listaHuespedes);
 
 	/*const calcularNoches = (ingreso, egreso) => {
-        if (ingreso && egreso) {
-            const checkInDate = new Date(ingreso);
-            const checkOutDate = new Date(egreso);
-            const diffTime = Math.abs(checkOutDate - checkInDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays;
-        }
-        return 0;
-    };*/
+		if (ingreso && egreso) {
+			const checkInDate = new Date(ingreso);
+			const checkOutDate = new Date(egreso);
+			const diffTime = Math.abs(checkOutDate - checkInDate);
+			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+			return diffDays;
+		}
+		return 0;
+	};*/
 
 	// Función para eliminar huésped
 	const eliminarHuesped = async (id) => {
-		try {
-			const response = await client.deleteAHuespedById(id);
-			const data = response.data;
-
-			if (response.status === 200) {
-				alert(data.message || "Huésped eliminado con éxito");
-				setListaHuespedes(prev => prev.filter(h => h.id_huesped !== id));
-			} else {
-				alert(data.error || "Error al eliminar huésped");
-			}
-		} catch (error) {
-			console.log(error.message);
-			alert("Error de conexión con el servidor");
-		}
+		alert("Huésped eliminado con éxito");
+		setListaHuespedes(prev => prev.filter(h => h.id_huesped !== id));
 	};
 
 	/**
@@ -69,7 +57,7 @@ const ConfirmarReserva = () => {
 
 	const formatDMY = (fecha) => {
 		const fechaCompletaSplit = fecha.split("T")[0];
-		const [year, month , day] = fechaCompletaSplit.split("-");
+		const [year, month, day] = fechaCompletaSplit.split("-");
 		const fechaFormateada = `${day}/${month}/${year}`;
 		return fechaFormateada;
 	};
@@ -108,7 +96,7 @@ const ConfirmarReserva = () => {
 			const dataPost = response.data.data;
 			console.log(dataPost);
 			navigate("/Inicio");
-		} catch(error) {
+		} catch (error) {
 			console.error("Error al crear el ingreso: ", error.response.data.error);
 		} finally {
 			setLoading(false);
@@ -262,8 +250,8 @@ const ConfirmarReserva = () => {
 };
 
 const thStyle = {
-    backgroundColor: "#E6E6E6",
-    color: "#2E2E2E"
+	backgroundColor: "#E6E6E6",
+	color: "#2E2E2E"
 };
 
 export default ConfirmarReserva;
