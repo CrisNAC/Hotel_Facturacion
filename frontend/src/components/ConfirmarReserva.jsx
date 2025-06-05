@@ -86,6 +86,8 @@ const ConfirmarReserva = () => {
 		}
 
 		if (!reservaSeleccionada.id_ingreso) {
+			setLoading(true);
+
 			const payloadWalkIn = {
 				fk_reserva: null,
 				checkIn: check_in,
@@ -98,7 +100,6 @@ const ConfirmarReserva = () => {
 			}
 
 			try {
-				setLoading(true);
 				const response = await client.postIngreso(payloadWalkIn);
 				const dataPost = response.data.data;
 				console.log(dataPost);
@@ -110,6 +111,7 @@ const ConfirmarReserva = () => {
 			}
 		}
 		else {
+			setLoading(true);
 
 			const payloadReserva = {
 				id_ingreso: id_ingreso,
@@ -124,7 +126,6 @@ const ConfirmarReserva = () => {
 			}
 
 			try {
-				setLoading(true);
 				const response = await client.updateIngreso(id_ingreso, payloadReserva);
 				const dataPost = response.data.data;
 				console.log(dataPost);
