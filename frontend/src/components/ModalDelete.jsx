@@ -3,6 +3,7 @@ import { useState } from "react";
 
 function ModalDelete({ item, setShowDeleteModal, refresh }) {
     const client = new HTTPClient();
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     /**
@@ -26,10 +27,14 @@ function ModalDelete({ item, setShowDeleteModal, refresh }) {
     const handleDelete = () => {
         const cancelarIngreso = async () => {
             try {
+                setLoading(true);
                 await client.cancelarIngreso(item.id_ingreso);
+                // await client.eliminarRelacionHuespedHabitacion(item.id_ingreso);
+                if (item.reserva) await client.cancelarReserva(item.reserva.id_reserva);
             } catch (err) {
                 setError(err.message);
             } finally {
+                setLoading(false);
                 setShowDeleteModal(false);
                 refresh();
             };
@@ -76,7 +81,7 @@ function ModalDelete({ item, setShowDeleteModal, refresh }) {
                     {/* Botones */}
                     <div className="modal-footer d-flex justify-content-center">
                         <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>Volver</button>
-                        <button type="button" className="btn btn-danger" onClick={handleDelete}>Cancelar</button>
+                        <button type="button" className="btn btn-danger" onClick={handleDelete} disabled={loading}>{loading ? "Cancelando..." : "Cancelar"}</button>
                     </div>
                 </div>
             </div>
