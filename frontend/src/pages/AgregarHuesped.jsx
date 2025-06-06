@@ -95,7 +95,7 @@ const AgregarHuesped = () => {
 				}
 				const nuevosHuespedes = [...huespedesPrevios];
 				nuevosHuespedes[indexEditar] = huespedActualizado;
-				navigate('/ConfirmarReserva', {
+				navigate('/ConfirmarIngreso', {
 					state: { huespedes: nuevosHuespedes }
 				});
 			} else {
@@ -109,7 +109,7 @@ const AgregarHuesped = () => {
 					huespedActualizado = response.data;
 				}
 
-				navigate('/ConfirmarReserva', {
+				navigate('/ConfirmarIngreso', {
 					state: { huespedes: [...huespedesPrevios, huespedActualizado] }
 				});
 			}
@@ -122,7 +122,7 @@ const AgregarHuesped = () => {
 
 
 	const handleCancelar = () => {
-		navigate('/ConfirmarReserva');
+		navigate('/ConfirmarIngreso');
 	};
 
 	/**

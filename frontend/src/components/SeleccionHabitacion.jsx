@@ -25,7 +25,7 @@ const SeleccionHabitacion = () => {
 	const handleSelection = (tarifa, habitacion) => {
 		setTarifaSeleccionada(tarifa);
 		setHabitacionSeleccionada(habitacion);
-		navigate("/ConfirmarReserva");
+		navigate("/ConfirmarIngreso");
 	}
 
 	const fetchHabitacionesPorId = async (tipoHabitacionId) => {
