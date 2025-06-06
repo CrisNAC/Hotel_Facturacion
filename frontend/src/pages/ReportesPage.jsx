@@ -531,13 +531,7 @@ export default function ReportesPage() {
                         {categoria === "reservas" && (
                             <>
                                 <Typography variant="subtitle1">
-                                    <strong>Reservas completadas:</strong> {resumen.completadas}
-                                </Typography>
-                                <Typography variant="subtitle1">
                                     <strong>Reservas pendientes:</strong> {resumen.pendientes}
-                                </Typography>
-                                <Typography variant="subtitle1">
-                                    <strong>Reservas canceladas:</strong> {resumen.canceladas}
                                 </Typography>
                             </>
                         )}
