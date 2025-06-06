@@ -28,28 +28,13 @@ const SeleccionHabitacion = () => {
 		navigate("/ConfirmarReserva");
 	}
 
-	/*const fetchHabitaciones = async () => {
-        try {
-            const res = await client.getHabitaciones();
-            const allHabitaciones = res.data;
-
-            const filtradas = allHabitaciones.filter(
-                (hab) => hab.tipoHabitacion.nombre === reservaSeleccionada.tipoHabitacion.nombre);
-            setHabitacionesDisponibles(filtradas);
-        } catch (error) {
-            console.error("Error al obtener las habitaciones: ", error);
-        } finally {
-            setCargando(false);
-        }
-    };*/
-
 	const fetchHabitacionesPorId = async (tipoHabitacionId) => {
 		try {
 			const res = await client.getHabitaciones();
 			const allHabitaciones = res.data;
 			const filtradas = allHabitaciones.filter(hab => hab.tipoHabitacion.id_tipo_habitacion === parseInt(tipoHabitacionId));
 			setHabitacionesDisponibles(filtradas);
-			console.log(filtradas);
+			//console.log(filtradas);
 		} catch (error) {
 			console.error("Error al obtener las habitaciones por Id: ", error);
 		} finally {
@@ -63,7 +48,7 @@ const SeleccionHabitacion = () => {
 			const allTarifas = res.data;
 			const filtradas = allTarifas.filter(tar => tar.tipoHabitacion.id_tipo_habitacion === parseInt(tipoHabitacionId));
 			setTarifasDisponibles(filtradas);
-			console.log(filtradas);
+			//console.log(filtradas);
 		} catch (error) {
 			console.error("Error al obtener las tarifas por Id: ", error);
 		} finally {
@@ -77,25 +62,13 @@ const SeleccionHabitacion = () => {
 			const allTarifas = res.data;
 			const filtradas = allTarifas.filter(tar => tar.id_tarifa === parseInt(tarifaId));
 			setTarifasDisponibles(filtradas);
+			//console.log(filtradas);
 		} catch (error) {
 			console.error("Error al obtener las tarifas por Id: ", error);
 		} finally {
 			setCargando(false);
 		}
 	}
-
-	/*const fetchTarifas = async () => {
-		try {
-			const res = await client.getTarifas();
-			const allTarifas = res.data;
-
-			const filtradas = allTarifas.filter(
-				(tar) => tar.tipoHabitacion.nombre === reservaSeleccionada.tipoHabitacion.nombre);
-			setTarifasDisponibles(filtradas);
-		} catch (error) {
-			console.error("Error al obtener las tarifas: ", error);
-		}
-	};*/
 
 	useEffect(() => {
 		if(reservaSeleccionada) {
