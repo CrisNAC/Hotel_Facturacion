@@ -13,7 +13,7 @@ const SeleccionHabitacion = () => {
 	const { setTarifaSeleccionada } = useTarifa();
 	const { setHabitacionSeleccionada } = useHabitacion();
 
-	console.log(reservaSeleccionada);
+	//console.log(reservaSeleccionada);
 
 	const navigate = useNavigate();
 

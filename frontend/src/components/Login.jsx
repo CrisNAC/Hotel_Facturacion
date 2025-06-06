@@ -26,8 +26,8 @@ const Login = () => {
 		try {
 			setLoading(true);
 			const response = await client.login(loginForm);
-			const data = response.data;
-			console.log(data);
+			//const data = response.data;
+			//console.log(data);
 
 			if (response) {
 				setErrors(null);

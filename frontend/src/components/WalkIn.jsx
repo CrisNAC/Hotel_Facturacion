@@ -169,7 +169,6 @@ const WalkIn = () => {
 							<option value="7">Cama-Doble Estándar</option>
 							<option value="8">Cama-Doble Deluxe</option>
 							<option value="9">Cama-Doble Suite</option>
-							<option value="10">Cama-Doble Matrimonial Estándar</option>
 						</select>
 					</div>
 
