@@ -41,7 +41,7 @@ const CheckInReserva = () => {
             setLoading(true);
             const res = await client.getAReservaById(id);
             setReserva(res.data);
-			console.log(res.data);
+			//console.log(res.data);
             setMensaje("");
         } catch (error) {
             console.error(error);
