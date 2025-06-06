@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { FaWifi, FaSnowflake, FaTv, FaBath, FaCouch } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
-import NavBar from "../components/navbar.jsx";
 import { useReserva } from "../context/Reserva/ReservaContext.jsx";
 import { useTarifa } from "../context/tarifa/TarifaContext.jsx";
 import { useHabitacion } from "../context/habitacion/HabitacionContext.jsx";
-import axios from "axios";
+import HTTPClient from "../api/HTTPClient.js";
 
 const SeleccionHabitacion = () => {
+	const client = new HTTPClient();
 
 	const { reservaSeleccionada } = useReserva();
 	const { setTarifaSeleccionada } = useTarifa();
 	const { setHabitacionSeleccionada } = useHabitacion();
 
-	//console.log(reservaSeleccionada);
+	console.log(reservaSeleccionada);
 
 	const navigate = useNavigate();
 
@@ -28,28 +28,13 @@ const SeleccionHabitacion = () => {
 		navigate("/ConfirmarReserva");
 	}
 
-	const fetchHabitaciones = async () => {
-        try {
-            const res = await axios.get("/api/habitacion");
-            const allHabitaciones = res.data;
-
-            const filtradas = allHabitaciones.filter(
-                (hab) => hab.tipoHabitacion.nombre === reservaSeleccionada.tipoHabitacion.nombre);
-            setHabitacionesDisponibles(filtradas);
-        } catch (error) {
-            console.error("Error al obtener las habitaciones: ", error);
-        } finally {
-            setCargando(false);
-        }
-    };
-
 	const fetchHabitacionesPorId = async (tipoHabitacionId) => {
 		try {
-			const res = await axios.get("/api/habitacion");
+			const res = await client.getHabitaciones();
 			const allHabitaciones = res.data;
 			const filtradas = allHabitaciones.filter(hab => hab.tipoHabitacion.id_tipo_habitacion === parseInt(tipoHabitacionId));
 			setHabitacionesDisponibles(filtradas);
-			console.log(filtradas);
+			//console.log(filtradas);
 		} catch (error) {
 			console.error("Error al obtener las habitaciones por Id: ", error);
 		} finally {
@@ -59,40 +44,43 @@ const SeleccionHabitacion = () => {
 
 	const fetchTarifasPorId = async (tipoHabitacionId) => {
 		try {
-			const res = await axios.get("/api/tarifa");
+			const res = await client.getTarifas();
 			const allTarifas = res.data;
 			const filtradas = allTarifas.filter(tar => tar.tipoHabitacion.id_tipo_habitacion === parseInt(tipoHabitacionId));
 			setTarifasDisponibles(filtradas);
-			console.log(filtradas);
+			//console.log(filtradas);
 		} catch (error) {
-			console.error("Error al obtener las habitaciones por Id: ", error);
+			console.error("Error al obtener las tarifas por Id: ", error);
 		} finally {
 			setCargando(false);
 		}
 	};
 
-	const fetchTarifas = async () => {
+	const fetchTarifasPorIdEnReserva = async (tarifaId) => {
 		try {
-			const res = await axios.get("/api/tarifa");
+			const res = await client.getTarifas();
 			const allTarifas = res.data;
-
-			const filtradas = allTarifas.filter(
-				(tar) => tar.tipoHabitacion.nombre === reservaSeleccionada.tipoHabitacion.nombre);
+			const filtradas = allTarifas.filter(tar => tar.id_tarifa === parseInt(tarifaId));
 			setTarifasDisponibles(filtradas);
+			//console.log(filtradas);
 		} catch (error) {
-			console.error("Error al obtener las tarifas: ", error);
+			console.error("Error al obtener las tarifas por Id: ", error);
+		} finally {
+			setCargando(false);
 		}
-	};
+	}
 
 	useEffect(() => {
 		if(reservaSeleccionada) {
-			if (reservaSeleccionada.tipoHabitacion) {
-				fetchHabitaciones();
-				fetchTarifas();
-			} else if (reservaSeleccionada.tipo_habitacion) {
+
+			if (!reservaSeleccionada.id_ingreso) {
 				fetchHabitacionesPorId(reservaSeleccionada.tipo_habitacion);
 				fetchTarifasPorId(reservaSeleccionada.tipo_habitacion);
+			} else {
+			fetchHabitacionesPorId(reservaSeleccionada.tipo_habitacion);
+			fetchTarifasPorIdEnReserva(reservaSeleccionada.fk_tarifa);
 			}
+			
 		} else {
 			setHabitacionesDisponibles([]);
 			setTarifasDisponibles([]);
@@ -101,11 +89,13 @@ const SeleccionHabitacion = () => {
 	}, []);
 
 	useEffect(() => {
-		if (tarifasDisponibles.length > 0) {
-			const tarifaEconomica = tarifasDisponibles.reduce((min, actual) => 
-				actual.precio < min.precio ? actual : min
-			);
-			setTarifaMasBarata(tarifaEconomica.id_tarifa);
+		if (!reservaSeleccionada.id_ingreso) {
+			if (tarifasDisponibles.length > 0) {
+				const tarifaEconomica = tarifasDisponibles.reduce((min, actual) => 
+					actual.precio < min.precio ? actual : min
+				);
+				setTarifaMasBarata(tarifaEconomica.id_tarifa);
+			}
 		}
 	}, [tarifasDisponibles]);
 

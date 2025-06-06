@@ -85,8 +85,8 @@ model Reserva {
   id_reserva         Int            @id @default(autoincrement())
   fk_huesped         Int
   fk_tipo_habitacion Int
-  check_in           DateTime       @db.Timestamptz(6)
-  check_out          DateTime       @db.Timestamptz(6)
+  checkIn            DateTime       @db.Timestamp(6)
+  checkOut           DateTime       @db.Timestamp(6)
   estado             EstadoReserva  @default(Pendiente)
   fk_usuario         Int
   activo             Boolean        @default(true)
@@ -109,8 +109,8 @@ model Ingreso {
   activo                Boolean             @default(true)
   created_at            DateTime            @default(now())
   updated_at            DateTime            @updatedAt
-  checkOut              DateTime?           @db.Timestamptz(6)
-  checkIn               DateTime            @default(now()) @db.Timestamptz(6)
+  checkOut              DateTime?           @db.Timestamp(6)
+  checkIn               DateTime            @db.Timestamp(6)
   cuenta                Cuenta[]
   huespedesHabitaciones HuespedHabitacion[]
   habitacion            Habitacion?         @relation(fields: [fk_habitacion], references: [id_habitacion], onDelete: Restrict)
@@ -207,7 +207,7 @@ model Productos {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model AsientoContable {
   id_asiento Int       @id @default(autoincrement())
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  created_at DateTime  @db.Timestamp(6)
   fecha      DateTime? @db.Date
   concepto   String?
   debe       Int?
@@ -218,7 +218,7 @@ model AsientoContable {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model MedioPago {
   id         Int      @id @default(autoincrement()) @db.SmallInt
-  created_at DateTime @default(now()) @db.Timestamptz(6)
+  created_at DateTime @db.Timestamp(6)
   metodo     String?
   lugar      String?
 }

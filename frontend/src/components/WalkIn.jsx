@@ -1,23 +1,21 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect} from "react";
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
 import { useReserva } from "../context/Reserva/ReservaContext";
+import HTTPClient from "../api/HTTPClient.js";
+import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const WalkIn = () => {	
+	const client = new HTTPClient();
 	const navigate = useNavigate();
 
-	const hoyUTC = new Date();
-	
-	//Formato ES para mostrar en el formulario de forma amigable
-	/*const fechaActual = hoyUTC.toLocaleDateString('es-ES', {
-		day: '2-digit',
-		month: '2-digit',
-		year: 'numeric'
-	});*/
-
 	//Formato US para mostrar en el formulario de forma amigable
-	const fechaHoy = hoyUTC.toISOString().split("T")[0];
+	const fechaHoy = dayjs().format('YYYY-MM-DD');
 
 	//Estados iniciales de los datos del formulario
 	const initialState = {
@@ -33,21 +31,35 @@ const WalkIn = () => {
 	const [form, setForm] = useState(initialState);
 	const {setReservaSeleccionada} = useReserva();
 
+	//Estados para manejar el payload para guardar en la base de datos (Hora Real)
+	const [checkInCompleto, setCheckInCompleto] = useState('');
+	const [checkOutCompleto, setCheckOutCompleto] = useState('');
+
 	//Efecto para modificar el check_out segun la cantidad de noches que se elijan
 	useEffect(() => {
-		const checkInDate = new Date(form.check_in);
+		/*const checkInDate = new Date(form.check_in);
 		checkInDate.setDate(checkInDate.getDate() + parseInt(form.noches));
 		const fechaSalida = checkInDate.toISOString().split("T")[0];
-		setForm(prev => ({ ...prev, check_out: fechaSalida}));
+		const fechaIngreso = dayjs(form.check_in);
+		const fechaSalida = fechaIngreso.add(parseInt(form.noches), 'day').format('YYYY-MM-DD');*/
+
+		const horaActual = dayjs().format('HH:mm:ss');
+		const fechaConHoraActual = dayjs(`${form.check_in}T${horaActual}`);
+		setCheckInCompleto(fechaConHoraActual.toISOString());
+
+		//Calculamos el check_out segun las noches
+		const checkOut = fechaConHoraActual.add(parseInt(form.noches), 'day');
+		setCheckOutCompleto(checkOut.toISOString());
+
+		// Para el formulario
+		setForm(prev => ({ ...prev, check_out: checkOut.format('YYYY-MM-DD')}));
 	}, [form.check_in, form.noches]);
 
 	//Efecto para obtener los datos del usuario en sesion
 	useEffect(() => {
 		const getUserInSession = async () => {
 			try {
-				const response = await axios.get("/api/session/user-session", {
-					withCredentials: true,
-				});
+				const response = await client.getUser();
 				const dataUser = response.data.user;
 				setForm(prev => ({
 					...prev,
@@ -68,9 +80,9 @@ const WalkIn = () => {
 		setForm(prev => ({ ...prev, [e.target.name]: e.target.value}));
 	}
 
+	// Convierte a UTC en formato ISO 8601 (para timestamptz)
 	const formatToDatabaseFormat = (fechaStr) => {
-		const date = new Date(fechaStr);
-		return date.toISOString();
+		return dayjs(fechaStr).utc().toISOString();
 	};
 
 	//Pasamos el payload al contexto al hacer Submit
@@ -79,11 +91,11 @@ const WalkIn = () => {
 
 		const payload = {
 			...restForm,
-			check_in: formatToDatabaseFormat(form.check_in),
-			check_out: formatToDatabaseFormat(form.check_out)
+			check_in: checkInCompleto,
+			check_out: checkOutCompleto
 		};
 
-		console.log(payload);
+		//console.log(payload);
 		setForm(initialState);
 		setReservaSeleccionada(payload);
 		navigate('/SeleccionHabitacion');
@@ -189,8 +201,8 @@ const WalkIn = () => {
 
 				</div>
 
-				<div className="text-center" style={{ marginTop: '60px'}}>
-					<button type="button" className="btn btn-success" onClick={handleSubmit}>
+				<div className="text-center" style={{ marginTop: '40px'}}>
+					<button type="button" className="btn btn-success fw-bold py-2" onClick={handleSubmit}>
 						Verificar Disponibilidad
 					</button>
 				</div>

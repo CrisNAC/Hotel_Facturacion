@@ -1,4 +1,11 @@
 import { PrismaClient } from "../../generated/prisma/index.js";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc.js";
+import timezone from "dayjs/plugin/timezone.js";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 const prisma = new PrismaClient();
 
 export const dashboard = async (req, res) => {
@@ -32,7 +39,7 @@ export const dashboard = async (req, res) => {
 
         const ingresosHoy = await prisma.reserva.findMany({
             where: {
-                check_in: {
+                checkIn: {
                     gte: fechaInicio,
                     lte: fechaFin,
                 }, activo: true
@@ -63,13 +70,13 @@ export const dashboard = async (req, res) => {
                 id: reserva.id_reserva,
                 nombre: reserva.huesped.nombre,
                 apellido: reserva.huesped.apellido,
-                hora: reserva.check_in.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+                hora: dayjs(reserva.checkIn).tz("America/Asuncion").format("HH:mm")
             })),
             egresosHoy: egresosHoy.map(ingreso => ({
                 id: ingreso.id_ingreso,
                 nombre: ingreso.huesped.nombre,
                 apellido: ingreso.huesped.apellido,
-                hora: ingreso.checkIn.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+                hora: dayjs(ingreso.checkOut).tz("America/Asuncion").format("HH:mm")
             })),
         });
     } catch (error) {

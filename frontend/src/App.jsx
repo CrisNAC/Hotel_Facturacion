@@ -29,51 +29,54 @@ import ReportesPage from './pages/ReportesPage.jsx';
 import AsientoContable from './components/AsientoContable.jsx';
 
 import MainLayout from './context/navbar/MainLayout.jsx';
+import AppWrapper from './components/AppWrapper.jsx';
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <Routes>
-          {/* Rutas sin NavBar */}
-          <Route path="/" element={<Login />} />
-          <Route path="/Invoice/:id" element={<Invoice />} />
-          <Route
-            path="*"
-            element={
-              <Navigate
-                to="/ErrorPage"
-                state={{ code: 404, message: "Página no encontrada" }}
-                replace
-              />
-            }
-          />
-          <Route path="/ErrorPage" element={<ErrorComponent code={404} message="Página no encontrada" />} />
+	return (
+		<QueryClientProvider client={queryClient}>
+			<Router>
+				<AppWrapper>
+					<Routes>
+						{/* Rutas sin NavBar */}
+						<Route path="/" element={<Login />} />
+						<Route path="/Invoice/:id" element={<Invoice />} />
+						<Route
+							path="*"
+							element={
+								<Navigate
+									to="/ErrorPage"
+									state={{ code: 404, message: "Página no encontrada" }}
+									replace
+								/>
+							}
+						/>
+						<Route path="/ErrorPage" element={<ErrorComponent code={404} message="Página no encontrada" />} />
 
-          {/* Rutas con NavBar */}
-          <Route element={<MainLayout />}>
-            <Route path="/Inicio" element={<Inicio />} />
-            <Route path="/Huespedes" element={<Huespedes />} />
-            <Route path="/DetallesCuenta/:id" element={<DetallesCuenta />} />
-            <Route path="/InvoiceCierre/:id" element={<InvoiceCierre />} />
-            
-            <Route element={<ReservaLayout></ReservaLayout>}>
-              <Route element={<TarifaLayout></TarifaLayout>}>
-                <Route path="/IngresoHuesped" element={<CheckIn />}></Route>
-                <Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
-                <Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
-                <Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
-              </Route>
-            </Route>
+						{/* Rutas con NavBar */}
+						<Route element={<MainLayout />}>
+							<Route path="/Inicio" element={<Inicio />} />
+							<Route path="/Huespedes" element={<Huespedes />} />
+							<Route path="/DetallesCuenta/:id" element={<DetallesCuenta />} />
+							<Route path="/InvoiceCierre/:id" element={<InvoiceCierre />} />
 
-            <Route path="/FacturasEmitidas" element={<FacturaPage />} />
-            <Route path="/Reportes" element={<ReportesPage />} />
-            <Route path="/AsientoContable" element={<AsientoContable />} />
-          </Route>
-        </Routes>
-      </Router>
-    </QueryClientProvider>
-  );
+							<Route element={<ReservaLayout></ReservaLayout>}>
+								<Route element={<TarifaLayout></TarifaLayout>}>
+									<Route path="/IngresoHuesped" element={<CheckIn />}></Route>
+									<Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
+									<Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
+									<Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
+								</Route>
+							</Route>
+
+							<Route path="/FacturasEmitidas" element={<FacturaPage />} />
+							<Route path="/Reportes" element={<ReportesPage />} />
+							<Route path="/AsientoContable" element={<AsientoContable />} />
+						</Route>
+					</Routes>
+				</AppWrapper>
+			</Router>
+		</QueryClientProvider>
+	);
 }
 
 export default App

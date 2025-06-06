@@ -2,19 +2,23 @@ import HTTPClient from "../api/HTTPClient";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useReserva } from "../context/Reserva/ReservaContext";
+import dayjs from "dayjs";
 
 const CheckInReserva = () => {
     const client = new HTTPClient();
+	const navigate = useNavigate();
+
     /*** Estados ***/
     const [reservaId, setReservaId] = useState("");
     const [reserva, setReserva] = useState(null);
     const [loading, setLoading] = useState(false);
     const [mensaje, setMensaje] = useState("");
+
     /*** Contexto ***/
-    const navigate = useNavigate();
     const { setReservaSeleccionada } = useReserva();
+
     /**
-     * Para tener los datos del usuario en seccion
+     * Para obtener los datos del usuario en sesion
      * @returns Retorna los datos en caso de exito, si no null
      */
     const getUserInSession = async () => {
@@ -27,6 +31,7 @@ const CheckInReserva = () => {
             return null;
         }
     };
+
     /**
      * Para obtener los datos de la reserva segun su numero.
      * @param {*} id El numero de la reserva que se quiere obtener
@@ -36,6 +41,7 @@ const CheckInReserva = () => {
             setLoading(true);
             const res = await client.getAReservaById(id);
             setReserva(res.data);
+			console.log(res.data);
             setMensaje("");
         } catch (error) {
             console.error(error);
@@ -46,19 +52,21 @@ const CheckInReserva = () => {
         }
     };
 
-    const calcularNoches = () => {
-        if (reserva?.check_in && reserva?.check_out) {
-            const checkIn = new Date(reserva.check_in);
-            const checkOut = new Date(reserva.check_out);
-            const diffTime = Math.abs(checkOut - checkIn);
-            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        }
-        return 0;
-    };
+	const formatDMY = (fecha) => {
+		const fechaCompletaSplit = fecha.split("T")[0];
+		const [year, month , day] = fechaCompletaSplit.split("-");
+		const fechaFormateada = `${day}/${month}/${year}`;
+		return fechaFormateada;
+	};
 
-    useEffect(() => {
-        getUserInSession();
-    }, []);
+    const calcularNoches = () => {
+		if (reserva?.checkIn && reserva?.checkOut) {
+			const checkIn = dayjs(reserva.checkIn);
+			const checkOut = dayjs(reserva.checkOut);
+			return checkOut.diff(checkIn, 'day');
+		}
+		return 0;
+	};
 
     const handleReservaIdChange = (e) => {
         const value = e.target.value;
@@ -73,6 +81,37 @@ const CheckInReserva = () => {
         if (id > 0) getReservaById(id);
         else setMensaje("Ingrese un número válido de reserva.");
     };
+
+	const handleSubmit = () => {
+
+		if (reserva.estado === "Confirmada"  || reserva.estado === "Finalizada") {
+			setMensaje("La reserva ya fue confirmada o finalizada. No es posible hacer el check-in nuevamente");
+			return;
+		}
+
+		const payload = {
+			// Ingreso anteriormente creado
+			id_ingreso: reserva.ingreso[0].id_ingreso,
+			fk_reserva: reserva.id_reserva,
+			fk_habitacion: null,
+			fk_huesped: reserva.huesped.id_huesped,
+			fk_tarifa: reserva.ingreso[0].fk_tarifa,
+			check_in: dayjs(reserva.checkIn).format("YYYY-MM-DDTHH:mm:ss"),
+			check_out: dayjs(reserva.checkOut).format("YYYY-MM-DDTHH:mm:ss"),
+			noches: noches,
+			tipo_habitacion: reserva.fk_tipo_habitacion,
+			huespedes: reserva.tipoHabitacion.capacidad,
+			fk_usuario: reserva.usuario.id_usuario
+		}
+		setReservaSeleccionada(payload);
+		navigate('/SeleccionHabitacion');
+	}
+
+	useEffect(() => {
+        getUserInSession();
+    }, []);
+
+	const noches = calcularNoches();
 
     return (
         <div>
@@ -126,24 +165,24 @@ const CheckInReserva = () => {
                                         </div>
                                     </div>
                                     <div className="row mb-3">
-                                        <div className="col-md-6">
-                                            <p><b>Recepcionista: </b>{reserva.usuario?.nombre_usuario}</p>
+										<div className="col-md-6">
+                                            <p><b>Cantidad de Huéspedes:</b> {reserva.tipoHabitacion.capacidad || 0}</p>
                                         </div>
-                                        <div className="col-md-6">
-                                            <p><b>Cantidad de Huéspedes:</b> {reserva.ingreso[0]?.huespedesHabitaciones?.length || 0}</p>
+										<div className="col-md-6">
+                                            <p><b>Noches:</b> {reserva ? noches : ""}</p>
                                         </div>
                                     </div>
                                     <div className="row mb-3">
                                         <div className="col-md-6">
-                                            <p><b>Check-in:</b> {reserva.check_in.substring(0, 10)}</p>
+                                            <p><b>Check-in:</b> {formatDMY(reserva.checkIn)}</p>
                                         </div>
                                         <div className="col-md-6">
-                                            <p><b>Check-out:</b> {reserva.check_out.substring(0, 10)}</p>
+                                            <p><b>Check-out:</b> {formatDMY(reserva.checkOut)}</p>
                                         </div>
                                     </div>
                                     <div className="row">
                                         <div className="col-md-6">
-                                            <p><b>Noches:</b> {reserva ? calcularNoches() : ""}</p>
+                                            <p><b>Recepcionista: </b>{reserva.usuario?.nombre_usuario}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -152,10 +191,7 @@ const CheckInReserva = () => {
                             <div className="text-center mt-4">
                                 <button
                                     className="btn btn-success"
-                                    onClick={() => {
-                                        setReservaSeleccionada(reserva);
-                                        navigate("/SeleccionHabitacion");
-                                    }}
+                                    onClick={handleSubmit}
                                 >
                                     Verificar Disponibilidad
                                 </button>

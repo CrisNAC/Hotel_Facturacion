@@ -17,7 +17,7 @@ export const login = async (req, res) => {
     }
 
     try {
-        const user = await prisma.usuario.findUnique({
+        const user = await prisma.usuario.findFirst({
             where: {
                 nombre_usuario,
                 activo: true,
@@ -55,7 +55,7 @@ export const login = async (req, res) => {
         res.cookie('userToken', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
         });
         res.status(200).json({
             success: true,
@@ -78,7 +78,7 @@ export const logout = async (req, res) => {
     res.clearCookie("userToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
     }).json({ message: "Hasta luego!" });
 };
 
@@ -95,7 +95,7 @@ export const userSession = async (req, res) => {
 
         const token_decodificado = jwt.verify(token, process.env.JWT_SECRET);
 
-        const user = await prisma.usuario.findUnique({
+        const user = await prisma.usuario.findFirst({
             where: {
                 id_usuario: token_decodificado.id_usuario,
                 activo: true,

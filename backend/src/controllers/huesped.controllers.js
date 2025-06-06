@@ -57,8 +57,8 @@ const getHuespedesFrecuentes = async (req, res) => {
                 reservas: {
                     where: {
                         AND: [
-                            fechaDesde ? { check_in: { gte: fechaDesde } } : {},
-                            fechaHasta ? { check_in: { lte: fechaHasta } } : {},
+                            fechaDesde ? { checkIn: { gte: fechaDesde } } : {},
+                            fechaHasta ? { checkIn: { lte: fechaHasta } } : {},
                         ],
                     },
                     select: { id_reserva: true },
@@ -119,6 +119,22 @@ const getHuesped = async (req, res) => {
 
         if (!result) return res.status(404).json({ error: "Huésped no encontrado" });
         res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener huésped" });
+    }
+};
+
+const getHuespedDocumento = async (req, res) => {
+    try {
+        const { dato } = req.params;
+        const response = await prisma.huesped.findFirst({
+            where: {
+                numero_documento: dato,
+                activo: true
+            }
+        });
+        if (!response) return res.status(404).json({ error: "Huésped no encontrado" });
+        res.status(200).json(response);
     } catch (error) {
         res.status(500).json({ error: "Error al obtener huésped" });
     }
@@ -290,6 +306,7 @@ export default {
     getAllHuespedes,
     getHuespedesFrecuentes,
     getHuesped,
+    getHuespedDocumento,
     postHuesped,
     deleteHuesped,
     putHuesped,

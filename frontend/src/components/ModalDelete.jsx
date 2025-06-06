@@ -1,8 +1,10 @@
 import HTTPClient from "../api/HTTPClient.js";
-import ErrorComponent from "../components/ErrorComponent.jsx";
+import { useState } from "react";
 
 function ModalDelete({ item, setShowDeleteModal, refresh }) {
     const client = new HTTPClient();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     /**
      * Para cambiar el formato de la fecha a Dia/Mes/Año
@@ -25,15 +27,30 @@ function ModalDelete({ item, setShowDeleteModal, refresh }) {
     const handleDelete = () => {
         const cancelarIngreso = async () => {
             try {
+                setLoading(true);
                 await client.cancelarIngreso(item.id_ingreso);
+                // await client.eliminarRelacionHuespedHabitacion(item.id_ingreso);
+                if (item.reserva) await client.cancelarReserva(item.reserva.id_reserva);
             } catch (err) {
-                console.error(err.message);
+                setError(err.message);
             } finally {
+                setLoading(false);
                 setShowDeleteModal(false);
                 refresh();
             };
         };
         cancelarIngreso();
+    };
+
+    const calcularNoches = (checkIn, checkOut) => {
+        if (!checkIn || !checkOut) return 0;
+
+        const unDia = 24 * 60 * 60 * 1000; // milisegundos en un día
+        const fechaInicio = new Date(checkIn);
+        const fechaFin = new Date(checkOut);
+
+        // Redondear hacia arriba para contar noches completas
+        return Math.round(Math.abs((fechaFin - fechaInicio) / unDia));
     };
 
     return (
@@ -46,20 +63,25 @@ function ModalDelete({ item, setShowDeleteModal, refresh }) {
                     {/* Presentacion del contenido */}
                     <div className="modal-body row row-cols-2 text-start py-5">
                         <p><strong>Nombre:</strong> {item.huesped.nombre}</p>
-                        <p><strong>Habitación:</strong> {item.habitacion? item.habitacion.numero : "Sin asignar"}</p>
+                        <p><strong>Habitación:</strong> {item.habitacion ? item.habitacion.numero : "Sin asignar"}</p>
                         <p><strong>Check-in:</strong> {formatDMY(item.checkIn)}</p>
                         <p><strong>Check-out:</strong> {formatDMY(item.checkOut)}</p>
                         <p><strong>Estado ingreso:</strong> {item.estado}</p>
-                        <p><strong>Total:</strong> {
-                            item.cuenta[0]?.consumos[0]
-                                ? (item.cuenta[0].consumos[0].cantidad * item.cuenta[0].consumos[0].monto).toLocaleString()
-                                : '0'
-                        } Gs</p>
+                        <p><strong>Total:</strong> {(() => {
+                            const noches = calcularNoches(item.checkIn, item.checkOut);
+                            const costoHabitacion = noches * (item.tarifa?.precio || 0);
+                            const totalConsumos = item.cuenta?.[0]?.consumos
+                                ?.filter(consumo => consumo.activo)
+                                ?.reduce((acc, consumo) => acc + (Number(consumo.monto) || 0), 0) || 0;
+                            const total = costoHabitacion + totalConsumos;
+
+                            return total > 0 ? `${total.toLocaleString()} Gs` : '—';
+                        })()} Gs</p>
                     </div>
                     {/* Botones */}
                     <div className="modal-footer d-flex justify-content-center">
                         <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>Volver</button>
-                        <button type="button" className="btn btn-danger" onClick={handleDelete}>Cancelar</button>
+                        <button type="button" className="btn btn-danger" onClick={handleDelete} disabled={loading}>{loading ? "Cancelando..." : "Cancelar"}</button>
                     </div>
                 </div>
             </div>

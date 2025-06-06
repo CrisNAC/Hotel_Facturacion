@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import Alert from '@mui/material/Alert';
 import HTTPClient from "../api/HTTPClient.js";
 
 const AgregarHuesped = () => {
 	const client = new HTTPClient();
 	const navigate = useNavigate();
 	const location = useLocation();
-	const [cancelado, setCancelado] = useState(false);
+	/**
+	 * Estados
+	 */
 	const [cargando, setCargando] = useState(false);
+	const [cargandoBusqueda, setCargandoBusqueda] = useState(false);
+	const [huespedExistente, setHuespedExistente] = useState(false);
 
 	const huespedEditar = location.state?.huespedEditar || null;
 	const indexEditar = location.state?.indexEditar;
@@ -25,6 +30,9 @@ const AgregarHuesped = () => {
 		fecha_nacimiento: "",
 	});
 
+	/**
+	 * Utilizado para la parte de editar
+	 */
 	useEffect(() => {
 		if (huespedEditar) {
 			const fecha = huespedEditar.fecha_nacimiento ? new Date(huespedEditar.fecha_nacimiento).toISOString().split("T")[0] : "";
@@ -43,6 +51,10 @@ const AgregarHuesped = () => {
 		}
 	}, [huespedEditar]);
 
+	/**
+	 * Captura los datos ingresados en los inputs.
+	 * @param {*} e 
+	 */
 	const handleChange = (e) => {
 		const { id, value, maxLength } = e.target;
 		setFormData({
@@ -51,13 +63,11 @@ const AgregarHuesped = () => {
 		});
 	};
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		if (cancelado) {
-			navigate('/ConfirmarReserva');
-			return;
-		}
-
+	/**
+	 * Para el boton Agregar
+	 * @returns 
+	 */
+	const handleAgregar = async () => {
 		const nuevoHuesped = {
 			nombre: formData.nombre,
 			apellido: formData.apellido,
@@ -75,30 +85,118 @@ const AgregarHuesped = () => {
 			let huespedActualizado;
 
 			if (huespedEditar && typeof huespedEditar.id_huesped === 'number') {
-				const response = await client.updateHuesped(huespedEditar.id_huesped, nuevoHuesped);
-				huespedActualizado = response.data.data;
-
+				if (huespedExistente) {
+					// Huesped ya existe: obtener sus datos actuales
+					const response = await client.getHuespedPorDocumento(formData.numero_documento.trim());
+					huespedActualizado = response.data;
+				} else {
+					// Modifica huésped
+					const response = await client.updateHuesped(huespedEditar.id_huesped, nuevoHuesped);
+					huespedActualizado = response.data.data;
+				}
 				const nuevosHuespedes = [...huespedesPrevios];
 				nuevosHuespedes[indexEditar] = huespedActualizado;
-
 				navigate('/ConfirmarReserva', {
 					state: { huespedes: nuevosHuespedes }
 				});
 			} else {
-				const response = await client.postHuesped(nuevoHuesped);
-				huespedActualizado = response.data;
+				if (huespedExistente) {
+					// Huesped ya existe: obtener sus datos actuales
+					const response = await client.getHuespedPorDocumento(formData.numero_documento.trim());
+					huespedActualizado = response.data;
+				} else {
+					// Crear nuevo huésped
+					const response = await client.postHuesped(nuevoHuesped);
+					huespedActualizado = response.data;
+				}
 
 				navigate('/ConfirmarReserva', {
 					state: { huespedes: [...huespedesPrevios, huespedActualizado] }
 				});
 			}
 		} catch (error) {
-			console.error("Error al guardar huésped:", error.response?.data || error.message);
-			alert(error.response?.data?.error || "Error al guardar huésped");
+			<Alert severity="error" onClose={() => { }}>
+				{error.response?.data?.error || "Error al guardar huésped"}
+			</Alert>
 		} finally {
 			setCargando(false);
 		}
 	};
+
+
+	const handleCancelar = () => {
+		navigate('/ConfirmarReserva');
+	};
+
+	/**
+	 * Busca a un huesped por su documento.
+	 * Si existe rellena los campos, si no las vacia.
+	 */
+	const buscarHuespedPorDocumento = async () => {
+		try {
+			if (!formData.numero_documento.trim()) {
+				<Alert severity="info" onClose={() => { }}>
+					Debe ingresar un número de documento.
+				</Alert>
+				return;
+			}
+
+			setCargandoBusqueda(true);
+			const response = await client.getHuespedPorDocumento(formData.numero_documento.trim());
+
+			if (response.data && response.data.id_huesped) {
+				const huesped = response.data;
+
+				const fecha = huesped.fecha_nacimiento
+					? new Date(huesped.fecha_nacimiento).toISOString().split("T")[0]
+					: "";
+
+				setFormData({
+					nombre: huesped.nombre || "",
+					apellido: huesped.apellido || "",
+					documento_identidad: huesped.documento_identidad || "DNI",
+					numero_documento: huesped.numero_documento || "",
+					correo: huesped.email || "",
+					telefono: huesped.telefono || "",
+					ruc: huesped.ruc || "",
+					nacionalidad: huesped.nacionalidad || "PARAGUAY",
+					fecha_nacimiento: fecha
+				});
+				setHuespedExistente(true);
+			}
+		} catch (error) {
+			if (error.response?.status === 404) {
+				setHuespedExistente(false);
+				<Alert severity="info" onClose={() => { }}>
+					No se encontró ningún huésped con ese documento.
+				</Alert>
+				clearData();
+			} else {
+				<Alert severity="error" onClose={() => { }}>
+					Ocurrió un error inesperado al buscar el huésped.
+				</Alert>
+			}
+		} finally {
+			setCargandoBusqueda(false);
+		}
+	};
+
+	/**
+	 * Funcion para vaciar los campos, menos el numero de documento.
+	 */
+	const clearData = () => {
+		setFormData({
+			nombre: "",
+			apellido: "",
+			documento_identidad: "DNI",
+			numero_documento: formData.numero_documento,
+			correo: "",
+			telefono: "",
+			ruc: "",
+			nacionalidad: "PARAGUAY",
+			fecha_nacimiento: ""
+		});
+	}
 
 	return (
 		<div className="container py-4">
@@ -107,18 +205,41 @@ const AgregarHuesped = () => {
 					<div className="card shadow p-4">
 						<div className="card-body">
 							<h3 className="text-center fw-bold mb-4">Datos del Huésped</h3>
-							<form className="px-2" onSubmit={handleSubmit}>
+							{/* Formulario */}
+							<div className="px-2">
 								<div className="row g-4">
+									<div className="col-md-4" key="numero_documento">
+										<label htmlFor="numero_documento" className="form-label mb-1 text-start d-block">
+											Número de Documento
+										</label>
+										<div className="input-group">
+											<input
+												type="text"
+												className="form-control"
+												id="numero_documento"
+												placeholder="Inserte número de documento..."
+												value={formData.numero_documento}
+												onChange={handleChange}
+												maxLength={20}
+											/>
+											<button
+												type="button"
+												className="btn btn-outline-primary"
+												onClick={buscarHuespedPorDocumento}
+												disabled={formData.numero_documento.trim() === ""}
+											>
+												{cargandoBusqueda ? "Buscando..." : "Buscar"}
+											</button>
+										</div>
+									</div>
 									{[
 										{ id: "nombre", label: "Nombre", type: "text", maxLength: 30 },
 										{ id: "apellido", label: "Apellido", type: "text", maxLength: 30 },
-										{ id: "numero_documento", label: "Número de Documento", type: "text", maxLength: 20 },
 										{ id: "ruc", label: "RUC", type: "text", maxLength: 20 },
 										{ id: "correo", label: "Correo", type: "email", maxLength: 50 },
-										{ id: "telefono", label: "Teléfono", type: "tel", maxLength: 20 },
-										//{ id: "fecha_nacimiento", label: "Fecha de Nacimiento", type: "date" }
+										{ id: "telefono", label: "Teléfono", type: "tel", maxLength: 20 }
 									].map(({ id, label, type, maxLength }) => (
-										<div className="col-md-6" key={id}>
+										<div className="col-md-4" key={id}>
 											<label htmlFor={id} className="form-label mb-1 text-start d-block">
 												{label}
 											</label>
@@ -129,14 +250,13 @@ const AgregarHuesped = () => {
 												placeholder={`Inserte ${label.toLowerCase()}...`}
 												value={formData[id]}
 												onChange={handleChange}
-												style={{ maxWidth: "100%", width: "400px" }}
 												{...(maxLength ? { maxLength } : {})}
 											/>
 										</div>
 									))}
 
 									{/* Fecha Nacimiento*/}
-									<div className="col-md-6">
+									<div className="col-md-4">
 										<label htmlFor="fecha_nacimiento" className="form-label mb-1 text-start d-block">
 											Fecha de Nacimiento
 										</label>
@@ -146,13 +266,12 @@ const AgregarHuesped = () => {
 											id="fecha_nacimiento"
 											value={formData.fecha_nacimiento}
 											onChange={handleChange}
-											style={{ maxWidth: "100%", width: "400px" }}
 											maxLength={11}
 										/>
 									</div>
 
 									{/* Nacionalidad */}
-									<div className="col-md-6">
+									<div className="col-md-4">
 										<label htmlFor="nacionalidad" className="form-label mb-1 text-start d-block">
 											Nacionalidad
 										</label>
@@ -161,7 +280,6 @@ const AgregarHuesped = () => {
 											className="form-select"
 											value={formData.nacionalidad}
 											onChange={handleChange}
-											style={{ maxWidth: "100%", width: "400px" }}
 										>
 											<option value="PARAGUAY">Paraguaya</option>
 											<option value="BRASIL">Brasilera</option>
@@ -170,7 +288,7 @@ const AgregarHuesped = () => {
 									</div>
 
 									{/* Tipo de Documento */}
-									<div className="col-md-6">
+									<div className="col-md-4">
 										<label htmlFor="documento_identidad" className="form-label mb-1 text-start d-block">
 											Tipo de Documento
 										</label>
@@ -179,7 +297,6 @@ const AgregarHuesped = () => {
 											className="form-select"
 											value={formData.documento_identidad}
 											onChange={handleChange}
-											style={{ maxWidth: "100%", width: "400px" }}
 										>
 											<option value="DNI">DNI</option>
 											<option value="PASAPORTE">Pasaporte</option>
@@ -192,20 +309,21 @@ const AgregarHuesped = () => {
 									<button
 										type="submit"
 										className="btn btn-secondary px-4 mx-1"
-										disabled={cargando}
-										onClick={() => setCancelado(true)}
+										disabled={cargando || cargandoBusqueda}
+										onClick={handleCancelar}
 									>
 										Cancelar
 									</button>
 									<button
 										type="submit"
-										className="btn btn-primary px-4 mx-1"
-										disabled={cargando}
+										className="btn btn-success px-4 mx-1"
+										disabled={cargando || cargandoBusqueda}
+										onClick={handleAgregar}
 									>
 										{cargando ? "Guardando..." : huespedEditar ? "Guardar cambios" : "Agregar"}
 									</button>
 								</div>
-							</form>
+							</div>
 						</div>
 					</div>
 				</div>

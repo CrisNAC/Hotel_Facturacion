@@ -6,7 +6,6 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Snackbar from '@mui/material/Snackbar';
@@ -104,8 +103,8 @@ export default function ReportesPage() {
                 huesped: `${r.huesped?.nombre} ${r.huesped?.apellido}`,
                 tipo_habitacion: r.tipoHabitacion?.nombre || '---',
                 estado: r.estado,
-                checkIn: r.check_in?.split('T')[0],
-                checkOut: r.check_out?.split('T')[0]
+                checkIn: r.checkIn?.split('T')[0],
+                checkOut: r.checkOut?.split('T')[0]
             }));
 
             const resumenEstado = {

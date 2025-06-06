@@ -1,4 +1,5 @@
-import axios from "axios";
+//import axios from "axios";
+import axiosInstance from "./axiosInstance.js";
 
 class HTTPClient {
     constructor() {
@@ -12,10 +13,13 @@ class HTTPClient {
             baseURL = import.meta.env.VITE_PRODUCCION;
         }
 
-        this.instance = axios.create({
+        /*this.instance = axios.create({
             baseURL,
             withCredentials: true
-        });
+        });*/
+        this.instance = axiosInstance;
+        this.instance.defaults.baseURL = baseURL;
+        this.instance.defaults.withCredentials = true;
     }
 
     /****           SESSION - LOGIN         ****/
@@ -53,6 +57,10 @@ class HTTPClient {
         return this.instance.patch(`/ingresos/${id}`);
     }
 
+    updateIngreso(id, data) {
+        return this.instance.put(`/ingresos/${id}`, data);
+    }
+
     /****        HUESPEDES        ****/
     getHuespedes() {
         return this.instance.get("/huesped");
@@ -77,10 +85,23 @@ class HTTPClient {
     updateHuesped(id, datos) {
         return this.instance.put(`/huesped/${id}`, datos);
     };
+
+    getHuespedPorDocumento(data) {
+        return this.instance.get(`/huesped/buscar/${data}`);
+    };
+
     /****        HUESPEDES HABITACION       ****/
     getDetalleHabitacion(id) {
         return this.instance.get(`/huespedHabitacion/${id}`);
     };
+
+    getHuespedEnHabitacion(id) {
+        return this.instance.get(`huespedHabitacion/${id}/ocupacion`);
+    };
+
+    eliminarRelacionHuespedHabitacion(id) {
+        return this.instance.patch(`/huespedhabitacion/${id}`);
+    }
 
     /****        FACTURAS       ****/
     getFacturas() {
@@ -115,6 +136,10 @@ class HTTPClient {
         return this.instance.get(`/reserva/${id}`);
     };
 
+    cancelarReserva(id) {
+        return this.instance.patch(`/reserva/${id}`);
+    };
+
     /****    CONSUMO   ****/
     postConsumo(data) {
         return this.instance.post('/consumo', data);
@@ -133,6 +158,20 @@ class HTTPClient {
         return this.instance.get('/productos');
     }
 
+    /****	HABITACIONES ****/
+    getHabitaciones() {
+        return this.instance.get('/habitacion');
+    }
+
+    /****	TARIFAS ****/
+    getTarifas() {
+        return this.instance.get('/tarifa');
+    }
+
+    getTarifaById(id) {
+        return this.instance.get(`/tarifa/${id}`);
+    }
+
     /****    ASIENTOS CONTABLES     ****/
     getAsientos() {
         return this.instance.get('/asientos');
@@ -142,7 +181,7 @@ class HTTPClient {
     crearAsiento(data) {
         return this.instance.post('/asientos', data);
     }
-  
+
 };
 
 export default HTTPClient;
