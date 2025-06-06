@@ -113,7 +113,7 @@ const FacturaTable = ({
                         >
                             <option>Todos</option>
                             <option>Contado</option>
-                            <option>Crédito</option>
+                            <option>Credito</option>
                         </select>
                     </div>
                     <div className="col-12 col-md-auto">
@@ -142,7 +142,7 @@ const FacturaTable = ({
                 </thead>
                 <tbody>
                     {loading ? (
-                        [...Array(5)].map((_, i) => (
+                        [...Array(15)].map((_, i) => (
                             <tr key={i}>
                                 <td className="text-center">
                                     <div className="d-flex justify-content-center">
