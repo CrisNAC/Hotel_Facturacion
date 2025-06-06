@@ -76,6 +76,7 @@ const FacturaTable = ({
                                 className="form-control"
                                 value={filters?.desde || ""}
                                 onChange={handleChange}
+                                placeholder=" "
                             />
                         </div>
                     </div>
@@ -88,6 +89,7 @@ const FacturaTable = ({
                                 className="form-control"
                                 value={filters?.hasta || ""}
                                 onChange={handleChange}
+                                placeholder=" "
                             />
                         </div>
                     </div>
