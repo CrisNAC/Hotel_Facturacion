@@ -19,10 +19,10 @@ const ConfirmarReserva = () => {
 	const { habitacionSeleccionada } = useHabitacion();
 	const [loading, setLoading] = useState(false);
 
-	console.log(reservaSeleccionada);
-	console.log(tarifaSeleccionada);
-	console.log(habitacionSeleccionada);
-	console.log(listaHuespedes);
+	//console.log(reservaSeleccionada);
+	//console.log(tarifaSeleccionada);
+	//console.log(habitacionSeleccionada);
+	//console.log(listaHuespedes);
 
 	// Función para eliminar huésped
 	const eliminarHuesped = async (id) => {
@@ -101,8 +101,9 @@ const ConfirmarReserva = () => {
 
 			try {
 				const response = await client.postIngreso(payloadWalkIn);
+				// eslint-disable-next-line no-unused-vars
 				const dataPost = response.data.data;
-				console.log(dataPost);
+				//console.log(dataPost);
 				navigate("/Inicio");
 			} catch(error) {
 				console.error("Error al crear el ingreso: ", error.response.data.error);
@@ -126,9 +127,10 @@ const ConfirmarReserva = () => {
 			}
 
 			try {
+				// eslint-disable-next-line no-unused-vars
 				const response = await client.updateIngreso(id_ingreso, payloadReserva);
-				const dataPost = response.data.data;
-				console.log(dataPost);
+				//const dataPost = response.data.data;
+				//console.log(dataPost);
 				navigate("/Inicio");
 			} catch(error) {
 				console.error("Error al crear el ingreso: ", error.response.data.error);
