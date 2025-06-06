@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FaEdit, FaTrash, FaUserPlus } from "react-icons/fa";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
-import HTTPClient from "../api/HTTPClient";
+import HTTPClient from "../api/HTTPClient.js";
 import { useReserva } from "../context/Reserva/ReservaContext.jsx";
 import { useTarifa } from "../context/tarifa/TarifaContext.jsx";
 import { useHabitacion } from "../context/habitacion/HabitacionContext.jsx";
@@ -105,7 +105,7 @@ const ConfirmarReserva = () => {
 				const dataPost = response.data.data;
 				//console.log(dataPost);
 				navigate("/Inicio");
-			} catch(error) {
+			} catch (error) {
 				console.error("Error al crear el ingreso: ", error.response.data.error);
 			} finally {
 				setLoading(false);
@@ -132,7 +132,7 @@ const ConfirmarReserva = () => {
 				//const dataPost = response.data.data;
 				//console.log(dataPost);
 				navigate("/Inicio");
-			} catch(error) {
+			} catch (error) {
 				console.error("Error al crear el ingreso: ", error.response.data.error);
 			} finally {
 				setLoading(false);
@@ -265,15 +265,12 @@ const ConfirmarReserva = () => {
 
 				{/* Button */}
 				<div className="d-flex justify-content-center gap-5 mt-5">
-
-					<button type="button" className="btn btn-success fw-bold px-4 py-3" disabled={loading || listaHuespedes.length === 0} onClick={handleSubmit}>
-						{loading ? "Espere..." : "Confirmar Ingreso"}
-					</button>
-
-					<button type="button" className="btn btn-secondary fw-bold px-4 py-3" onClick={handleCancelar}>
+					<button type="button" className="btn btn-secondary fw-bold" onClick={handleCancelar}>
 						Cancelar
 					</button>
-
+					<button type="button" className="btn btn-success fw-bold" disabled={loading || listaHuespedes.length === 0} onClick={handleSubmit}>
+						{loading ? "Espere..." : "Confirmar Ingreso"}
+					</button>
 				</div>
 
 			</div>

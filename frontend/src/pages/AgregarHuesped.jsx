@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Alert from '@mui/material/Alert';
 import HTTPClient from "../api/HTTPClient.js";
 
 const AgregarHuesped = () => {
@@ -96,7 +95,7 @@ const AgregarHuesped = () => {
 				}
 				const nuevosHuespedes = [...huespedesPrevios];
 				nuevosHuespedes[indexEditar] = huespedActualizado;
-				navigate('/ConfirmarReserva', {
+				navigate('/ConfirmarIngreso', {
 					state: { huespedes: nuevosHuespedes }
 				});
 			} else {
@@ -110,14 +109,12 @@ const AgregarHuesped = () => {
 					huespedActualizado = response.data;
 				}
 
-				navigate('/ConfirmarReserva', {
+				navigate('/ConfirmarIngreso', {
 					state: { huespedes: [...huespedesPrevios, huespedActualizado] }
 				});
 			}
 		} catch (error) {
-			<Alert severity="error" onClose={() => { }}>
-				{error.response?.data?.error || "Error al guardar huésped"}
-			</Alert>
+			alert(error.response?.data?.error || "Error al guardar huésped");
 		} finally {
 			setCargando(false);
 		}
@@ -125,7 +122,7 @@ const AgregarHuesped = () => {
 
 
 	const handleCancelar = () => {
-		navigate('/ConfirmarReserva');
+		navigate('/ConfirmarIngreso');
 	};
 
 	/**
@@ -135,9 +132,7 @@ const AgregarHuesped = () => {
 	const buscarHuespedPorDocumento = async () => {
 		try {
 			if (!formData.numero_documento.trim()) {
-				<Alert severity="info" onClose={() => { }}>
-					Debe ingresar un número de documento.
-				</Alert>
+				alert("Debe ingresar un número de documento.");
 				return;
 			}
 
@@ -167,14 +162,10 @@ const AgregarHuesped = () => {
 		} catch (error) {
 			if (error.response?.status === 404) {
 				setHuespedExistente(false);
-				<Alert severity="info" onClose={() => { }}>
-					No se encontró ningún huésped con ese documento.
-				</Alert>
+				alert("No se encontró ningún huésped con ese documento.");
 				clearData();
 			} else {
-				<Alert severity="error" onClose={() => { }}>
-					Ocurrió un error inesperado al buscar el huésped.
-				</Alert>
+				alert("Ocurrió un error inesperado al buscar el huésped.");
 			}
 		} finally {
 			setCargandoBusqueda(false);

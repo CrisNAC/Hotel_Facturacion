@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
 
-import Login from './components/Login'
+import Login from './components/Login.jsx'
 import Inicio from './pages/Inicio.jsx'
 
 import Huespedes from './components/Huespedes.jsx';
@@ -13,10 +13,10 @@ import InvoiceCierre from './components/InvoiceCierre.jsx'
 
 import Invoice from "./components/Invoice.jsx"
 
-import CheckIn from './components/CheckIn'
-import ConfirmarReserva from './components/ConfirmarReserva'
+import CheckIn from './components/CheckIn.jsx'
+import ConfirmarIngreso from './components/ConfirmarIngreso.jsx'
 import AgregarHuesped from './pages/AgregarHuesped.jsx';
-import SeleccionHabitacion from './components/SeleccionHabitacion'
+import SeleccionHabitacion from './components/SeleccionHabitacion.jsx'
 
 import TarifaLayout from './context/tarifa/TarifaLayout.jsx';
 import ReservaLayout from "./context/Reserva/ReservaLayout.jsx";
@@ -64,7 +64,7 @@ function App() {
 									<Route path="/IngresoHuesped" element={<CheckIn />}></Route>
 									<Route path="/AgregarHuesped" element={<AgregarHuesped />}></Route>
 									<Route path="/SeleccionHabitacion" element={<SeleccionHabitacion />}></Route>
-									<Route path="/ConfirmarReserva" element={<ConfirmarReserva />}></Route>
+									<Route path="/ConfirmarIngreso" element={<ConfirmarIngreso />}></Route>
 								</Route>
 							</Route>
 
