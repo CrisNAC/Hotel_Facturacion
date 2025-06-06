@@ -134,6 +134,7 @@ export const getIngresoById = async (req, res) => {
                         telefono: true,
                         email: true,
                         ruc: true,
+                        numero_documento:true
                     },
                 },
 
