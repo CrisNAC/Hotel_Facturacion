@@ -41,6 +41,7 @@ export const crearAsiento = async (req, res) => {
 
     // Mapear datos (prisma.createMany no convierte tipos automáticamente)
     const data = asientos.map(a => ({
+      created_at: a.fecha ? new Date(a.fecha) : null,
       fecha: a.fecha ? new Date(a.fecha) : null,
       concepto: a.concepto,
       debe: a.debe !== null ? parseInt(a.debe) : null,
