@@ -83,33 +83,33 @@ export const getReservasPorHuesped = async (req, res) => {
 
 // Obtener reservas activas por rango de fechas
 export const getReservasPorFechas = async (req, res) => {
-    try {
-        const { desde, hasta } = req.query;
+	try {
+		const { desde, hasta } = req.query;
 
-        if (!desde || !hasta) {
-            return res.status(400).json({ message: "Fechas 'desde' y 'hasta' son obligatorias." });
-        }
+		if (!desde || !hasta) {
+			return res.status(400).json({ message: "Fechas 'desde' y 'hasta' son obligatorias." });
+		}
 
-        const reservas = await prisma.reserva.findMany({
-            where: {
-                checkIn: { gte: new Date(desde) },
-                checkOut: { lte: new Date(hasta) },
-                activo: true,
-            },
-            include: {
-                huesped: true,
-                tipoHabitacion: true,
-            },
-            orderBy: {
-                checkIn: 'asc',
-            }
-        });
+		const reservas = await prisma.reserva.findMany({
+			where: {
+				checkIn: { gte: new Date(desde) },
+				checkOut: { lte: new Date(hasta) },
+				activo: true,
+			},
+			include: {
+				huesped: true,
+				tipoHabitacion: true,
+			},
+			orderBy: {
+				checkIn: 'asc',
+			}
+		});
 
-        res.json(reservas);
-    } catch (error) {
-        console.error("Error al obtener reservas por fechas:", error);
-        res.status(500).json({ message: "Error del servidor" });
-    }
+		res.json(reservas);
+	} catch (error) {
+		console.error("Error al obtener reservas por fechas:", error);
+		res.status(500).json({ message: "Error del servidor" });
+	}
 };
 
 // Obtener una reserva por su ID
@@ -165,5 +165,18 @@ export const deleteReserva = async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: "Error al eliminar la reserva" });
+	}
+};
+
+export const cancelarReserva = async (req, res) => {
+	try {
+		const { id_reserva } = req.params;
+		await prisma.reserva.update({
+			where: { id_reserva: Number(id_reserva) },
+			data: { estado: "Finalizada" }
+		});
+		res.status(204).end();
+	} catch (error) {
+		res.status(500).json({ error: "Error al finalizar la reserva" });
 	}
 };

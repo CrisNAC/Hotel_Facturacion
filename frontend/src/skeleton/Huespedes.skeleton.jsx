@@ -70,7 +70,7 @@ function HuespedesSkeleton() {
                     </tbody>
                 </table>
             </div >
-            <div className='d-flex justify-content-center mt-2'>
+            <div className='d-flex justify-content-center mt-2 mb-3'>
                 <div className='d-flex'>
                     <Skeleton variant='rectangular' animation='wave' width={100} height={30} style={{ margin: "0 0.2rem 0 0.2rem" }}></Skeleton>
                     <Skeleton variant='rectangular' animation='wave' width={30} height={30} style={{ margin: "0 0.2rem 0 0.2rem" }}></Skeleton>

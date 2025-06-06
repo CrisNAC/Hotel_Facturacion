@@ -2,24 +2,24 @@ import { PrismaClient } from "../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
 export const getAllHuespedHabitacion = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const result = await prisma.huespedHabitacion.findMany({
-            where: {
-                activo: true,
-                ingreso: {
-                    id_ingreso: parseInt(id)
-                }
-            },
-            include: {
-                huesped: true
-            }
-        });
-        if (result.length === 0) return res.status(404).json({ error: 'Error en huespedes habitacion' });
-        res.status(200).json(result);
-    } catch (error) {
-        res.status(500).json({ error: "Error al obtener huesped habitacion" });
-    }
+	try {
+		const { id } = req.params;
+		const result = await prisma.huespedHabitacion.findMany({
+			where: {
+				activo: true,
+				ingreso: {
+					id_ingreso: parseInt(id)
+				}
+			},
+			include: {
+				huesped: true
+			}
+		});
+		if (result.length === 0) return res.status(404).json({ error: 'Error en huespedes habitacion' });
+		res.status(200).json(result);
+	} catch (error) {
+		res.status(500).json({ error: "Error al obtener huesped habitacion" });
+	}
 };
 
 export const huespedEnHabitacion = async (req, res) => {
@@ -38,7 +38,7 @@ export const huespedEnHabitacion = async (req, res) => {
 			}
 		});
 
-		if(huespedActivo) {
+		if (huespedActivo) {
 			return res.status(200).json({
 				ocupado: true,
 				habitacion: huespedActivo.ingreso.fk_habitacion,
@@ -50,5 +50,18 @@ export const huespedEnHabitacion = async (req, res) => {
 	} catch (error) {
 		console.error("Error al verificar ocupación:", error);
 		return res.status(500).json({ error: "Error al verificar ocupación del huésped." });
+	}
+};
+
+export const eliminandoRelacion = async (req, res) => {
+	try {
+		const { id } = req.params;
+		await prisma.huespedHabitacion.updateMany({
+			where: { fk_ingreso: Number(id) },
+			data: { activo: false }
+		});
+		res.status(204).end();
+	} catch (error) {
+		res.status(500).json({ error: "Error a eliminar relacion de huesped habitacion" });
 	}
 };

@@ -337,7 +337,7 @@ function Huespedes() {
                         </table>
                     </div>
                     {/* Paginación */}
-                    <div className="d-flex justify-content-center mt-6 space-x-2">
+                    <div className="d-flex justify-content-center mt-2 mb-3 space-x-2">
                         <button
                             type='button'
                             className="px-3 py-1 border rounded disabled:opacity-50"
