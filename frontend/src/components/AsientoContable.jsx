@@ -5,11 +5,12 @@ import * as XLSX from 'xlsx';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import dayjs from 'dayjs';
+import { Skeleton } from '@mui/material';
 
 const AsientoContable = () => {
   const client = new HTTPClient();
   const [asientos, setAsientos] = useState([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const [fechaDesde, setFechaDesde] = useState(dayjs().startOf('month').format('YYYY-MM-DD'));
   const [fechaHasta, setFechaHasta] = useState(dayjs().endOf('month').format('YYYY-MM-DD'));
 
@@ -26,7 +27,7 @@ const AsientoContable = () => {
 
   const fetchAsientos = async () => {
     try {
-      setLoading(true); 
+      setLoading(true);
       const { data } = await client.getAsientos();
       if (Array.isArray(data)) {
         setAsientos(data);
@@ -36,7 +37,7 @@ const AsientoContable = () => {
     } catch (error) {
       console.error("Error al obtener asientos contables:", error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -171,11 +172,20 @@ const AsientoContable = () => {
             {loading ? (
               [...Array(10)].map((_, i) => (
                 <tr key={i}>
-                  <td><div className="placeholder-glow"><span className="placeholder col-8"></span></div></td>
-                  <td className="text-start"><div className="placeholder-glow"><span className="placeholder col-10"></span></div></td>
-                  <td className="text-end"><div className="placeholder-glow"><span className="placeholder col-6"></span></div></td>
-                  <td className="text-end"><div className="placeholder-glow"><span className="placeholder col-6"></span></div></td>
-                  <td className="text-end"><div className="placeholder-glow"><span className="placeholder col-6"></span></div></td>
+                  <td className="col-1"><div className="d-flex justify-content-center">
+                    <Skeleton variant="text" width="50%" height={30}></Skeleton>
+                  </div></td>
+                  <td className="col-6"><div className="d-flex justify-content-start">
+                    <Skeleton variant="text" width="80%" height={30}></Skeleton></div></td>
+                  <td className="col-1"><div className="d-flex justify-content-end">
+                    <Skeleton variant="text" width="50%" height={30}></Skeleton>
+                  </div></td>
+                  <td className="col-1"><div className="d-flex justify-content-end">
+                    <Skeleton variant="text" width="50%" height={30}></Skeleton>
+                  </div></td>
+                  <td className="col-1"><div className="d-flex justify-content-end">
+                    <Skeleton variant="text" width="50%" height={30}></Skeleton>
+                  </div></td>
                 </tr>
               ))
             ) : (
