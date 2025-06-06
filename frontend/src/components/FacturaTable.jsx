@@ -113,7 +113,7 @@ const FacturaTable = ({
                         >
                             <option>Todos</option>
                             <option>Contado</option>
-                            <option>Crédito</option>
+                            <option>Credito</option>
                         </select>
                     </div>
                     <div className="col-12 col-md-auto">
