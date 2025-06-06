@@ -108,9 +108,9 @@ export default function ReportesPage() {
             }));
 
             const resumenEstado = {
-                completadas: data.filter(r => r.estado === 'Completada').length,
+                completadas: data.filter(r => r.estado === 'Confirmada').length,
                 pendientes: data.filter(r => r.estado === 'Pendiente').length,
-                canceladas: data.filter(r => r.estado === 'Cancelada').length,
+                canceladas: data.filter(r => r.estado === 'Finalizada').length,
             };
             setDatos(reservasParseadas);
             setResumen(resumenEstado);
@@ -531,7 +531,13 @@ export default function ReportesPage() {
                         {categoria === "reservas" && (
                             <>
                                 <Typography variant="subtitle1">
+                                    <strong>Reservas Confirmadas:</strong> {resumen.completadas}
+                                </Typography>
+                                <Typography variant="subtitle1">
                                     <strong>Reservas pendientes:</strong> {resumen.pendientes}
+                                </Typography>
+                                <Typography variant="subtitle1">
+                                    <strong>Reservas Finalizadas:</strong> {resumen.canceladas}
                                 </Typography>
                             </>
                         )}
