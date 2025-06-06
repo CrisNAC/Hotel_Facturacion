@@ -310,8 +310,10 @@ function Huespedes() {
                                             {/* Detalles del huésped*/}
                                             <button
                                                 type='button'
-                                                className='btn rounded-circle mx-1'
-                                                onClick={() => handleShowDetails(item)}>
+                                                className='btn rounded-circle mx-1 border-0'
+                                                onClick={() => handleShowDetails(item)}
+                                                disabled={item.estado === 'Cancelado' || item.estado === 'Pendiente'}
+                                                >
                                                 <FaEye />
                                             </button>
                                             {/* Cancelar el Ingreso */}
