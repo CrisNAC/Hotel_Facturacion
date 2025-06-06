@@ -4,12 +4,14 @@ import HTTPClient from "../api/HTTPClient";
 import * as XLSX from 'xlsx';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import dayjs from 'dayjs';
 
 const AsientoContable = () => {
   const client = new HTTPClient();
   const [asientos, setAsientos] = useState([]);
-  const [fechaDesde, setFechaDesde] = useState('');
-  const [fechaHasta, setFechaHasta] = useState('');
+  const [loading, setLoading] = useState(true); 
+  const [fechaDesde, setFechaDesde] = useState(dayjs().startOf('month').format('YYYY-MM-DD'));
+  const [fechaHasta, setFechaHasta] = useState(dayjs().endOf('month').format('YYYY-MM-DD'));
 
   const formatoGs = (valor) =>
     valor != null ? valor.toLocaleString('es-PY') : '';
@@ -24,6 +26,7 @@ const AsientoContable = () => {
 
   const fetchAsientos = async () => {
     try {
+      setLoading(true); 
       const { data } = await client.getAsientos();
       if (Array.isArray(data)) {
         setAsientos(data);
@@ -32,6 +35,8 @@ const AsientoContable = () => {
       }
     } catch (error) {
       console.error("Error al obtener asientos contables:", error);
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -39,7 +44,6 @@ const AsientoContable = () => {
     fetchAsientos();
   }, []);
 
-  // Filtro por fechas (frontend)
   const asientosFiltrados = asientos.filter((a) => {
     const fecha = new Date(a.fecha);
     const desde = fechaDesde ? new Date(fechaDesde) : null;
@@ -50,7 +54,6 @@ const AsientoContable = () => {
     return true;
   });
 
-  // Calcular saldo progresivo
   let saldo = 0;
   const asientosConSaldo = asientosFiltrados.map((a) => {
     const debe = a.debe || 0;
@@ -62,63 +65,55 @@ const AsientoContable = () => {
   const totalDebe = asientosFiltrados.reduce((acc, a) => acc + (a.debe || 0), 0);
   const totalHaber = asientosFiltrados.reduce((acc, a) => acc + (a.haber || 0), 0);
 
-
-
-  // Encabezados con estilos
   const handleExportarXLSX = async () => {
-  const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet('Asientos');
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Asientos');
 
-  // Encabezados con estilos
-  worksheet.columns = [
-    { header: 'Fecha', key: 'fecha', width: 15 },
-    { header: 'Concepto', key: 'concepto', width: 35 },
-    { header: 'Debe', key: 'debe', width: 15, style: { alignment: { horizontal: 'right' } } },
-    { header: 'Haber', key: 'haber', width: 15, style: { alignment: { horizontal: 'right' } } },
-    { header: 'Saldo', key: 'saldo', width: 15, style: { alignment: { horizontal: 'right' } } },
-  ];
+    worksheet.columns = [
+      { header: 'Fecha', key: 'fecha', width: 15 },
+      { header: 'Concepto', key: 'concepto', width: 35 },
+      { header: 'Debe', key: 'debe', width: 15, style: { alignment: { horizontal: 'right' } } },
+      { header: 'Haber', key: 'haber', width: 15, style: { alignment: { horizontal: 'right' } } },
+      { header: 'Saldo', key: 'saldo', width: 15, style: { alignment: { horizontal: 'right' } } },
+    ];
 
-  // Cuerpo
-  asientosConSaldo.forEach((a) => {
-    worksheet.addRow({
-      fecha: formatoFecha(a.fecha),
-      concepto: a.concepto,
-      debe: a.debe ?? 0,
-      haber: a.haber ?? 0,
-      saldo: a.saldo ?? 0,
+    asientosConSaldo.forEach((a) => {
+      worksheet.addRow({
+        fecha: formatoFecha(a.fecha),
+        concepto: a.concepto,
+        debe: a.debe ?? 0,
+        haber: a.haber ?? 0,
+        saldo: a.saldo ?? 0,
+      });
     });
-  });
 
-  // Totales con estilo
-  const filaTotales = worksheet.addRow({
-    concepto: 'Totales',
-    debe: totalDebe,
-    haber: totalHaber,
-    saldo: saldo,
-  });
+    const filaTotales = worksheet.addRow({
+      concepto: 'Totales',
+      debe: totalDebe,
+      haber: totalHaber,
+      saldo: saldo,
+    });
 
-  filaTotales.eachCell((cell) => {
-    cell.fill = {
+    filaTotales.eachCell((cell) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFD1E7DD' },
+      };
+      cell.font = { bold: true };
+    });
+
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).fill = {
       type: 'pattern',
       pattern: 'solid',
-      fgColor: { argb: 'FFD1E7DD' }, 
+      fgColor: { argb: 'D9D9D9' },
     };
-    cell.font = { bold: true };
-  });
 
-  // Estilo de encabezado
-  worksheet.getRow(1).font = { bold: true };
-  worksheet.getRow(1).fill = {
-    type: 'pattern',
-    pattern: 'solid',
-    fgColor: { argb: 'D9D9D9' },
+    const buffer = await workbook.xlsx.writeBuffer();
+    const nombreArchivo = `asientos_${fechaDesde || 'inicio'}_a_${fechaHasta || 'hoy'}.xlsx`;
+    saveAs(new Blob([buffer]), nombreArchivo);
   };
-
-  // Descargar
-  const buffer = await workbook.xlsx.writeBuffer();
-  const nombreArchivo = `asientos_${fechaDesde || 'inicio'}_a_${fechaHasta || 'hoy'}.xlsx`;
-  saveAs(new Blob([buffer]), nombreArchivo);
-};
 
   return (
     <div className="container mt-5">
@@ -155,45 +150,59 @@ const AsientoContable = () => {
           >
             Reestablecer
           </button>
-          </div>
-          <button className="btn btn-success ms-2" onClick={handleExportarXLSX}>
-            Exportar XLSX
-          </button>
-
+        </div>
+        <button className="btn btn-success ms-2" onClick={handleExportarXLSX}>
+          Exportar XLSX
+        </button>
       </div>
 
       <div className="table-responsive" style={{ maxHeight: '500px', overflowY: 'auto' }}>
         <table className="table table-sm table-hover table-bordered text-center">
           <thead>
             <tr>
-              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Fecha</th>
-              <th className="text-start" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Concepto</th>
-              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Debe</th>
-              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Haber</th>
-              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Saldo</th>
+              <th style={{ backgroundColor: "#E6E6E6" }}>Fecha</th>
+              <th className="text-start" style={{ backgroundColor: "#E6E6E6" }}>Concepto</th>
+              <th style={{ backgroundColor: "#E6E6E6" }}>Debe</th>
+              <th style={{ backgroundColor: "#E6E6E6" }}>Haber</th>
+              <th style={{ backgroundColor: "#E6E6E6" }}>Saldo</th>
             </tr>
           </thead>
           <tbody>
-            {asientosConSaldo.map((a, index) => (
-              <tr key={a.id_asiento || index}>
-                <td>{formatoFecha(a.fecha)}</td>
-                <td className="text-start">{a.concepto}</td>
-                <td className="text-end">{formatoGs(a.debe)}</td>
-                <td className="text-end">{formatoGs(a.haber)}</td>
-                <td className="text-end">{formatoGs(a.saldo)}</td>
-              </tr>
-            ))}
+            {loading ? (
+              [...Array(10)].map((_, i) => (
+                <tr key={i}>
+                  <td><div className="placeholder-glow"><span className="placeholder col-8"></span></div></td>
+                  <td className="text-start"><div className="placeholder-glow"><span className="placeholder col-10"></span></div></td>
+                  <td className="text-end"><div className="placeholder-glow"><span className="placeholder col-6"></span></div></td>
+                  <td className="text-end"><div className="placeholder-glow"><span className="placeholder col-6"></span></div></td>
+                  <td className="text-end"><div className="placeholder-glow"><span className="placeholder col-6"></span></div></td>
+                </tr>
+              ))
+            ) : (
+              asientosConSaldo.map((a, index) => (
+                <tr key={a.id_asiento || index}>
+                  <td>{formatoFecha(a.fecha)}</td>
+                  <td className="text-start">{a.concepto}</td>
+                  <td className="text-end">{formatoGs(a.debe)}</td>
+                  <td className="text-end">{formatoGs(a.haber)}</td>
+                  <td className="text-end">{formatoGs(a.saldo)}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
-      <div className="total-row d-flex justify-content-between" style={{ backgroundColor: '#C6EAD6', borderRadius: '8px' }}>
+
+      {!loading && (
+        <div className="total-row d-flex justify-content-between" style={{ backgroundColor: '#C6EAD6', borderRadius: '8px' }}>
           <div className="p-3 mt-3 d-flex justify-content-between w-100">
             <span><strong>Totales:</strong></span>
-            <span><strong>Debe: </strong>{formatoGs(totalDebe) }  Gs.</span>
-            <span><strong>Haber: </strong> {formatoGs(totalHaber)} Gs.</span>
-            <span><strong>Saldo: </strong> {formatoGs(saldo)}</span>
+            <span><strong>Debe: </strong>{formatoGs(totalDebe)} Gs.</span>
+            <span><strong>Haber: </strong>{formatoGs(totalHaber)} Gs.</span>
+            <span><strong>Saldo: </strong>{formatoGs(saldo)}</span>
           </div>
         </div>
+      )}
     </div>
   );
 };
