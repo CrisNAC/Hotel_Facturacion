@@ -97,7 +97,8 @@ function DetallesCuenta() {
           email: valor.huesped.email,
           nacionalidad: valor.huesped.nacionalidad,
           ruc: valor.huesped.ruc,
-          telefono: valor.huesped.telefono
+          telefono: valor.huesped.telefono,
+          numero_documento: valor.huesped.numero_documento
         });
         setHabitacion({
           id_habitacion: Number(valor.habitacion.id_habitacion),
@@ -409,7 +410,11 @@ function DetallesCuenta() {
             </div>
             <div className="flex-fill" style={{ minWidth: "160px" }}>
               <small className="text-muted">RUC</small>
-              <div className="fw-semibold">{huesped.ruc || '-'}</div>
+              <div className="fw-semibold">
+                {huesped.ruc ? huesped.ruc : huesped.numero_documento || '-'}
+              </div>
+
+
             </div>
             <div className="flex-fill" style={{ minWidth: "160px" }}>
               <small className="text-muted">Correo electrónico</small>

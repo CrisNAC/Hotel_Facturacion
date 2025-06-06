@@ -177,11 +177,7 @@ class HTTPClient {
         return this.instance.get('/asientos');
     }
 
-    /****    MEDIOS DE PAGO     ****/
-    getMediosPago() {
-        return this.instance.get('/asientos/medioPago');
-    }
-
+    /****    CREAR ASIENTOS    ****/
     crearAsiento(data) {
         return this.instance.post('/asientos', data);
     }
