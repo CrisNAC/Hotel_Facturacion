@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash, FaSearch, FaTimes } from "react-icons/fa";
+import DetallesCuentaSkeleton from "../skeleton/DetallesCuenta.skeleton";
 import HTTPClient from "../api/HTTPClient";
 
 function DetallesCuenta() {
@@ -69,9 +70,9 @@ function DetallesCuenta() {
     monto: 0
   });
   // Funcionalidad de la pagina
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [status, setStatus] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [status, setStatus] = useState(null);
 
   /*
    * Cargar datos del ingreso
@@ -394,315 +395,318 @@ function DetallesCuenta() {
   };
 
   return (
-    <div className="container mt-5">
-      {/* Encabezado */}
-      <h2 className="d-block mt-n3 text-center">Detalles Cuenta</h2>
-      {/* Datos del Huésped */}
-      <div className="card border-secondary-subtle bg-light p-3 mb-4">
-        <h4 className="card-title mb-3">Datos del Huésped</h4>
-        <div className="d-flex flex-wrap gap-4">
-          <div className="flex-fill" style={{ minWidth: "160px" }}>
-            <small className="text-muted">Nombre completo</small>
-            <div className="fw-semibold">{`${huesped.nombre || ''} ${huesped.apellido || ''}`}</div>
-          </div>
-          <div className="flex-fill" style={{ minWidth: "160px" }}>
-            <small className="text-muted">RUC</small>
-            <div className="fw-semibold">{huesped.ruc || '-'}</div>
-          </div>
-          <div className="flex-fill" style={{ minWidth: "160px" }}>
-            <small className="text-muted">Correo electrónico</small>
-            <div className="fw-semibold">{huesped.email || '-'}</div>
-          </div>
-          <div className="flex-fill" style={{ minWidth: "160px" }}>
-            <small className="text-muted">Teléfono</small>
-            <div className="fw-semibold">{huesped.telefono || '-'}</div>
+    <>{loading ? <DetallesCuentaSkeleton></DetallesCuentaSkeleton> : (
+      <div className="container mt-5">
+        {/* Encabezado */}
+        <h2 className="d-block mt-n3 text-center">Detalles Cuenta</h2>
+        {/* Datos del Huésped */}
+        <div className="card border-secondary-subtle bg-light p-3 mb-4">
+          <h4 className="card-title mb-3">Datos del Huésped</h4>
+          <div className="d-flex flex-wrap gap-4">
+            <div className="flex-fill" style={{ minWidth: "160px" }}>
+              <small className="text-muted">Nombre completo</small>
+              <div className="fw-semibold">{`${huesped.nombre || '-'} ${huesped.apellido || ''}`}</div>
+            </div>
+            <div className="flex-fill" style={{ minWidth: "160px" }}>
+              <small className="text-muted">RUC</small>
+              <div className="fw-semibold">{huesped.ruc || '-'}</div>
+            </div>
+            <div className="flex-fill" style={{ minWidth: "160px" }}>
+              <small className="text-muted">Correo electrónico</small>
+              <div className="fw-semibold">{huesped.email || '-'}</div>
+            </div>
+            <div className="flex-fill" style={{ minWidth: "160px" }}>
+              <small className="text-muted">Teléfono</small>
+              <div className="fw-semibold">{huesped.telefono || '-'}</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Detalles Habitación */}
-      <h4 className="text-start">Detalles Habitación</h4>
-      <table className="table table-bordered">
-        <thead>
-          <tr className="text-center">
-            <th className="text-start" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Descripción</th>
-            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Cant. Noches</th>
-            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Nro. Habitación</th>
-            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Adicionales</th>
-            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Precio</th>
-            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Precio Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{habitacion?.tipoHabitacion?.nombre || 'Habitación'}</td>
-            <td className="text-center">{noches}</td>
-            <td className="text-center">{habitacion.numero || '—'}</td>
-            <td className="text-center">{tarifa.descripcion || '—'}</td>
-            <td className="text-end">{precioHabitacion.toLocaleString("de-DE")}</td>
-            <td className="text-end">{totalHabitacion.toLocaleString("de-DE")}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      {/* Cargos Extras */}
-      <h4 className="text-start mt-4">
-        Consumos y Cargos Extras
-        <button
-          className="btn btn-sm ms-3"
-          style={{ backgroundColor: '#83A3A8', color: "white" }}
-          onClick={() => setShowDetailModal(true)}
-          disabled={loading}
-        >
-          + Agregar
-        </button>
-      </h4>
-
-      {error && <div className="alert alert-danger">{error}</div>}
-
-      <table className="table table-bordered">
-        <thead>
-          <tr className="text-center">
-            <th className="text-start" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Descripción</th>
-            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Cantidad</th>
-            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Precio</th>
-            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Precio Total</th>
-            <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {consumos.length > 0 ? (
-            consumos.map((item) => (
-              <tr key={item.id_consumo}>
-                <td>{item.Productos?.descripcion || item.descripcion || 'Consumo'}</td>
-                <td className="text-center">{item.cantidad || 1}</td>
-                <td className="text-end">{(item.Productos?.precio_unitario || item.monto || 0).toLocaleString("de-DE")}</td>
-                <td className="text-end">
-                  {((item.Productos?.precio_unitario || item.monto || 0) * (item.cantidad || 1)).toLocaleString("de-DE")}
-                </td>
-                <td className="d-flex justify-content-center align-items-center" style={{ gap: "3px" }}>
-                  <button
-                    className="btn  rounded-circle d-flex align-items-center justify-content-center"
-                    style={{ width: "30px", height: "30px", padding: 0 }}
-                    onClick={() => abrirModalEdicion(item)}
-                    disabled={loading}
-                    title="Editar cantidad"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="btn rounded-circle d-flex align-items-center justify-content-center"
-                    style={{ width: "30px", height: "30px", padding: 0 }}
-                    onClick={() => eliminarConsumo(item.id_consumo)}
-                    disabled={loading}
-                    title="Eliminar consumo"
-                  >
-                    <FaTrash />
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" className="text-center">No hay consumos registrados</td>
+        {/* Detalles Habitación */}
+        <h4 className="text-start">Detalles Habitación</h4>
+        <table className="table table-bordered">
+          <thead>
+            <tr className="text-center">
+              <th className="text-start" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Descripción</th>
+              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Cant. Noches</th>
+              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Nro. Habitación</th>
+              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Adicionales</th>
+              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Precio</th>
+              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Precio Total</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{habitacion?.tipoHabitacion?.nombre || 'Habitación'}</td>
+              <td className="text-center">{noches}</td>
+              <td className="text-center">{habitacion.numero || '—'}</td>
+              <td className="text-center">{tarifa.descripcion || '—'}</td>
+              <td className="text-end">{precioHabitacion.toLocaleString("de-DE")}</td>
+              <td className="text-end">{totalHabitacion.toLocaleString("de-DE")}</td>
+            </tr>
+          </tbody>
+        </table>
 
-      <h5 className="text-end">
-        <strong>Total: {totalGeneral.toLocaleString("de-DE")} Gs</strong>
-      </h5>
+        {/* Cargos Extras */}
+        <h4 className="text-start mt-4">
+          Consumos y Cargos Extras
+          <button
+            className="btn btn-sm ms-3"
+            style={{ backgroundColor: '#83A3A8', color: "white" }}
+            onClick={() => setShowDetailModal(true)}
+            disabled={loading}
+          >
+            + Agregar
+          </button>
+        </h4>
 
-      {/* Botones finales */}
-      <div className="d-flex justify-content-center align-items-center mt-4" style={{ gap: "30px" }}>
-        <button
-          className="btn btn-secondary fw-bold"
-          style={{ width: "150px", height: "40px" }}
-          onClick={irAHuespedes}
-          disabled={loading}
-        >
-          Volver
-        </button>
-        <button
-          className="btn btn-success fw-bold"
-          style={{ width: "150px", height: "40px" }}
-          onClick={irAFactura}
-          disabled={loading}
-        >
-          Cerrar Cuenta
-        </button>
-      </div>
+        {error && <div className="alert alert-danger">{error}</div>}
 
-      {/* Modal Agregar consumo */}
-      {showDetailModal && (
-        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title w-100 text-center">Agregar Consumo</h5>
-              </div>
-              <div className="modal-body">
-                {error && <div className="alert alert-danger">{error}</div>}
+        <table className="table table-bordered">
+          <thead>
+            <tr className="text-center">
+              <th className="text-start" style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Descripción</th>
+              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Cantidad</th>
+              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Precio</th>
+              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Precio Total</th>
+              <th style={{ backgroundColor: "#E6E6E6", color: "#2E2E2E" }}>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {consumos.length > 0 ? (
+              consumos.map((item) => (
+                <tr key={item.id_consumo}>
+                  <td>{item.Productos?.descripcion || item.descripcion || 'Consumo'}</td>
+                  <td className="text-center">{item.cantidad || 1}</td>
+                  <td className="text-end">{(item.Productos?.precio_unitario || item.monto || 0).toLocaleString("de-DE")}</td>
+                  <td className="text-end">
+                    {((item.Productos?.precio_unitario || item.monto || 0) * (item.cantidad || 1)).toLocaleString("de-DE")}
+                  </td>
+                  <td className="d-flex justify-content-center align-items-center" style={{ gap: "3px" }}>
+                    <button
+                      className="btn  rounded-circle d-flex align-items-center justify-content-center"
+                      style={{ width: "30px", height: "30px", padding: 0 }}
+                      onClick={() => abrirModalEdicion(item)}
+                      disabled={loading}
+                      title="Editar cantidad"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn rounded-circle d-flex align-items-center justify-content-center"
+                      style={{ width: "30px", height: "30px", padding: 0 }}
+                      onClick={() => eliminarConsumo(item.id_consumo)}
+                      disabled={loading}
+                      title="Eliminar consumo"
+                    >
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center">No hay consumos registrados</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
 
-                <div className="mb-3">
-                  <label className="form-label">Seleccionar Producto</label>
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={busqueda}
-                      onChange={(e) => setBusqueda(e.target.value)}
-                      placeholder="Busque y seleccione un producto..."
-                    />
-                    {busqueda && (
-                      <button
-                        className="btn btn-outline-secondary"
-                        type="button"
-                        onClick={limpiarSeleccion}
-                      >
-                        <FaTimes />
-                      </button>
+        <h5 className="text-end">
+          <strong>Total: {totalGeneral.toLocaleString("de-DE")} Gs</strong>
+        </h5>
+
+        {/* Botones finales */}
+        <div className="d-flex justify-content-center align-items-center mt-4" style={{ gap: "30px" }}>
+          <button
+            className="btn btn-secondary fw-bold"
+            style={{ width: "150px", height: "40px" }}
+            onClick={irAHuespedes}
+            disabled={loading}
+          >
+            Volver
+          </button>
+          <button
+            className="btn btn-success fw-bold"
+            style={{ width: "150px", height: "40px" }}
+            onClick={irAFactura}
+            disabled={loading}
+          >
+            Cerrar Cuenta
+          </button>
+        </div>
+
+        {/* Modal Agregar consumo */}
+        {showDetailModal && (
+          <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <div className="modal-dialog modal-lg">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title w-100 text-center">Agregar Consumo</h5>
+                </div>
+                <div className="modal-body">
+                  {error && <div className="alert alert-danger">{error}</div>}
+
+                  <div className="mb-3">
+                    <label className="form-label">Seleccionar Producto</label>
+                    <div className="input-group">
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={busqueda}
+                        onChange={(e) => setBusqueda(e.target.value)}
+                        placeholder="Busque y seleccione un producto..."
+                      />
+                      {busqueda && (
+                        <button
+                          className="btn btn-outline-secondary"
+                          type="button"
+                          onClick={limpiarSeleccion}
+                        >
+                          <FaTimes />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Dropdown de resultados */}
+                    {showDropdown && (
+                      <div className="list-group mt-2" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                        {productosFiltrados.length > 0 ? (
+                          productosFiltrados.map(producto => (
+                            <button
+                              key={producto.id_producto}
+                              type="button"
+                              className={`list-group-item list-group-item-action ${nuevoConsumo.producto?.id_producto === producto.id_producto ? 'active' : ''
+                                }`}
+                              onClick={() => seleccionarProducto(producto)}
+                            >
+                              <div className="d-flex justify-content-between">
+                                <span>{producto.descripcion}</span>
+                                <span>{producto.precio_unitario.toLocaleString()} Gs.</span>
+                              </div>
+                            </button>
+                          ))
+                        ) : (
+                          <div className="list-group-item text-muted">
+                            {busqueda ? 'No se encontraron productos' : 'Escriba para buscar productos'}
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
 
-                  {/* Dropdown de resultados */}
-                  {showDropdown && (
-                    <div className="list-group mt-2" style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                      {productosFiltrados.length > 0 ? (
-                        productosFiltrados.map(producto => (
-                          <button
-                            key={producto.id_producto}
-                            type="button"
-                            className={`list-group-item list-group-item-action ${nuevoConsumo.producto?.id_producto === producto.id_producto ? 'active' : ''
-                              }`}
-                            onClick={() => seleccionarProducto(producto)}
-                          >
-                            <div className="d-flex justify-content-between">
-                              <span>{producto.descripcion}</span>
-                              <span>{producto.precio_unitario.toLocaleString()} Gs.</span>
-                            </div>
-                          </button>
-                        ))
-                      ) : (
-                        <div className="list-group-item text-muted">
-                          {busqueda ? 'No se encontraron productos' : 'Escriba para buscar productos'}
+                  {nuevoConsumo.producto && (
+                    <>
+                      <div className="row mb-3">
+                        <div className="col-md-6">
+                          <label className="form-label">Cantidad</label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            min="1"
+                            value={nuevoConsumo.cantidad}
+                            onChange={handleCantidadChange}
+                          />
                         </div>
-                      )}
-                    </div>
+                        <div className="col-md-6">
+                          <label className="form-label">Precio Unitario</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={nuevoConsumo.producto.precio_unitario.toLocaleString()}
+                            readOnly
+                          />
+                        </div>
+                      </div>
+
+                      <div className="alert alert-info">
+                        <strong>Total:</strong> {nuevoConsumo.monto.toLocaleString()} Gs.
+                      </div>
+                    </>
                   )}
                 </div>
+                <div className="modal-footer d-flex justify-content-center">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setShowDetailModal(false);
+                      limpiarSeleccion();
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                  <button type="button" className="btn btn-success" onClick={agregarConsumo} disabled={loading || !nuevoConsumo.producto}>
+                    {loading ? 'Guardando...' : 'Guardar Consumo'}</button>
 
-                {nuevoConsumo.producto && (
-                  <>
-                    <div className="row mb-3">
-                      <div className="col-md-6">
-                        <label className="form-label">Cantidad</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          min="1"
-                          value={nuevoConsumo.cantidad}
-                          onChange={handleCantidadChange}
-                        />
-                      </div>
-                      <div className="col-md-6">
-                        <label className="form-label">Precio Unitario</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={nuevoConsumo.producto.precio_unitario.toLocaleString()}
-                          readOnly
-                        />
-                      </div>
-                    </div>
-
-                    <div className="alert alert-info">
-                      <strong>Total:</strong> {nuevoConsumo.monto.toLocaleString()} Gs.
-                    </div>
-                  </>
-                )}
-              </div>
-              <div className="modal-footer d-flex justify-content-center">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => {
-                    setShowDetailModal(false);
-                    limpiarSeleccion();
-                  }}
-                >
-                  Cancelar
-                </button>
-                <button type="button" className="btn btn-success" onClick={agregarConsumo} disabled={loading || !nuevoConsumo.producto}>
-                  {loading ? 'Guardando...' : 'Guardar Consumo'}</button>
-
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Modal Editar Cantidad */}
-      {showEditModal && consumoEditando && (
-        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title w-100 text-center">Editar Cantidad</h5>
-              </div>
-              <div className="modal-body">
-                {error && <div className="alert alert-danger">{error}</div>}
-
-                <div className="mb-3">
-                  <label className="form-label">Producto</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={consumoEditando.Productos?.descripcion || consumoEditando.descripcion || 'Consumo'}
-                    readOnly
-                  />
+        {/* Modal Editar Cantidad */}
+        {showEditModal && consumoEditando && (
+          <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title w-100 text-center">Editar Cantidad</h5>
                 </div>
+                <div className="modal-body">
+                  {error && <div className="alert alert-danger">{error}</div>}
 
-                <div className="mb-3">
-                  <label className="form-label">Cantidad</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    min="1"
-                    value={nuevaCantidad}
-                    onChange={(e) => setNuevaCantidad(Math.max(1, Number(e.target.value)))}
-                  />
-                </div>
+                  <div className="mb-3">
+                    <label className="form-label">Producto</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={consumoEditando.Productos?.descripcion || consumoEditando.descripcion || 'Consumo'}
+                      readOnly
+                    />
+                  </div>
 
-                <div className="alert alert-info">
-                  <strong>Precio Unitario:</strong> {(consumoEditando.Productos?.precio_unitario || consumoEditando.monto || 0).toLocaleString()} Gs.
-                  <br />
-                  <strong>Nuevo Total:</strong> {(consumoEditando.Productos?.precio_unitario || consumoEditando.monto || 0) * nuevaCantidad} Gs.
+                  <div className="mb-3">
+                    <label className="form-label">Cantidad</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      min="1"
+                      value={nuevaCantidad}
+                      onChange={(e) => setNuevaCantidad(Math.max(1, Number(e.target.value)))}
+                    />
+                  </div>
+
+                  <div className="alert alert-info">
+                    <strong>Precio Unitario:</strong> {(consumoEditando.Productos?.precio_unitario || consumoEditando.monto || 0).toLocaleString()} Gs.
+                    <br />
+                    <strong>Nuevo Total:</strong> {(consumoEditando.Productos?.precio_unitario || consumoEditando.monto || 0) * nuevaCantidad} Gs.
+                  </div>
                 </div>
-              </div>
-              <div className="modal-footer d-flex justify-content-center">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowEditModal(false)}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-success"
-                  onClick={guardarEdicionCantidad}
-                  disabled={loading || nuevaCantidad === consumoEditando.cantidad}
-                >
-                  {loading ? 'Guardando...' : 'Guardar Cambios'}
-                </button>
+                <div className="modal-footer d-flex justify-content-center">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowEditModal(false)}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={guardarEdicionCantidad}
+                    disabled={loading || nuevaCantidad === consumoEditando.cantidad}
+                  >
+                    {loading ? 'Guardando...' : 'Guardar Cambios'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    )}
+    </>
   );
 };
 
