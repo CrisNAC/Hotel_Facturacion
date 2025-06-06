@@ -364,13 +364,15 @@ function InvoiceCierre() {
             concepto: `por Pago de factura ${invoiceData.numero_factura}`,
             debe: invoiceData.total,
             haber: null,
-            fecha: new Date()
+            fecha: new Date(),
+            created_at: new Date()
           },
           {
             concepto: `a Documentos por cobrar`,
             debe: null,
             haber: invoiceData.total,
-            fecha: new Date()
+            fecha: new Date(),
+            created_at: new Date()
           }
         ];
       } else if (condicionVenta === "Contado" && medioPago === "Efectivo") {
@@ -379,19 +381,22 @@ function InvoiceCierre() {
             concepto: `por Pago de factura ${invoiceData.numero_factura}`,
             debe: invoiceData.total,
             haber: null,
-            fecha: new Date()
+            fecha: new Date(),
+            created_at: new Date()
           },
           {
             concepto: `a Caja`,
             debe: null,
             haber: invoiceData.total - iva.totalIVA,
-            fecha: new Date()
+            fecha: new Date(),
+            created_at: new Date()
           },
           {
             concepto: `IVA Débito Fiscal correspondiente a la Factura ${invoiceData.numero_factura}`,
             debe: null,
             haber: Math.ceil(iva.totalIVA),
-            fecha: new Date()
+            fecha: new Date(),
+            created_at: new Date()
           }
         ];
       } else {
@@ -400,30 +405,36 @@ function InvoiceCierre() {
             concepto: `por Pago de factura ${invoiceData.numero_factura}`,
             debe: invoiceData.total,
             haber: null,
-            fecha: new Date()
+            fecha: new Date(),
+            created_at: new Date()
           },
           {
             concepto: `a Ueno Bank S.A.`,
             debe: null,
             haber: invoiceData.total - iva.totalIVA,
-            fecha: new Date()
+            fecha: new Date(),
+            created_at: new Date()
           },
           {
             concepto: `IVA Débito Fiscal correspondiente a la Factura ${invoiceData.numero_factura}`,
             debe: null,
             haber: iva.totalIVA,
-            fecha: new Date()
+            fecha: new Date(),
+            created_at: new Date()
           }
         ];
       }
-      await client.crearAsiento(asientoData);
+       const response = await client.crearAsiento(asientoData);
 
-      setShowAsientoModal(false);
-      setShowEmailModal(true);
-
+      if (response.status === 200 || response.status === 201) {
+        setShowAsientoModal(false);
+        setShowEmailModal(true);
+      } else {
+        throw new Error(response.data?.message || 'Error al crear asiento contable');
+      }
     } catch (error) {
-      setError(error.message);
-      console.error('Error al crear asiento:', error);
+      console.error('Error al crear asiento contable:', error);
+      setError('Error al crear asiento contable: ' + (error.message || ''));
     } finally {
       setLoading(false);
     }
